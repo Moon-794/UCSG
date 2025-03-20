@@ -3,5 +3,6 @@
 
 int main(int argc, char** args)
 {
-    std::cout << "Hello, World!!!" << std::endl;
+    glfwInit();
+    GLFWwindow* window = glfwCreateWindow(640, 480, "UCSG", NULL, NULL);
 }
