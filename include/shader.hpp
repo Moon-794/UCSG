@@ -140,4 +140,10 @@ public:
         }
     }
 };
+
+void setMat4(unsigned int shaderID, const std::string &name, glm::mat4 value)
+{
+    glUniformMatrix4fv(glGetUniformLocation(shaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
 #endif
