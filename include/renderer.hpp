@@ -20,6 +20,7 @@ struct Renderer
 public:
     GLFWwindow* window = nullptr;
     unsigned int quadVAO;
+    glm::vec3 cameraPos = glm::vec3(0);
 };
 
 unsigned int CreateQuadVAO()
@@ -30,11 +31,11 @@ unsigned int CreateQuadVAO()
     
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);   
-    glBufferData(GL_ARRAY_BUFFER, sizeof(SpriteConstants::vertices), SpriteConstants::vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(SpriteConstants::vertices), SpriteConstants::vertices, GL_DYNAMIC_DRAW);
     
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SpriteConstants::indices), SpriteConstants::indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SpriteConstants::indices), SpriteConstants::indices, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -62,7 +63,7 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
     }
 
     glfwMakeContextCurrent(renderer.window);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     //Load GLAD (needs a context)
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -86,7 +87,8 @@ void DrawSprite(Renderer& renderer, Sprite& sprite)
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    view  = glm::translate(view, -renderer.cameraPos);
+    view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
     model = glm::translate(model, glm::vec3(sprite.x, sprite.y, 0));
 
     //Move into its own callback for window resizing
