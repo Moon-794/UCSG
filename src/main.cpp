@@ -18,15 +18,11 @@ public:
         keyMap[key] = status;
     }
 
-    static InputMap* activeInputMap;
-
 private:
     std::array<int, 90> keyMap;
 };
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-InputMap* InputMap::activeInputMap = nullptr;
 
 int main(int argc, char** args)
 {
@@ -41,8 +37,8 @@ int main(int argc, char** args)
     InitRenderer(renderer, hints);
     Shader s = Shader("resources/vertex.vert", "resources/fragment.frag");
 
-    InputMap inputMap;
-    InputMap::activeInputMap = &inputMap;
+    InputMap* inputMap = new InputMap();
+    glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void *>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
     Sprite tile;
@@ -59,22 +55,22 @@ int main(int argc, char** args)
 
         DrawSprite(renderer, tile);
 
-        if(InputMap::activeInputMap->GetKey(GLFW_KEY_D) == 1)
+        if(inputMap->GetKey(GLFW_KEY_D) == 1)
         {
             renderer.cameraPos.x += 0.05f;
         }
 
-        if(InputMap::activeInputMap->GetKey(GLFW_KEY_A) == 1)
+        if(inputMap->GetKey(GLFW_KEY_A) == 1)
         {
             renderer.cameraPos.x -= 0.05f;
         }
 
-        if(InputMap::activeInputMap->GetKey(GLFW_KEY_W) == 1)
+        if(inputMap->GetKey(GLFW_KEY_W) == 1)
         {
             renderer.cameraPos.y += 0.05f;
         }
 
-        if(InputMap::activeInputMap->GetKey(GLFW_KEY_S) == 1)
+        if(inputMap->GetKey(GLFW_KEY_S) == 1)
         {
             renderer.cameraPos.y -= 0.05f;
         }
@@ -86,20 +82,22 @@ int main(int argc, char** args)
 
     //Cleanup
     glfwTerminate();
-    delete (InputMap::activeInputMap);
+    delete (inputMap);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    InputMap* map = reinterpret_cast<InputMap*>(glfwGetWindowUserPointer(window));
+
     if(action == GLFW_PRESS)
     {
-        InputMap::activeInputMap->SetKey(key, 1);
+        map->SetKey(key, 1);
         return;
     }
 
     if(action == GLFW_RELEASE)
     {
-        InputMap::activeInputMap->SetKey(key, 0);
+        map->SetKey(key, 0);
         return;
     }
 }
