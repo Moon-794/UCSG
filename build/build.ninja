@@ -66,8 +66,8 @@ build CMakeFiles/UCSG.dir/src/glad.c.obj: C_COMPILER__UCSG_unscanned_ C$:/Users/
 #############################################
 # Link the executable bin\UCSG.exe
 
-build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_ CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj | C$:/msys64/mingw64/lib/libglfw3.dll.a
-  LINK_LIBRARIES = C:/msys64/mingw64/lib/libglfw3.dll.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_ CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj | C$:/msys64/mingw64/lib/libglfw3.dll.a C$:/Users/conno/Desktop/UCSG/lib/libbox2d.a
+  LINK_LIBRARIES = C:/msys64/mingw64/lib/libglfw3.dll.a  C:/Users/conno/Desktop/UCSG/lib/libbox2d.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\UCSG.dir
   POST_BUILD = cd .
   PRE_LINK = cd .

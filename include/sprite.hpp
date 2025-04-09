@@ -4,6 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include "shader.hpp"
+
 namespace SpriteConstants
 {
     const float vertices[] = 
@@ -34,10 +36,11 @@ unsigned int GenerateTextureID(std::string file)
     // load and generate the texture
     int width, height, nrChannels;
     std::string filePath = "resources/sprites/" + file;
-    unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -52,13 +55,23 @@ unsigned int GenerateTextureID(std::string file)
     return texture;
 }
 
-struct Sprite
+class Sprite
 {
 public:
+    Sprite(std::string textureFile, glm::vec2 position, Shader* s)
+    {
+        textureID = GenerateTextureID(textureFile.c_str());
+        this->position = position;
+        scale = glm::vec2(1, 1);
+
+        shader = s;
+    }
+
     unsigned int textureID;
-    unsigned int shaderID;
-    int16_t x;
-    int16_t y;
+    Shader* shader;
+
+    glm::vec2 position;
+    glm::vec2 scale;
 };
 
 #endif

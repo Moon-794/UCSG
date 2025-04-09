@@ -72,6 +72,7 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
     }
 
     glViewport(0, 0, hints.windowWidth, hints.windowHeight);
+    glEnable(GL_BLEND);
 
     renderer.quadVAO = CreateQuadVAO();
 
@@ -80,7 +81,7 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
 
 void DrawSprite(Renderer& renderer, Sprite& sprite)
 {
-    glUseProgram(sprite.shaderID);
+    glUseProgram(sprite.shader->ID);
 
     //Base uniforms, different shaders will likely have different uniforms
     glm::mat4 model = glm::mat4(1.0f);
@@ -89,15 +90,17 @@ void DrawSprite(Renderer& renderer, Sprite& sprite)
 
     view  = glm::translate(view, -renderer.cameraPos);
     view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
-    model = glm::translate(model, glm::vec3(sprite.x, sprite.y, 0));
+
+    model = glm::scale(model, glm::vec3(sprite.scale, 1));
+    model = glm::translate(model, glm::vec3(sprite.position.x, sprite.position.y, 0));
 
     //Move into its own callback for window resizing
     float aspect = (800.0f/600.0f);
     projection = glm::ortho(-10.0f * aspect, 10.0f * aspect, -10.0f, 10.0f, 0.1f, 15.0f);
 
-    setMat4(sprite.shaderID, "projection", projection);
-    setMat4(sprite.shaderID, "model", model);
-    setMat4(sprite.shaderID, "view", view);
+    sprite.shader->setMat4("projection", projection);
+    sprite.shader->setMat4("model", model);
+    sprite.shader->setMat4("view", view);
 
     glBindVertexArray(renderer.quadVAO);
 

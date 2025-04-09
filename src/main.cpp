@@ -4,6 +4,8 @@
 #include "unistd.h"
 #include <array>
 
+#include "box2d/box2d.h"
+
 class InputMap
 {
 public:
@@ -26,6 +28,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 int main(int argc, char** args)
 {
+    b2Polygon box = b2MakeBox(1.0f, 1.0f);
+
     World world(16, 16);
 
     Renderer renderer;
@@ -41,19 +45,20 @@ int main(int argc, char** args)
     glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void *>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
-    Sprite tile;
-    tile.textureID = GenerateTextureID("tile.png");
-    tile.shaderID = s.ID;
-    tile.x = 2;
-    tile.y = 2;
+    Sprite tile(std::string("tile.png"), glm::vec2(2, 2), &s);
+    Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
+    Sprite map(std::string("map.png"), glm::vec2(0, 0), &s);
+    map.scale.x = 16;
+    map.scale.y = 16;
 
     while (!glfwWindowShouldClose(renderer.window))
     {
         //Clear screen
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.090f, 0.098f, 0.117f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        DrawSprite(renderer, tile);
+        DrawSprite(renderer, map);
+        DrawSprite(renderer, player);
 
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
         {
@@ -74,6 +79,9 @@ int main(int argc, char** args)
         {
             renderer.cameraPos.y -= 0.05f;
         }
+
+        player.position.x = renderer.cameraPos.x;
+        player.position.y = renderer.cameraPos.y;
         
         //Finish Render pass
         glfwSwapBuffers(renderer.window);
