@@ -1,0 +1,5 @@
+Tilemaps:
+
+Tilemaps are represented via a png spritesheet, and a JSON file.
+Each layer is named as LX, where X is the layer number e.g L0 is the base layer
+Higher order layers are drawn over all lower layers

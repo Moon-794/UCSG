@@ -1,10 +1,11 @@
 #include <iostream>
-#include "World.hpp"
+#include "area.hpp"
 #include "renderer.hpp"
 #include "unistd.h"
 #include <array>
 
-#include "box2d/box2d.h"
+#include "collision.h"
+#include <json-c/json.h>
 
 class InputMap
 {
@@ -28,9 +29,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 int main(int argc, char** args)
 {
-    b2Polygon box = b2MakeBox(1.0f, 1.0f);
+    Area area(std::string("TestMap"));
 
-    World world(16, 16);
+    json_object *root = json_object_from_file("resources/areaData/TestMap/map.json");
+
+    json_object *layers;
+    json_object_object_get_ex(root, "layers", &layers);
+    int array_len = json_object_array_length(layers);
+
+    for (size_t i = 0; i < array_len; i++)
+    {
+        json_object *elem = json_object_array_get_idx(layers, i);
+        json_object *name;
+        json_object_object_get_ex(elem, "name", &name);
+        printf("Name: %s\n", json_object_get_string(name));
+    }
 
     Renderer renderer;
     RendererSetupHints hints;
@@ -51,6 +64,18 @@ int main(int argc, char** args)
     map.scale.x = 16;
     map.scale.y = 16;
 
+    URect playerRect;
+    playerRect.x = 0;
+    playerRect.y = 0;
+    playerRect.width = 0.8;
+    playerRect.height = 1;
+
+    URect tileRect;
+    tileRect.x = 2;
+    tileRect.y = 2;
+    tileRect.width = 1;
+    tileRect.height = 1;
+
     while (!glfwWindowShouldClose(renderer.window))
     {
         //Clear screen
@@ -58,30 +83,57 @@ int main(int argc, char** args)
         glClear(GL_COLOR_BUFFER_BIT);
 
         DrawSprite(renderer, map);
+        DrawSprite(renderer, tile);
         DrawSprite(renderer, player);
 
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
         {
-            renderer.cameraPos.x += 0.05f;
+            player.position.x += 0.05f;
         }
 
         if(inputMap->GetKey(GLFW_KEY_A) == 1)
         {
-            renderer.cameraPos.x -= 0.05f;
+            player.position.x -= 0.05f;
         }
 
         if(inputMap->GetKey(GLFW_KEY_W) == 1)
         {
-            renderer.cameraPos.y += 0.05f;
+            player.position.y += 0.05f;
         }
 
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
         {
-            renderer.cameraPos.y -= 0.05f;
+            player.position.y -= 0.05f;
         }
 
-        player.position.x = renderer.cameraPos.x;
-        player.position.y = renderer.cameraPos.y;
+        playerRect.x = player.position.x;
+        playerRect.y = player.position.y;
+
+        if(PlayerAABBIntersect(playerRect, tileRect))
+        {
+            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
+            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
+
+            float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
+            float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
+
+            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
+            float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
+
+            if (std::abs(resolveX) < std::abs(resolveY)) 
+            {
+                player.position.x -= resolveX;
+            } else 
+            {
+                player.position.y -= resolveY;
+            }
+
+            playerRect.x = player.position.x;
+            playerRect.y = player.position.y;
+        }
+
+        renderer.cameraPos.x = player.position.x;
+        renderer.cameraPos.y = player.position.y;
         
         //Finish Render pass
         glfwSwapBuffers(renderer.window);
