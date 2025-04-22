@@ -4,8 +4,10 @@
 #include "unistd.h"
 #include <array>
 
+#include <fstream> 
 #include "collision.h"
 #include <json-c/json.h>
+#include "tilemap.h"
 
 class InputMap
 {
@@ -26,24 +28,12 @@ private:
 };
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+unsigned int GenerateMapTexture();
 
 int main(int argc, char** args)
 {
     Area area(std::string("TestMap"));
-
-    json_object *root = json_object_from_file("resources/areaData/TestMap/map.json");
-
-    json_object *layers;
-    json_object_object_get_ex(root, "layers", &layers);
-    int array_len = json_object_array_length(layers);
-
-    for (size_t i = 0; i < array_len; i++)
-    {
-        json_object *elem = json_object_array_get_idx(layers, i);
-        json_object *name;
-        json_object_object_get_ex(elem, "name", &name);
-        printf("Name: %s\n", json_object_get_string(name));
-    }
+    
 
     Renderer renderer;
     RendererSetupHints hints;
@@ -55,14 +45,17 @@ int main(int argc, char** args)
     Shader s = Shader("resources/vertex.vert", "resources/fragment.frag");
 
     InputMap* inputMap = new InputMap();
-    glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void *>(inputMap));
+    glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void*>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
     Sprite tile(std::string("tile.png"), glm::vec2(2, 2), &s);
     Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
-    Sprite map(std::string("map.png"), glm::vec2(0, 0), &s);
-    map.scale.x = 16;
-    map.scale.y = 16;
+
+    unsigned int mapTex = GenerateMapTexture();
+    Sprite map(mapTex, glm::vec2(0, 0), &s);
+    map.scale = glm::vec2(32, 32);
+
+    std::cout << "zx" << map.textureID << "\n";
 
     URect playerRect;
     playerRect.x = 0;
@@ -78,8 +71,9 @@ int main(int argc, char** args)
 
     while (!glfwWindowShouldClose(renderer.window))
     {
+        
         //Clear screen
-        glClearColor(0.090f, 0.098f, 0.117f, 1.0f);
+        glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         DrawSprite(renderer, map);
@@ -160,4 +154,143 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         map->SetKey(key, 0);
         return;
     }
+}
+  
+unsigned int GenerateMapTexture()
+{
+    json_object *data = GetDataArray("resources/areaData/TestMap/TestMap.json");
+    int data_len = json_object_array_length(data);
+
+    std::vector<int> tileIDS;
+    int width = 32;
+    int height = 32;
+    int nrChannels = 0;
+    int spriteWidth = 16;
+
+    for (size_t i = 0; i < data_len; i++)
+    {
+        json_object *tile = json_object_array_get_idx(data, i);
+        tileIDS.push_back(json_object_get_int(tile));
+    }
+
+    stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
+    int length = width * height * 4;
+
+    int numImages = width / spriteWidth;
+    
+    std::vector<unsigned char*> subImages(numImages);
+
+    for (size_t n = 0; n < numImages; n++)
+    {
+        subImages[n] = new unsigned char[16 * 16 * 4];
+        for (size_t x = 0; x < 16; x++)
+        {
+            for (size_t y = 0; y < 16; y++)
+            {
+                int parentOffset = ((x * 80) + y + (spriteWidth * n)) * 4;
+                int childOffset = ((x * 16) + y) * 4;
+                subImages[n][childOffset + 0] = image[parentOffset + 0];
+                subImages[n][childOffset + 1] = image[parentOffset + 1];
+                subImages[n][childOffset + 2] = image[parentOffset + 2];
+                subImages[n][childOffset + 3] = image[parentOffset + 3];
+            }
+        }
+    }
+    
+    std::ofstream MyFile("thing.ppm");
+    MyFile << "P3\n512 512\n255\n";
+
+    //for (size_t x = 0; x < 16; x++)
+    //{
+        //for (size_t y = 0; y < 16; y++)
+       /*{
+            int xOffset = x * 16 * 4;
+            int offset = (xOffset + (y * 4));
+            MyFile << (int)subImages[0][offset + 0] << " ";
+            MyFile << (int)subImages[0][offset + 1] << " ";
+            MyFile << (int)subImages[0][offset + 2] << "\n";
+        }
+    }*/
+
+    
+
+    
+    //Begin stitching together tilemap
+    int mapWidth = 32;
+    int mapHeight = 32;
+
+    unsigned char* tileMapImage = new unsigned char[512 * 512 * 4];
+
+    for (size_t x = 0; x < mapWidth; x++)
+    {          
+        for (size_t y = 0; y < mapHeight; y++)
+        {
+            int tileID = tileIDS[(x * mapWidth) + y];
+
+            //Copy subImage to tilemapImage
+            for (size_t i = 0; i < 16; i++)
+            {
+                for (size_t j = 0; j < 16; j++)
+                {
+                    //Move down 16 lines for each y
+                    int mapOffsetY = ((x * 16) + i) * (16 * mapWidth * 4);
+                    //Move down 1 line per j
+                    int subOffsetY = i * 16 * 4;
+                    
+                    //Move 16 pixels across for each x
+                    int mapOffsetX = y * (16 * 4);
+                    int subOffsetX = j * 4;
+
+                    int subOffset = subOffsetY + subOffsetX;
+                    int mapOffset = mapOffsetY + mapOffsetX;
+
+                    tileMapImage[mapOffset + subOffsetX + 0] = subImages[tileID - 1][subOffset + 0];
+                    tileMapImage[mapOffset + subOffsetX + 1] = subImages[tileID - 1][subOffset + 1];
+                    tileMapImage[mapOffset + subOffsetX + 2] = subImages[tileID - 1][subOffset + 2];
+                    tileMapImage[mapOffset + subOffsetX + 3] = subImages[tileID - 1][subOffset + 3];
+                }
+            }
+            
+        }
+    }
+
+    for (size_t x = 0; x < 512; x++)
+    { 
+        for (size_t y = 0; y < 512; y++)
+        {
+            int offset = ((x * 512) + y) * 4;
+
+            // Extract RGB values from tileMapImage
+            unsigned char r = tileMapImage[offset + 0]; // Red channel
+            unsigned char g = tileMapImage[offset + 1]; // Green channel
+            unsigned char b = tileMapImage[offset + 2]; // Blue channel
+
+            // Print each color value in PPM format
+            MyFile << (int)r << " " << (int)g << " " << (int)b << " ";
+            MyFile << "\n";
+        }
+    }
+
+    MyFile.close();
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, tileMapImage);
+
+    //Free stb data
+
+    //Delete subimages
+    //Delete tilemapImage
+
+    std::cout << texture << "\n";
+
+    return texture;
 }

@@ -41,7 +41,6 @@ unsigned int GenerateTextureID(std::string file)
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
@@ -58,6 +57,15 @@ unsigned int GenerateTextureID(std::string file)
 class Sprite
 {
 public:
+    Sprite(unsigned int textureID, glm::vec2 position, Shader* s)
+    {
+        this->textureID = textureID;
+        this->position = position;
+        scale = glm::vec2(1, 1);
+
+        shader = s;
+    }
+
     Sprite(std::string textureFile, glm::vec2 position, Shader* s)
     {
         textureID = GenerateTextureID(textureFile.c_str());

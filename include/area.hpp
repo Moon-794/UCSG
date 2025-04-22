@@ -14,8 +14,7 @@ enum TileType
 struct Tile
 {
 public:
-    TileType type = TileType::Void;
-    bool collisionTile = false;
+    bool collider = false;
 };
 
 struct Area
