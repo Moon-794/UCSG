@@ -71,7 +71,7 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
         std::cout << "Failed to initialize GLAD" << std::endl;
     }
 
-    glViewport(0, 0, hints.windowWidth, hints.windowHeight);
+    glViewport(0, 0, 800, 600);
     glEnable(GL_BLEND);
 
     renderer.quadVAO = CreateQuadVAO();

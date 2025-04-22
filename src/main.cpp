@@ -55,8 +55,6 @@ int main(int argc, char** args)
     Sprite map(mapTex, glm::vec2(0, 0), &s);
     map.scale = glm::vec2(32, 32);
 
-    std::cout << "zx" << map.textureID << "\n";
-
     URect playerRect;
     playerRect.x = 0;
     playerRect.y = 0;
