@@ -161,7 +161,7 @@ unsigned int GenerateMapTexture()
     json_object *data = GetDataArray("resources/areaData/TestMap/TestMap.json");
     int data_len = json_object_array_length(data);
 
-    std::vector<int> tileIDS;
+    std::vector<int> tileIDS(32 * 32);
     int width = 32;
     int height = 32;
     int nrChannels = 0;
@@ -170,9 +170,10 @@ unsigned int GenerateMapTexture()
     for (size_t i = 0; i < data_len; i++)
     {
         json_object *tile = json_object_array_get_idx(data, i);
-        tileIDS.push_back(json_object_get_int(tile));
+        tileIDS[tileIDS.size() - 1 - i] = json_object_get_int(tile);
     }
 
+    stbi_set_flip_vertically_on_load(true);
     stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
     int length = width * height * 4;
 
@@ -197,23 +198,6 @@ unsigned int GenerateMapTexture()
         }
     }
     
-    std::ofstream MyFile("thing.ppm");
-    MyFile << "P3\n512 512\n255\n";
-
-    //for (size_t x = 0; x < 16; x++)
-    //{
-        //for (size_t y = 0; y < 16; y++)
-       /*{
-            int xOffset = x * 16 * 4;
-            int offset = (xOffset + (y * 4));
-            MyFile << (int)subImages[0][offset + 0] << " ";
-            MyFile << (int)subImages[0][offset + 1] << " ";
-            MyFile << (int)subImages[0][offset + 2] << "\n";
-        }
-    }*/
-
-    
-
     
     //Begin stitching together tilemap
     int mapWidth = 32;
@@ -254,25 +238,6 @@ unsigned int GenerateMapTexture()
         }
     }
 
-    for (size_t x = 0; x < 512; x++)
-    { 
-        for (size_t y = 0; y < 512; y++)
-        {
-            int offset = ((x * 512) + y) * 4;
-
-            // Extract RGB values from tileMapImage
-            unsigned char r = tileMapImage[offset + 0]; // Red channel
-            unsigned char g = tileMapImage[offset + 1]; // Green channel
-            unsigned char b = tileMapImage[offset + 2]; // Blue channel
-
-            // Print each color value in PPM format
-            MyFile << (int)r << " " << (int)g << " " << (int)b << " ";
-            MyFile << "\n";
-        }
-    }
-
-    MyFile.close();
-
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -289,8 +254,6 @@ unsigned int GenerateMapTexture()
 
     //Delete subimages
     //Delete tilemapImage
-
-    std::cout << texture << "\n";
 
     return texture;
 }
