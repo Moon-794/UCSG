@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: UCSG
-# Configurations: 
+# Configurations: RELEASE
 # =============================================================================
 
 #############################################
@@ -20,6 +20,11 @@
 
 ninja_required_version = 1.5
 
+
+#############################################
+# Set configuration variable for custom commands.
+
+CONFIGURATION = RELEASE
 # =============================================================================
 # Include auxiliary files.
 
@@ -44,16 +49,18 @@ cmake_ninja_workdir = C$:/Users/conno/Desktop/UCSG/build/
 
 build cmake_object_order_depends_target_UCSG: phony || .
 
-build CMakeFiles/UCSG.dir/src/main.cpp.obj: CXX_COMPILER__UCSG_unscanned_ C$:/Users/conno/Desktop/UCSG/src/main.cpp || cmake_object_order_depends_target_UCSG
+build CMakeFiles/UCSG.dir/src/main.cpp.obj: CXX_COMPILER__UCSG_unscanned_RELEASE C$:/Users/conno/Desktop/UCSG/src/main.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\main.cpp.obj.d
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
 
-build CMakeFiles/UCSG.dir/src/glad.c.obj: C_COMPILER__UCSG_unscanned_ C$:/Users/conno/Desktop/UCSG/src/glad.c || cmake_object_order_depends_target_UCSG
+build CMakeFiles/UCSG.dir/src/glad.c.obj: C_COMPILER__UCSG_unscanned_RELEASE C$:/Users/conno/Desktop/UCSG/src/glad.c || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\glad.c.obj.d
+  FLAGS = -O3 -DNDEBUG
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -66,8 +73,9 @@ build CMakeFiles/UCSG.dir/src/glad.c.obj: C_COMPILER__UCSG_unscanned_ C$:/Users/
 #############################################
 # Link the executable bin\UCSG.exe
 
-build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_ CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj | C$:/msys64/mingw64/lib/libjson-c.dll.a C$:/msys64/mingw64/lib/libglfw3.dll.a
-  LINK_LIBRARIES = C:/msys64/mingw64/lib/libjson-c.dll.a  C:/msys64/mingw64/lib/libglfw3.dll.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_RELEASE CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj | C$:/msys64/mingw64/lib/libjson-c.dll.a C$:/msys64/mingw64/lib/libglfw3.dll.a
+  FLAGS = -O3 -DNDEBUG
+  LINK_LIBRARIES = C:/msys64/mingw64/lib/libjson-c.dll.a  C:/msys64/mingw64/lib/libglfw3.dll.a  -lwinmm  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\UCSG.dir
   POST_BUILD = cd .
   PRE_LINK = cd .

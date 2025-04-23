@@ -4,6 +4,7 @@
 #include "unistd.h"
 #include <array>
 
+#include <chrono>
 #include <fstream> 
 #include "collision.h"
 #include <json-c/json.h>
@@ -34,12 +35,11 @@ int main(int argc, char** args)
 {
     Area area(std::string("TestMap"));
     
-
     Renderer renderer;
     RendererSetupHints hints;
     hints.windowName = "Space Game";
-    hints.windowWidth = 800;
-    hints.windowHeight = 600;
+    hints.windowWidth = 1920;
+    hints.windowHeight = 1080;
 
     InitRenderer(renderer, hints);
     Shader s = Shader("resources/vertex.vert", "resources/fragment.frag");
@@ -50,10 +50,13 @@ int main(int argc, char** args)
 
     Sprite tile(std::string("tile.png"), glm::vec2(2, 2), &s);
     Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
+    tile.scale = glm::vec2(64, 64);
+    player.scale = glm::vec2(64, 64);
+
 
     unsigned int mapTex = GenerateMapTexture();
     Sprite map(mapTex, glm::vec2(0, 0), &s);
-    map.scale = glm::vec2(32, 32);
+    map.scale = glm::vec2(32 * 64, 32 * 64);
 
     URect playerRect;
     playerRect.x = 0;
@@ -67,68 +70,70 @@ int main(int argc, char** args)
     tileRect.width = 1;
     tileRect.height = 1;
 
+    
+    auto lastTime = std::chrono::steady_clock::now();
+    auto currentTime = std::chrono::steady_clock::now();
+
+    float acc = 0.0f;
+    float acc2 = 0.0f;
+    int tick = 0;
+    float framerate = 1.0f/144.0f;
+
     while (!glfwWindowShouldClose(renderer.window))
     {
-        
-        //Clear screen
-        glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        currentTime = std::chrono::steady_clock::now();
+        std::chrono::duration<float> deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
-        DrawSprite(renderer, map);
-        DrawSprite(renderer, tile);
-        DrawSprite(renderer, player);
+        float dt = deltaTime.count();
+
+        acc += dt;
+        acc2 += dt;
 
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
         {
-            player.position.x += 0.05f;
+            player.position.x += 300.0f * dt;
         }
 
         if(inputMap->GetKey(GLFW_KEY_A) == 1)
         {
-            player.position.x -= 0.05f;
+            player.position.x -= 300.0f * dt;
         }
 
         if(inputMap->GetKey(GLFW_KEY_W) == 1)
         {
-            player.position.y += 0.05f;
+            player.position.y += 300.0f * dt;
         }
 
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
         {
-            player.position.y -= 0.05f;
+            player.position.y -= 300.0f * dt;
         }
+
+        player.position.y = player.position.y;
+        player.position.x = player.position.x;
 
         playerRect.x = player.position.x;
         playerRect.y = player.position.y;
 
-        if(PlayerAABBIntersect(playerRect, tileRect))
+        renderer.cameraPos.x = glm::round(player.position.x);
+        renderer.cameraPos.y = glm::round(player.position.y);
+
+        if(acc > framerate)
         {
-            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
-            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
+            acc -= framerate;
+            glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-            float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
-            float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
+            DrawSprite(renderer, map);
+            DrawSprite(renderer, tile);
+            DrawSprite(renderer, player);
 
-            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
-            float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
+            glfwSwapBuffers(renderer.window);
 
-            if (std::abs(resolveX) < std::abs(resolveY)) 
-            {
-                player.position.x -= resolveX;
-            } else 
-            {
-                player.position.y -= resolveY;
-            }
-
-            playerRect.x = player.position.x;
-            playerRect.y = player.position.y;
+            tick++;
         }
 
-        renderer.cameraPos.x = player.position.x;
-        renderer.cameraPos.y = player.position.y;
-        
-        //Finish Render pass
-        glfwSwapBuffers(renderer.window);
         glfwPollEvents();
     }
 
@@ -255,3 +260,26 @@ unsigned int GenerateMapTexture()
 
     return texture;
 }
+
+/*if(PlayerAABBIntersect(playerRect, tileRect))
+        {
+            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
+            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
+
+            float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
+            float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
+
+            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
+            float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
+
+            if (std::abs(resolveX) < std::abs(resolveY)) 
+            {
+                player.position.x -= resolveX;
+            } else 
+            {
+                player.position.y -= resolveY;
+            }
+
+            playerRect.x = player.position.x;
+            playerRect.y = player.position.y;
+        }*/

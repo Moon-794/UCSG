@@ -4,9 +4,18 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+#include <windows.h>
+#include <GL/gl.h>
+
 #include "sprite.hpp"
 #include "shader.hpp"
 #include <string>
+
+typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int);
+typedef int  (WINAPI *PFNWGLGETSWAPINTERVALEXTPROC)(void);
+
+PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
+PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT = nullptr;
 
 struct RendererSetupHints
 {
@@ -19,6 +28,8 @@ struct Renderer
 {
 public:
     GLFWwindow* window = nullptr;
+    int windowWidth;
+    int windowHeight;
     unsigned int quadVAO;
     glm::vec3 cameraPos = glm::vec3(0);
 };
@@ -63,7 +74,10 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
     }
 
     glfwMakeContextCurrent(renderer.window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
+
+    renderer.windowWidth = hints.windowWidth;
+    renderer.windowHeight = hints.windowHeight;
 
     //Load GLAD (needs a context)
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -71,7 +85,9 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
         std::cout << "Failed to initialize GLAD" << std::endl;
     }
 
-    glViewport(0, 0, 800, 600);
+    int viewX = hints.windowWidth / 2;
+
+    glViewport(0, 0, hints.windowWidth, hints.windowHeight);
     glEnable(GL_BLEND);
 
     renderer.quadVAO = CreateQuadVAO();
@@ -88,15 +104,18 @@ void DrawSprite(Renderer& renderer, Sprite& sprite)
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    view  = glm::translate(view, -renderer.cameraPos);
+    int camX = -renderer.cameraPos.x;
+    int camY = -renderer.cameraPos.y;
+
+    view  = glm::translate(view, glm::vec3((float)camX, (float)camY, 0.0f));
     view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
 
-    model = glm::scale(model, glm::vec3(sprite.scale, 1));
     model = glm::translate(model, glm::vec3(sprite.position.x, sprite.position.y, 0));
+    model = glm::scale(model, glm::vec3(sprite.scale, 1));
 
     //Move into its own callback for window resizing
-    float aspect = (800.0f/600.0f);
-    projection = glm::ortho(-10.0f * aspect, 10.0f * aspect, -10.0f, 10.0f, 0.1f, 15.0f);
+    
+    projection = glm::ortho(0.0f, (float)renderer.windowWidth, 0.0f, (float)renderer.windowHeight, 0.1f, 15.0f);
 
     sprite.shader->setMat4("projection", projection);
     sprite.shader->setMat4("model", model);
