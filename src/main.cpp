@@ -4,29 +4,12 @@
 #include "unistd.h"
 #include <array>
 
+#include <thread>
 #include <chrono>
-#include <fstream> 
+#include "input.h"
 #include "collision.h"
 #include <json-c/json.h>
 #include "tilemap.h"
-
-class InputMap
-{
-public:
-
-    int GetKey(int key)
-    {
-        return keyMap[key];
-    }
-
-    void SetKey(int key, int status)
-    {
-        keyMap[key] = status;
-    }
-
-private:
-    std::array<int, 90> keyMap;
-};
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 unsigned int GenerateMapTexture();
@@ -38,8 +21,8 @@ int main(int argc, char** args)
     Renderer renderer;
     RendererSetupHints hints;
     hints.windowName = "Space Game";
-    hints.windowWidth = 1920;
-    hints.windowHeight = 1080;
+    hints.windowWidth = 2560;
+    hints.windowHeight = 1440;
 
     InitRenderer(renderer, hints);
     Shader s = Shader("resources/vertex.vert", "resources/fragment.frag");
@@ -53,87 +36,59 @@ int main(int argc, char** args)
     tile.scale = glm::vec2(64, 64);
     player.scale = glm::vec2(64, 64);
 
-
     unsigned int mapTex = GenerateMapTexture();
     Sprite map(mapTex, glm::vec2(0, 0), &s);
     map.scale = glm::vec2(32 * 64, 32 * 64);
 
-    URect playerRect;
-    playerRect.x = 0;
-    playerRect.y = 0;
-    playerRect.width = 0.8;
-    playerRect.height = 1;
+    float playerSpeed = 1.0f;
 
-    URect tileRect;
-    tileRect.x = 2;
-    tileRect.y = 2;
-    tileRect.width = 1;
-    tileRect.height = 1;
+    double currentTime = 0.0f;
+    double previousTime = 0.0f;
+    double timeDiff = 0.0f;
+    unsigned int counter = 0;
 
-    
-    auto lastTime = std::chrono::steady_clock::now();
-    auto currentTime = std::chrono::steady_clock::now();
-
-    float acc = 0.0f;
-    float acc2 = 0.0f;
-    int tick = 0;
-    float framerate = 1.0f/144.0f;
+    std::chrono::milliseconds frameDuration(16);
 
     while (!glfwWindowShouldClose(renderer.window))
     {
-        currentTime = std::chrono::steady_clock::now();
-        std::chrono::duration<float> deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
+        currentTime = glfwGetTime();
+        timeDiff = currentTime - previousTime;
+        counter++;
 
-        float dt = deltaTime.count();
+        if(timeDiff >= 1.0f / 60.0f)
+        {
+            std::string FPS = std::to_string((1.0f/timeDiff) * counter);
+            std::string ms = std::to_string((timeDiff / counter) * 1000);
+            std::string newTitle = "UCSG - " + FPS + " FPS -- " + ms + " ms";
 
-        acc += dt;
-        acc2 += dt;
+            glfwSetWindowTitle(renderer.window, newTitle.c_str());
+            previousTime = currentTime;
+            counter = 0;
+        }
 
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
-        {
-            player.position.x += 300.0f * dt;
-        }
+            player.position.x += playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_A) == 1)
-        {
-            player.position.x -= 300.0f * dt;
-        }
+            player.position.x -= playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_W) == 1)
-        {
-            player.position.y += 300.0f * dt;
-        }
+            player.position.y += playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
-        {
-            player.position.y -= 300.0f * dt;
-        }
-
-        player.position.y = player.position.y;
-        player.position.x = player.position.x;
-
-        playerRect.x = player.position.x;
-        playerRect.y = player.position.y;
+            player.position.y -= playerSpeed;
 
         renderer.cameraPos.x = glm::round(player.position.x);
         renderer.cameraPos.y = glm::round(player.position.y);
 
-        if(acc > framerate)
-        {
-            acc -= framerate;
-            glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-            DrawSprite(renderer, map);
-            DrawSprite(renderer, tile);
-            DrawSprite(renderer, player);
-
-            glfwSwapBuffers(renderer.window);
-
-            tick++;
-        }
-
+        DrawSprite(renderer, map);
+        DrawSprite(renderer, tile);
+        DrawSprite(renderer, player);
+        
+        glfwSwapBuffers(renderer.window);
         glfwPollEvents();
     }
 
@@ -170,13 +125,13 @@ unsigned int GenerateMapTexture()
     int nrChannels = 0;
     int spriteWidth = 16;
 
-    for (size_t i = 0; i < data_len; i++)
+    for (size_t h = 0; h < 32 * 32; h++)
     {
-        json_object *tile = json_object_array_get_idx(data, i);
-        tileIDS[tileIDS.size() - 1 - i] = json_object_get_int(tile);
+        json_object* tile = json_object_array_get_idx(data, h);
+        tileIDS[h] = json_object_get_int(tile);
     }
 
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false);
     stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
     int length = width * height * 4;
 
@@ -186,7 +141,7 @@ unsigned int GenerateMapTexture()
 
     for (size_t n = 0; n < numImages; n++)
     {
-        subImages[n] = new unsigned char[16 * 16 * 4];
+        subImages[n] = new unsigned char[16 * 16 * 4]; 
         for (size_t x = 0; x < 16; x++)
         {
             for (size_t y = 0; y < 16; y++)
@@ -201,15 +156,13 @@ unsigned int GenerateMapTexture()
         }
     }
     
-    
     //Begin stitching together tilemap
     int mapWidth = 32;
     int mapHeight = 32;
-
     unsigned char* tileMapImage = new unsigned char[512 * 512 * 4];
 
     for (size_t x = 0; x < mapWidth; x++)
-    {          
+    {
         for (size_t y = 0; y < mapHeight; y++)
         {
             int tileID = tileIDS[(x * mapWidth) + y];
@@ -220,7 +173,7 @@ unsigned int GenerateMapTexture()
                 for (size_t j = 0; j < 16; j++)
                 {
                     //Move down 16 lines for each y
-                    int mapOffsetY = ((x * 16) + i) * (16 * mapWidth * 4);
+                    int mapOffsetY = (512 * 512 * 4) - ((x * 16) + i) * (16 * mapWidth * 4);
                     //Move down 1 line per j
                     int subOffsetY = i * 16 * 4;
                     
@@ -237,7 +190,6 @@ unsigned int GenerateMapTexture()
                     tileMapImage[mapOffset + subOffsetX + 3] = subImages[tileID - 1][subOffset + 3];
                 }
             }
-            
         }
     }
 

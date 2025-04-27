@@ -1,19 +1,22 @@
 #ifndef U_INPUT
 #define U_INPUT
 
-#include "GLFW/glfw3.h"
-
-enum UKey
+class InputMap
 {
-    W,
-    A,
-    S,
-    D
+public:
+
+    int GetKey(int key)
+    {
+        return keyMap[key];
+    }
+
+    void SetKey(int key, int status)
+    {
+        keyMap[key] = status;
+    }
+
+private:
+    std::array<int, 90> keyMap;
 };
-
-bool isKeyPressed(UKey key)
-{
-
-}
 
 #endif

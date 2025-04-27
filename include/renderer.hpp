@@ -6,6 +6,7 @@
 
 #include <windows.h>
 #include <GL/gl.h>
+#include "dwmapi.h"
 
 #include "sprite.hpp"
 #include "shader.hpp"
@@ -65,6 +66,9 @@ int InitRenderer(Renderer& renderer, RendererSetupHints& hints)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    int count;
+    GLFWmonitor **monitors = glfwGetMonitors(&count);
+
     //Create Window
     renderer.window = glfwCreateWindow(hints.windowWidth, hints.windowHeight, "Space Game", nullptr, nullptr);
     if(renderer.window == nullptr)
@@ -114,8 +118,9 @@ void DrawSprite(Renderer& renderer, Sprite& sprite)
     model = glm::scale(model, glm::vec3(sprite.scale, 1));
 
     //Move into its own callback for window resizing
-    
-    projection = glm::ortho(0.0f, (float)renderer.windowWidth, 0.0f, (float)renderer.windowHeight, 0.1f, 15.0f);
+    float vW = (float)renderer.windowWidth / 2;
+    float vH = (float)renderer.windowHeight / 2;
+    projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
 
     sprite.shader->setMat4("projection", projection);
     sprite.shader->setMat4("model", model);
