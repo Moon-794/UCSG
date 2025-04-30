@@ -12,7 +12,7 @@
 #include "tilemap.h"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-unsigned int GenerateMapTexture();
+unsigned int GenerateMapTexture(json_object *tileData);
 
 int main(int argc, char** args)
 {
@@ -36,21 +36,26 @@ int main(int argc, char** args)
     tile.scale = glm::vec2(64, 64);
     player.scale = glm::vec2(64, 64);
 
-    unsigned int mapTex = GenerateMapTexture();
+    json_object *data = GetDataArray("resources/areaData/TestMap/TestMap.json", 0);
+    unsigned int mapTex = GenerateMapTexture(data);
     Sprite map(mapTex, glm::vec2(0, 0), &s);
     map.scale = glm::vec2(32 * 64, 32 * 64);
 
-    float playerSpeed = 1.0f;
+    json_object *data2 = GetDataArray("resources/areaData/TestMap/TestMap.json", 1);
+    unsigned int map2Tex = GenerateMapTexture(data2);
+    Sprite map2(map2Tex, glm::vec2(0, 0), &s);
+    map2.scale = glm::vec2(32 * 64, 32 * 64);
 
+    float playerSpeed = 4.0f;
     double currentTime = 0.0f;
     double previousTime = 0.0f;
     double timeDiff = 0.0f;
     unsigned int counter = 0;
 
-    std::chrono::milliseconds frameDuration(16);
-
     while (!glfwWindowShouldClose(renderer.window))
     {
+        auto frameStart = std::chrono::high_resolution_clock::now();
+
         currentTime = glfwGetTime();
         timeDiff = currentTime - previousTime;
         counter++;
@@ -87,9 +92,21 @@ int main(int argc, char** args)
         DrawSprite(renderer, map);
         DrawSprite(renderer, tile);
         DrawSprite(renderer, player);
-        
+        DrawSprite(renderer, map2);
+
         glfwSwapBuffers(renderer.window);
         glfwPollEvents();
+        DwmFlush();
+        glFinish();
+
+        auto frameEnd = std::chrono::high_resolution_clock::now();
+        auto frameDuration = std::chrono::duration_cast<std::chrono::microseconds>(frameEnd - frameStart);
+        auto timeLeft = std::chrono::microseconds(16670) - frameDuration;
+
+        while (std::chrono::high_resolution_clock::now() < frameEnd + timeLeft) 
+        {
+            // Just spinning
+        }
     }
 
     //Cleanup
@@ -114,10 +131,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
   
-unsigned int GenerateMapTexture()
+unsigned int GenerateMapTexture(json_object* tileData)
 {
-    json_object *data = GetDataArray("resources/areaData/TestMap/TestMap.json");
-    int data_len = json_object_array_length(data);
+    int data_len = json_object_array_length(tileData);
 
     std::vector<int> tileIDS(32 * 32);
     int width = 32;
@@ -127,17 +143,32 @@ unsigned int GenerateMapTexture()
 
     for (size_t h = 0; h < 32 * 32; h++)
     {
-        json_object* tile = json_object_array_get_idx(data, h);
-        tileIDS[h] = json_object_get_int(tile);
+        json_object* tile = json_object_array_get_idx(tileData, h);
+        tileIDS[h] = json_object_get_int(tile) - 1;
     }
 
     stbi_set_flip_vertically_on_load(false);
     stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
     int length = width * height * 4;
 
-    int numImages = width / spriteWidth;
+    //Num sprites in image + 1 for empty sprite (tiledID 0)
+    int numImages = (width / spriteWidth);
     
     std::vector<unsigned char*> subImages(numImages);
+    unsigned char emptyImage[16 * 16 * 4];
+    
+    //Create Empty Image //TODO: Make this a constant variable somewhere relevant
+    for (size_t x = 0; x < 16; x++)
+    {
+        for (size_t y = 0; y < 16; y++)
+        {
+            int offset = ((x * 16) + y) * 4;
+            emptyImage[offset + 0] = 0;
+            emptyImage[offset + 1] = 0;
+            emptyImage[offset + 2] = 0;
+            emptyImage[offset + 3] = 0;
+        }
+    }
 
     for (size_t n = 0; n < numImages; n++)
     {
@@ -161,11 +192,23 @@ unsigned int GenerateMapTexture()
     int mapHeight = 32;
     unsigned char* tileMapImage = new unsigned char[512 * 512 * 4];
 
+    std::cout << "a" << "\n";
+
     for (size_t x = 0; x < mapWidth; x++)
     {
         for (size_t y = 0; y < mapHeight; y++)
         {
             int tileID = tileIDS[(x * mapWidth) + y];
+
+            unsigned char* dataSource;
+            if(tileID == -1)
+            {
+                dataSource = emptyImage;
+            }
+            else
+            {
+                dataSource = subImages[tileID];
+            }
 
             //Copy subImage to tilemapImage
             for (size_t i = 0; i < 16; i++)
@@ -184,10 +227,10 @@ unsigned int GenerateMapTexture()
                     int subOffset = subOffsetY + subOffsetX;
                     int mapOffset = mapOffsetY + mapOffsetX;
 
-                    tileMapImage[mapOffset + subOffsetX + 0] = subImages[tileID - 1][subOffset + 0];
-                    tileMapImage[mapOffset + subOffsetX + 1] = subImages[tileID - 1][subOffset + 1];
-                    tileMapImage[mapOffset + subOffsetX + 2] = subImages[tileID - 1][subOffset + 2];
-                    tileMapImage[mapOffset + subOffsetX + 3] = subImages[tileID - 1][subOffset + 3];
+                    tileMapImage[mapOffset + subOffsetX + 0] = dataSource[subOffset + 0];
+                    tileMapImage[mapOffset + subOffsetX + 1] = dataSource[subOffset + 1];
+                    tileMapImage[mapOffset + subOffsetX + 2] = dataSource[subOffset + 2];
+                    tileMapImage[mapOffset + subOffsetX + 3] = dataSource[subOffset + 3];
                 }
             }
         }
@@ -207,8 +250,14 @@ unsigned int GenerateMapTexture()
 
     //Free stb data
 
-    //Delete subimages
-    //Delete tilemapImage
+    //Delete image data
+    for(int i = 0; i < subImages.size(); i++)
+    {
+        delete(subImages[i]);
+    }
+
+    delete(tileMapImage);
+    stbi_image_free(image);
 
     return texture;
 }

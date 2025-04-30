@@ -5,16 +5,17 @@
 #include <vector>
 #include <json-c/json.h>
 
-enum TileType
-{
-    Void,
-    Floor
-};
+std::vector<bool> GenerateCollisionMap();
 
 struct Tile
 {
-public:
-    bool collider = false;
+
+};
+
+struct Layer
+{
+    std::vector<Tile> tiles;
+    unsigned int textureID;
 };
 
 struct Area
@@ -27,14 +28,20 @@ public:
 
     Tile& GetTile(uint8_t x, uint8_t y)
     {
-        return tiles[(areaWidth * y) + x];
+        return layers[0].tiles[(areaWidth * y) + x];
     }
 
 private:
-    std::vector<Tile> tiles;
+    std::vector<Layer> layers;
+    std::vector<bool> collisionMap;
     
-    int areaWidth;
-    int areaHeight;
+    unsigned int areaWidth;
+    unsigned int areaHeight;
 };
+
+std::vector<bool> GenerateCollisionMap()
+{
+    return {false};
+}
 
 #endif
