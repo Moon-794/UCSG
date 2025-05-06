@@ -1,6 +1,9 @@
 #ifndef U_INPUT
 #define U_INPUT
 
+#include "renderer.hpp"
+#include <array>
+
 class InputMap
 {
 public:
@@ -18,5 +21,7 @@ public:
 private:
     std::array<int, 90> keyMap;
 };
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 #endif

@@ -1,6 +1,8 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
-#include "area.hpp"
 #include "renderer.hpp"
+#include "area.hpp"
 #include "unistd.h"
 #include <array>
 
@@ -9,42 +11,33 @@
 #include "input.h"
 #include "collision.h"
 #include <json-c/json.h>
-#include "tilemap.h"
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-unsigned int GenerateMapTexture(json_object *tileData);
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_glfw.h>
 
 int main(int argc, char** args)
 {
-    Area area(std::string("TestMap"));
-    
-    Renderer renderer;
-    RendererSetupHints hints;
-    hints.windowName = "Space Game";
-    hints.windowWidth = 2560;
-    hints.windowHeight = 1440;
-
-    InitRenderer(renderer, hints);
+    Renderer renderer("Space Game", 2560, 1440);
     Shader s = Shader("resources/vertex.vert", "resources/fragment.frag");
+
+    Area area(std::string("TestMap"));
+    area.SetShader(&s);
 
     InputMap* inputMap = new InputMap();
     glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void*>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
-    Sprite tile(std::string("tile.png"), glm::vec2(2, 2), &s);
     Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
-    tile.scale = glm::vec2(64, 64);
     player.scale = glm::vec2(64, 64);
 
-    json_object *data = GetDataArray("resources/areaData/TestMap/TestMap.json", 0);
-    unsigned int mapTex = GenerateMapTexture(data);
-    Sprite map(mapTex, glm::vec2(0, 0), &s);
-    map.scale = glm::vec2(32 * 64, 32 * 64);
-
-    json_object *data2 = GetDataArray("resources/areaData/TestMap/TestMap.json", 1);
-    unsigned int map2Tex = GenerateMapTexture(data2);
-    Sprite map2(map2Tex, glm::vec2(0, 0), &s);
-    map2.scale = glm::vec2(32 * 64, 32 * 64);
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(renderer.window, true);
+    ImGui_ImplOpenGL3_Init("#version 460");
 
     float playerSpeed = 4.0f;
     double currentTime = 0.0f;
@@ -71,6 +64,16 @@ int main(int argc, char** args)
             counter = 0;
         }
 
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Hello, world!");   
+        ImGui::Text("This is some useful text.");  
+        ImGui::End();
+
+        
+
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
             player.position.x += playerSpeed;
 
@@ -89,10 +92,12 @@ int main(int argc, char** args)
         glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        DrawSprite(renderer, map);
-        DrawSprite(renderer, tile);
+        area.DrawLayer(renderer, 0);
         DrawSprite(renderer, player);
-        DrawSprite(renderer, map2);
+        area.DrawLayer(renderer, 1);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(renderer.window);
         glfwPollEvents();
@@ -112,154 +117,6 @@ int main(int argc, char** args)
     //Cleanup
     glfwTerminate();
     delete (inputMap);
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    InputMap* map = reinterpret_cast<InputMap*>(glfwGetWindowUserPointer(window));
-
-    if(action == GLFW_PRESS)
-    {
-        map->SetKey(key, 1);
-        return;
-    }
-
-    if(action == GLFW_RELEASE)
-    {
-        map->SetKey(key, 0);
-        return;
-    }
-}
-  
-unsigned int GenerateMapTexture(json_object* tileData)
-{
-    int data_len = json_object_array_length(tileData);
-
-    std::vector<int> tileIDS(32 * 32);
-    int width = 32;
-    int height = 32;
-    int nrChannels = 0;
-    int spriteWidth = 16;
-
-    for (size_t h = 0; h < 32 * 32; h++)
-    {
-        json_object* tile = json_object_array_get_idx(tileData, h);
-        tileIDS[h] = json_object_get_int(tile) - 1;
-    }
-
-    stbi_set_flip_vertically_on_load(false);
-    stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
-    int length = width * height * 4;
-
-    //Num sprites in image + 1 for empty sprite (tiledID 0)
-    int numImages = (width / spriteWidth);
-    
-    std::vector<unsigned char*> subImages(numImages);
-    unsigned char emptyImage[16 * 16 * 4];
-    
-    //Create Empty Image //TODO: Make this a constant variable somewhere relevant
-    for (size_t x = 0; x < 16; x++)
-    {
-        for (size_t y = 0; y < 16; y++)
-        {
-            int offset = ((x * 16) + y) * 4;
-            emptyImage[offset + 0] = 0;
-            emptyImage[offset + 1] = 0;
-            emptyImage[offset + 2] = 0;
-            emptyImage[offset + 3] = 0;
-        }
-    }
-
-    for (size_t n = 0; n < numImages; n++)
-    {
-        subImages[n] = new unsigned char[16 * 16 * 4]; 
-        for (size_t x = 0; x < 16; x++)
-        {
-            for (size_t y = 0; y < 16; y++)
-            {
-                int parentOffset = ((x * 80) + y + (spriteWidth * n)) * 4;
-                int childOffset = ((x * 16) + y) * 4;
-                subImages[n][childOffset + 0] = image[parentOffset + 0];
-                subImages[n][childOffset + 1] = image[parentOffset + 1];
-                subImages[n][childOffset + 2] = image[parentOffset + 2];
-                subImages[n][childOffset + 3] = image[parentOffset + 3];
-            }
-        }
-    }
-    
-    //Begin stitching together tilemap
-    int mapWidth = 32;
-    int mapHeight = 32;
-    unsigned char* tileMapImage = new unsigned char[512 * 512 * 4];
-
-    std::cout << "a" << "\n";
-
-    for (size_t x = 0; x < mapWidth; x++)
-    {
-        for (size_t y = 0; y < mapHeight; y++)
-        {
-            int tileID = tileIDS[(x * mapWidth) + y];
-
-            unsigned char* dataSource;
-            if(tileID == -1)
-            {
-                dataSource = emptyImage;
-            }
-            else
-            {
-                dataSource = subImages[tileID];
-            }
-
-            //Copy subImage to tilemapImage
-            for (size_t i = 0; i < 16; i++)
-            {
-                for (size_t j = 0; j < 16; j++)
-                {
-                    //Move down 16 lines for each y
-                    int mapOffsetY = (512 * 512 * 4) - ((x * 16) + i) * (16 * mapWidth * 4);
-                    //Move down 1 line per j
-                    int subOffsetY = i * 16 * 4;
-                    
-                    //Move 16 pixels across for each x
-                    int mapOffsetX = y * (16 * 4);
-                    int subOffsetX = j * 4;
-
-                    int subOffset = subOffsetY + subOffsetX;
-                    int mapOffset = mapOffsetY + mapOffsetX;
-
-                    tileMapImage[mapOffset + subOffsetX + 0] = dataSource[subOffset + 0];
-                    tileMapImage[mapOffset + subOffsetX + 1] = dataSource[subOffset + 1];
-                    tileMapImage[mapOffset + subOffsetX + 2] = dataSource[subOffset + 2];
-                    tileMapImage[mapOffset + subOffsetX + 3] = dataSource[subOffset + 3];
-                }
-            }
-        }
-    }
-
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, tileMapImage);
-
-    //Free stb data
-
-    //Delete image data
-    for(int i = 0; i < subImages.size(); i++)
-    {
-        delete(subImages[i]);
-    }
-
-    delete(tileMapImage);
-    stbi_image_free(image);
-
-    return texture;
 }
 
 /*if(PlayerAABBIntersect(playerRect, tileRect))
