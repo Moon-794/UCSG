@@ -89,6 +89,14 @@ build CMakeFiles/UCSG.dir/src/sprite.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
 
+build CMakeFiles/UCSG.dir/src/debugger.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/debugger.cpp || cmake_object_order_depends_target_UCSG
+  DEFINES = -DGLFW_DLL
+  DEP_FILE = CMakeFiles\UCSG.dir\src\debugger.cpp.obj.d
+  FLAGS = -g
+  INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
+  OBJECT_DIR = CMakeFiles\UCSG.dir
+  OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
+
 build CMakeFiles/UCSG.dir/src/imgui/imgui.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui.cpp.obj.d
@@ -145,7 +153,7 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui_impl_opengl3.cpp.obj: CXX_COMPILER__UC
 #############################################
 # Link the executable bin\UCSG.exe
 
-build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_Debug CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj CMakeFiles/UCSG.dir/src/input.cpp.obj CMakeFiles/UCSG.dir/src/renderer.cpp.obj CMakeFiles/UCSG.dir/src/sprite.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_impl_glfw.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_tables.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_widgets.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_draw.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_impl_opengl3.cpp.obj | C$:/msys64/mingw64/lib/libjson-c.dll.a C$:/msys64/mingw64/lib/libglfw3.dll.a
+build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_Debug CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj CMakeFiles/UCSG.dir/src/input.cpp.obj CMakeFiles/UCSG.dir/src/renderer.cpp.obj CMakeFiles/UCSG.dir/src/sprite.cpp.obj CMakeFiles/UCSG.dir/src/debugger.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_impl_glfw.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_tables.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_widgets.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_draw.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_impl_opengl3.cpp.obj | C$:/msys64/mingw64/lib/libjson-c.dll.a C$:/msys64/mingw64/lib/libglfw3.dll.a
   FLAGS = -g
   LINK_LIBRARIES = C:/msys64/mingw64/lib/libjson-c.dll.a  C:/msys64/mingw64/lib/libglfw3.dll.a  -lDwmapi  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\UCSG.dir

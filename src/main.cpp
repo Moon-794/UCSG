@@ -1,45 +1,36 @@
 #define STB_IMAGE_IMPLEMENTATION
 
-#include <iostream>
 #include "renderer.hpp"
+#include "debugger.hpp"
 #include "area.hpp"
-#include "unistd.h"
-#include <array>
-
-#include <thread>
-#include <chrono>
 #include "input.h"
 #include "collision.h"
-#include <json-c/json.h>
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
+#include <iostream>
+#include "unistd.h"
+#include <array>
+#include <thread>
+#include <chrono>
+
 
 int main(int argc, char** args)
 {
     Renderer renderer("Space Game", 2560, 1440);
-    Shader s = Shader("resources/vertex.vert", "resources/fragment.frag");
+    Shader s = Shader("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
+    Debugger debugger(&renderer);
 
     Area area(std::string("TestMap"));
     area.SetShader(&s);
 
     InputMap* inputMap = new InputMap();
+
     glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void*>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
     Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
-    player.scale = glm::vec2(64, 64);
+    player.scale = glm::vec2(1, 1);
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(renderer.window, true);
-    ImGui_ImplOpenGL3_Init("#version 460");
-
-    float playerSpeed = 4.0f;
+    float playerSpeed = 0.1f;
     double currentTime = 0.0f;
     double previousTime = 0.0f;
     double timeDiff = 0.0f;
@@ -64,16 +55,6 @@ int main(int argc, char** args)
             counter = 0;
         }
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        ImGui::Begin("Hello, world!");   
-        ImGui::Text("This is some useful text.");  
-        ImGui::End();
-
-        
-
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
             player.position.x += playerSpeed;
 
@@ -86,8 +67,8 @@ int main(int argc, char** args)
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
             player.position.y -= playerSpeed;
 
-        renderer.cameraPos.x = glm::round(player.position.x);
-        renderer.cameraPos.y = glm::round(player.position.y);
+        renderer.cameraPos.x = player.position.x;
+        renderer.cameraPos.y = player.position.y;
 
         glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -96,8 +77,9 @@ int main(int argc, char** args)
         DrawSprite(renderer, player);
         area.DrawLayer(renderer, 1);
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        DebuggerInfo debugInfo;
+        debugInfo.playerPosition = player.position;
+        debugger.DrawDebugger(debugInfo);
 
         glfwSwapBuffers(renderer.window);
         glfwPollEvents();

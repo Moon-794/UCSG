@@ -29,5 +29,6 @@ private:
 
 unsigned int CreateQuadVAO();
 void DrawSprite(Renderer& renderer, Sprite& sprite);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 #endif

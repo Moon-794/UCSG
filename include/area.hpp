@@ -154,7 +154,7 @@ public:
         ProcessTilemaps(areaData);
 
         layerSprite = Sprite(-1, glm::vec2(0, 0), nullptr);
-        layerSprite.scale = glm::vec2(64 * 32, 64 * 32);
+        layerSprite.scale = glm::vec2(32, 32);
     }
 
     void ProcessTilemaps(std::string areaData)
