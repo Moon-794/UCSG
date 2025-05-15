@@ -98,7 +98,7 @@ void DrawSprite(Renderer& renderer, Sprite& sprite)
     view  = glm::translate(view, glm::vec3((float)camX, (float)camY, 0.0f));
     view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
 
-    model = glm::translate(model, glm::vec3(sprite.position.x * 64, sprite.position.y * 64, 0));
+    model = glm::translate(model, glm::vec3((sprite.position.x * 64) + 0.5f, (sprite.position.y * 64) + 0.5f, 0));
     model = glm::scale(model, glm::vec3(sprite.scale.x * 64, sprite.scale.y * 64, 1));
 
     sprite.shader->setMat4("projection", renderer.projection);

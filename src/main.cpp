@@ -36,6 +36,9 @@ int main(int argc, char** args)
     double timeDiff = 0.0f;
     unsigned int counter = 0;
 
+    DebuggerInfo debugInfo;
+    debugInfo.area = &area;
+
     while (!glfwWindowShouldClose(renderer.window))
     {
         auto frameStart = std::chrono::high_resolution_clock::now();
@@ -77,7 +80,6 @@ int main(int argc, char** args)
         DrawSprite(renderer, player);
         area.DrawLayer(renderer, 1);
 
-        DebuggerInfo debugInfo;
         debugInfo.playerPosition = player.position;
         debugger.DrawDebugger(debugInfo);
 

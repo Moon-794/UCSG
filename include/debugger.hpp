@@ -2,6 +2,7 @@
 #define U_DEBUGGER
 
 #include "renderer.hpp"
+#include "area.hpp"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -15,6 +16,7 @@ struct DebuggerState
 
 struct DebuggerInfo
 {
+    Area* area;
     glm::vec2 playerPosition;
 };
 

@@ -1,4 +1,5 @@
-{ "columns":5,
+{ 
+ "columns":5,
  "image":"Tiles.png",
  "imageheight":16,
  "imagewidth":80,

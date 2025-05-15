@@ -48,6 +48,8 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
         const glm::vec3 redColor(1, 0, 0);
         const glm::vec3 blueColor(0, 0, 1);
 
+        int areaSize = info.area->layers[0].tiles.size();
+
         for (int x = -1; x < 2; x++)
         {
             for (int y = -1; y < 2; y++)
@@ -56,7 +58,33 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
 
                 debugShader.use();
                 debugShader.setVec3("tcolor", redColor);
-                DrawSprite((*renderer), debugSprite);
+
+                if(debugSprite.position.x >= 0 && debugSprite.position.y <= 0)
+                {
+                    float i = playerX - 0.5f;
+                    float j = - playerY - 0.5f;
+
+                    int index = ((j - y) * 32) + (i + x);
+                    
+                    if(debugSprite.position.x < 32 && debugSprite.position.y > -32)
+                    {
+                        if(index < areaSize && index >= 0)
+                        {
+                            int type = info.area->layers[0].tiles[index];
+                            if(info.area->collisionMap[type] == true)
+                            {
+                                 debugShader.setVec3("tcolor", blueColor);
+                            }
+                            else
+                            {
+                                debugShader.setVec3("tcolor", redColor);
+                            }
+
+                            DrawSprite((*renderer), debugSprite);
+                        }
+                    }
+                }
+
             }
         }
     }
