@@ -12,6 +12,11 @@
 #include <thread>
 #include <chrono>
 
+/*
+     BIG TODO
+
+     GET tileIDS 2D array to go from bottom left to top right
+*/
 
 int main(int argc, char** args)
 {
@@ -29,6 +34,7 @@ int main(int argc, char** args)
 
     Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
     player.scale = glm::vec2(1, 1);
+    player.position = glm::vec2(16, 16);
 
     float playerSpeed = 0.1f;
     double currentTime = 0.0f;
@@ -38,6 +44,9 @@ int main(int argc, char** args)
 
     DebuggerInfo debugInfo;
     debugInfo.area = &area;
+
+    URect playerRect = {16, 16, 1, 1};
+    URect tileRect = {0, 0, 1, 1};
 
     while (!glfwWindowShouldClose(renderer.window))
     {
@@ -65,13 +74,16 @@ int main(int argc, char** args)
             player.position.x -= playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_W) == 1)
-            player.position.y += playerSpeed;
+            player.position.y -= playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
-            player.position.y -= playerSpeed;
+            player.position.y += playerSpeed;
 
         renderer.cameraPos.x = player.position.x;
         renderer.cameraPos.y = player.position.y;
+
+        playerRect.x = player.position.x;
+        playerRect.y = player.position.y;
 
         glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -82,6 +94,46 @@ int main(int argc, char** args)
 
         debugInfo.playerPosition = player.position;
         debugger.DrawDebugger(debugInfo);
+
+        float playerX = glm::floor(player.position.x + 0.5f);
+        float playerY = glm::floor(player.position.y + 0.5f);
+
+        for (int x = -1; x < 2; x++)
+        {
+            for (int y = -1; y < 2; y++)
+            {   
+                tileRect.x = playerX + x;
+                tileRect.y = playerY + y;
+                
+                int type = area.layers[0].tiles[tileRect.y][tileRect.x];
+                if(area.collisionMap[type] == true)
+                {
+                    if(PlayerAABBIntersect(playerRect, tileRect))
+                    {
+                        float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
+                        float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
+
+                        float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
+                        float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
+
+                        float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
+                        float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
+
+                        if (std::abs(resolveX) < std::abs(resolveY)) 
+                        {
+                            player.position.x -= resolveX;
+                        } else 
+                        {
+                            player.position.y -= resolveY;
+                        }
+
+                        playerRect.x = player.position.x;
+                        playerRect.y = player.position.y;
+                    }   
+                }
+                
+            }   
+        }
 
         glfwSwapBuffers(renderer.window);
         glfwPollEvents();
@@ -103,25 +155,4 @@ int main(int argc, char** args)
     delete (inputMap);
 }
 
-/*if(PlayerAABBIntersect(playerRect, tileRect))
-        {
-            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
-            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
-
-            float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
-            float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
-
-            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
-            float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
-
-            if (std::abs(resolveX) < std::abs(resolveY)) 
-            {
-                player.position.x -= resolveX;
-            } else 
-            {
-                player.position.y -= resolveY;
-            }
-
-            playerRect.x = player.position.x;
-            playerRect.y = player.position.y;
-        }*/
+/**/

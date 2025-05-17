@@ -12,7 +12,7 @@
 struct Layer
 {
 public:
-    std::vector<int> tiles;
+    std::vector<std::vector<int>> tiles;
     unsigned int textureID;
 };
 
@@ -27,7 +27,7 @@ public:
         ProcessTilemaps(areaData);
 
         layerSprite = Sprite(-1, glm::vec2(0, 0), nullptr);
-        layerSprite.position = glm::vec2(16, -16);
+        layerSprite.position = glm::vec2(0, 0);
         layerSprite.scale = glm::vec2(32, 32);
 
         collisionMap = GenerateCollisionMap(areaData);
@@ -65,7 +65,7 @@ public:
 
     int& GetTile(uint8_t x, uint8_t y)
     {
-        return layers[0].tiles[(areaWidth * y) + x];
+        return layers[0].tiles[x][y];
     }
 
     std::vector<Layer> layers;

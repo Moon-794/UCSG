@@ -4,16 +4,20 @@ Layer ProcessAreaLayer(json_object* layerData)
 {
     int data_len = json_object_array_length(layerData);
 
-    std::vector<int> tileIDS(32 * 32);
+    std::vector<std::vector<int>> tileIDS(32, std::vector<int>(32));
     int width = 32;
     int height = 32;
     int nrChannels = 0;
     int spriteWidth = 16;
 
-    for (size_t h = 0; h < 32 * 32; h++)
+    for (size_t tx = 0; tx < 32; tx++)
     {
-        json_object* tile = json_object_array_get_idx(layerData, h);
-        tileIDS[h] = json_object_get_int(tile) - 1;
+        for (size_t ty = 0; ty < 32; ty++)
+        {
+            json_object* tile = json_object_array_get_idx(layerData, (tx * 32) + ty);
+            int val = json_object_get_int(tile) - 1;
+            tileIDS[tx][ty] = val;
+        }
     }
 
     stbi_set_flip_vertically_on_load(false);
@@ -65,7 +69,7 @@ Layer ProcessAreaLayer(json_object* layerData)
     {
         for (size_t y = 0; y < mapHeight; y++)
         {
-            int tileID = tileIDS[(x * mapWidth) + y];
+            int tileID = tileIDS[x][y];
 
             unsigned char* dataSource;
             if(tileID == -1)

@@ -40,15 +40,11 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
 {
     if(state.showActiveColliders)
     {
-        float playerX = glm::floor(info.playerPosition.x);
-        float playerY = glm::floor(info.playerPosition.y);
-        playerX += 0.5f;
-        playerY += 0.5f;
+        float playerX = glm::floor(info.playerPosition.x + 0.5f);
+        float playerY = glm::floor(info.playerPosition.y + 0.5f);
 
         const glm::vec3 redColor(1, 0, 0);
         const glm::vec3 blueColor(0, 0, 1);
-
-        int areaSize = info.area->layers[0].tiles.size();
 
         for (int x = -1; x < 2; x++)
         {
@@ -59,18 +55,11 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
                 debugShader.use();
                 debugShader.setVec3("tcolor", redColor);
 
-                if(debugSprite.position.x >= 0 && debugSprite.position.y <= 0)
+                if(debugSprite.position.x >= 0 && debugSprite.position.y >= 0)
                 {
-                    float i = playerX - 0.5f;
-                    float j = - playerY - 0.5f;
-
-                    int index = ((j - y) * 32) + (i + x);
-                    
-                    if(debugSprite.position.x < 32 && debugSprite.position.y > -32)
+                    if(debugSprite.position.x < 32 && debugSprite.position.y < 32)
                     {
-                        if(index < areaSize && index >= 0)
-                        {
-                            int type = info.area->layers[0].tiles[index];
+                            int type = info.area->layers[0].tiles[debugSprite.position.y][debugSprite.position.x];
                             if(info.area->collisionMap[type] == true)
                             {
                                  debugShader.setVec3("tcolor", blueColor);
@@ -81,7 +70,6 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
                             }
 
                             DrawSprite((*renderer), debugSprite);
-                        }
                     }
                 }
 
