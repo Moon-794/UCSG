@@ -165,11 +165,35 @@ build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_Debug CMakeFiles/UCSG.dir/src/ma
   FLAGS = -g
   LINK_LIBRARIES = C:/msys64/mingw64/lib/libjson-c.dll.a  C:/msys64/mingw64/lib/libglfw3.dll.a  -lDwmapi  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\UCSG.dir
-  POST_BUILD = cd .
+  POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory C:/Users/conno/Desktop/UCSG/resources bin/resources"
   PRE_LINK = cd .
   TARGET_FILE = bin\UCSG.exe
   TARGET_IMPLIB = libUCSG.dll.a
   TARGET_PDB = UCSG.exe.dbg
+
+
+#############################################
+# Utility command for package
+
+build CMakeFiles/package.util: CUSTOM_COMMAND all
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackConfig.cmake"
+  DESC = Run CPack packaging tool...
+  pool = console
+  restat = 1
+
+build package: phony CMakeFiles/package.util
+
+
+#############################################
+# Utility command for package_source
+
+build CMakeFiles/package_source.util: CUSTOM_COMMAND
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake C:/Users/conno/Desktop/UCSG/build/CPackSourceConfig.cmake"
+  DESC = Run CPack packaging tool for source...
+  pool = console
+  restat = 1
+
+build package_source: phony CMakeFiles/package_source.util
 
 
 #############################################
@@ -195,6 +219,48 @@ build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
 
 build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
+
+#############################################
+# Utility command for list_install_components
+
+build list_install_components: phony
+
+
+#############################################
+# Utility command for install
+
+build CMakeFiles/install.util: CUSTOM_COMMAND all
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -P cmake_install.cmake"
+  DESC = Install the project...
+  pool = console
+  restat = 1
+
+build install: phony CMakeFiles/install.util
+
+
+#############################################
+# Utility command for install/local
+
+build CMakeFiles/install/local.util: CUSTOM_COMMAND all
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  DESC = Installing only the local directory...
+  pool = console
+  restat = 1
+
+build install/local: phony CMakeFiles/install/local.util
+
+
+#############################################
+# Utility command for install/strip
+
+build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  DESC = Installing the project stripped...
+  pool = console
+  restat = 1
+
+build install/strip: phony CMakeFiles/install/strip.util
+
 # =============================================================================
 # Target aliases.
 
@@ -219,14 +285,14 @@ build all: phony bin/UCSG.exe
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCXXInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCommonLanguageInclude.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeGenericSystem.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeInitializeConfigs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeLanguageInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeRCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageMessage.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-Initialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-windres.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/WindowsPaths.cmake C$:/Users/conno/Desktop/UCSG/CMakeLists.txt C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Config.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3ConfigVersion.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets-release.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-config.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets-release.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets.cmake CMakeCache.txt CMakeFiles/3.31.3/CMakeCCompiler.cmake CMakeFiles/3.31.3/CMakeCXXCompiler.cmake CMakeFiles/3.31.3/CMakeRCCompiler.cmake CMakeFiles/3.31.3/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCXXInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCommonLanguageInclude.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeGenericSystem.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeInitializeConfigs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeLanguageInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeRCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CPack.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CPackComponent.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageMessage.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-Initialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-windres.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/WindowsPaths.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Templates/CPackConfig.cmake.in C$:/Users/conno/Desktop/UCSG/CMakeLists.txt C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Config.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3ConfigVersion.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets-release.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-config.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets-release.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets.cmake CMakeCache.txt CMakeFiles/3.31.3/CMakeCCompiler.cmake CMakeFiles/3.31.3/CMakeCXXCompiler.cmake CMakeFiles/3.31.3/CMakeRCCompiler.cmake CMakeFiles/3.31.3/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCXXInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCommonLanguageInclude.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeGenericSystem.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeInitializeConfigs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeLanguageInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeRCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageMessage.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-Initialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-windres.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/WindowsPaths.cmake C$:/Users/conno/Desktop/UCSG/CMakeLists.txt C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Config.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3ConfigVersion.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets-release.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-config.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets-release.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets.cmake CMakeCache.txt CMakeFiles/3.31.3/CMakeCCompiler.cmake CMakeFiles/3.31.3/CMakeCXXCompiler.cmake CMakeFiles/3.31.3/CMakeRCCompiler.cmake CMakeFiles/3.31.3/CMakeSystem.cmake: phony
+build C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCXXInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeCommonLanguageInclude.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeGenericSystem.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeInitializeConfigs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeLanguageInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeRCInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CMakeSystemSpecificInitialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CPack.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CPackComponent.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckIncludeFile.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Compiler/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageHandleStandardArgs.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindPackageMessage.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Linker/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-C.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU-CXX.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-GNU.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-Initialize.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows-windres.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/Windows.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Modules/Platform/WindowsPaths.cmake C$:/Program$ Files/CMake/share/cmake-3.31/Templates/CPackConfig.cmake.in C$:/Users/conno/Desktop/UCSG/CMakeLists.txt C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Config.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3ConfigVersion.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets-release.cmake C$:/msys64/mingw64/lib/cmake/glfw3/glfw3Targets.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-config.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets-release.cmake C$:/msys64/mingw64/lib/cmake/json-c/json-c-targets.cmake CMakeCache.txt CMakeFiles/3.31.3/CMakeCCompiler.cmake CMakeFiles/3.31.3/CMakeCXXCompiler.cmake CMakeFiles/3.31.3/CMakeRCCompiler.cmake CMakeFiles/3.31.3/CMakeSystem.cmake: phony
 
 
 #############################################
