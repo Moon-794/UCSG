@@ -35,7 +35,7 @@ set(IMGUI_SRCS
 add_executable(UCSG ${APP_SRCS} ${IMGUI_SRCS})
 
 #Packages + linking
-find_package(GLFW3 REQUIRED)
+find_package(glfw3 REQUIRED)
 find_package(json-c CONFIG REQUIRED)
 target_link_libraries(UCSG PRIVATE json-c::json-c glfw)
 target_include_directories(UCSG PRIVATE include/ include/imgui/)
