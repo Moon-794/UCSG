@@ -4,10 +4,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-#include <windows.h>
 #include <GL/gl.h>
-#include "dwmapi.h"
-
 #include "sprite.hpp"
 #include "shader.hpp"
 #include <string>

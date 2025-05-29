@@ -91,7 +91,6 @@ int main(int argc, char** args)
 
         glfwSwapBuffers(renderer.window);
         glfwPollEvents();
-        DwmFlush();
         glFinish();
 
         auto frameEnd = std::chrono::high_resolution_clock::now();
