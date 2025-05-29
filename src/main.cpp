@@ -12,12 +12,6 @@
 #include <thread>
 #include <chrono>
 
-/*
-     BIG TODO
-
-     GET tileIDS 2D array to go from bottom left to top right
-*/
-
 int main(int argc, char** args)
 {
     Renderer renderer("Space Game", 2560, 1440);
@@ -114,5 +108,3 @@ int main(int argc, char** args)
     glfwTerminate();
     delete (inputMap);
 }
-
-/**/
