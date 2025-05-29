@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_UCSG: phony || .
 build CMakeFiles/UCSG.dir/src/main.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/main.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\main.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -68,7 +68,7 @@ build CMakeFiles/UCSG.dir/src/glad.c.obj: C_COMPILER__UCSG_unscanned_Debug C$:/U
 build CMakeFiles/UCSG.dir/src/input.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/input.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\input.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -76,7 +76,7 @@ build CMakeFiles/UCSG.dir/src/input.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug 
 build CMakeFiles/UCSG.dir/src/renderer.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/renderer.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\renderer.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -84,7 +84,7 @@ build CMakeFiles/UCSG.dir/src/renderer.cpp.obj: CXX_COMPILER__UCSG_unscanned_Deb
 build CMakeFiles/UCSG.dir/src/sprite.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/sprite.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\sprite.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -92,7 +92,7 @@ build CMakeFiles/UCSG.dir/src/sprite.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug
 build CMakeFiles/UCSG.dir/src/area.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/area.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\area.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -100,7 +100,7 @@ build CMakeFiles/UCSG.dir/src/area.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C
 build CMakeFiles/UCSG.dir/src/debugger.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/debugger.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\debugger.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src
@@ -108,7 +108,7 @@ build CMakeFiles/UCSG.dir/src/debugger.cpp.obj: CXX_COMPILER__UCSG_unscanned_Deb
 build CMakeFiles/UCSG.dir/src/imgui/imgui.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src\imgui
@@ -116,7 +116,7 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui.cpp.obj: CXX_COMPILER__UCSG_unscanned_
 build CMakeFiles/UCSG.dir/src/imgui/imgui_impl_glfw.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui_impl_glfw.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui_impl_glfw.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src\imgui
@@ -124,7 +124,7 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui_impl_glfw.cpp.obj: CXX_COMPILER__UCSG_
 build CMakeFiles/UCSG.dir/src/imgui/imgui_tables.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui_tables.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui_tables.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src\imgui
@@ -132,7 +132,7 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui_tables.cpp.obj: CXX_COMPILER__UCSG_uns
 build CMakeFiles/UCSG.dir/src/imgui/imgui_widgets.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui_widgets.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui_widgets.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src\imgui
@@ -140,7 +140,7 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui_widgets.cpp.obj: CXX_COMPILER__UCSG_un
 build CMakeFiles/UCSG.dir/src/imgui/imgui_draw.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui_draw.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui_draw.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src\imgui
@@ -148,7 +148,7 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui_draw.cpp.obj: CXX_COMPILER__UCSG_unsca
 build CMakeFiles/UCSG.dir/src/imgui/imgui_impl_opengl3.cpp.obj: CXX_COMPILER__UCSG_unscanned_Debug C$:/Users/conno/Desktop/UCSG/src/imgui/imgui_impl_opengl3.cpp || cmake_object_order_depends_target_UCSG
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\UCSG.dir\src\imgui\imgui_impl_opengl3.cpp.obj.d
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   INCLUDES = -IC:/Users/conno/Desktop/UCSG/include -IC:/Users/conno/Desktop/UCSG/include/imgui -isystem C:/msys64/mingw64/include/json-c
   OBJECT_DIR = CMakeFiles\UCSG.dir
   OBJECT_FILE_DIR = CMakeFiles\UCSG.dir\src\imgui
@@ -162,10 +162,10 @@ build CMakeFiles/UCSG.dir/src/imgui/imgui_impl_opengl3.cpp.obj: CXX_COMPILER__UC
 # Link the executable bin\UCSG.exe
 
 build bin/UCSG.exe: CXX_EXECUTABLE_LINKER__UCSG_Debug CMakeFiles/UCSG.dir/src/main.cpp.obj CMakeFiles/UCSG.dir/src/glad.c.obj CMakeFiles/UCSG.dir/src/input.cpp.obj CMakeFiles/UCSG.dir/src/renderer.cpp.obj CMakeFiles/UCSG.dir/src/sprite.cpp.obj CMakeFiles/UCSG.dir/src/area.cpp.obj CMakeFiles/UCSG.dir/src/debugger.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_impl_glfw.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_tables.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_widgets.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_draw.cpp.obj CMakeFiles/UCSG.dir/src/imgui/imgui_impl_opengl3.cpp.obj | C$:/msys64/mingw64/lib/libjson-c.dll.a C$:/msys64/mingw64/lib/libglfw3.dll.a
-  FLAGS = -g
+  FLAGS = -static-libstdc++ -static-libgcc -static -g
   LINK_LIBRARIES = C:/msys64/mingw64/lib/libjson-c.dll.a  C:/msys64/mingw64/lib/libglfw3.dll.a  -lDwmapi  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\UCSG.dir
-  POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory C:/Users/conno/Desktop/UCSG/resources bin/resources"
+  POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory C:/Users/conno/Desktop/UCSG/resources bin/resources && cd /D C:\Users\conno\Desktop\UCSG\build && "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Users/conno/Desktop/UCSG/lib/glfw3.dll C:/Users/conno/Desktop/UCSG/build/bin && "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Users/conno/Desktop/UCSG/lib/libjson-c-5.dll C:/Users/conno/Desktop/UCSG/build/bin"
   PRE_LINK = cd .
   TARGET_FILE = bin\UCSG.exe
   TARGET_IMPLIB = libUCSG.dll.a
