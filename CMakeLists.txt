@@ -1,9 +1,19 @@
 cmake_minimum_required(VERSION 3.13.0)
 project(UCSG VERSION 1.0)
 
+#Function to copy required dlls to binary folder
+function (copy_dlls target)
+    if (WIN32)
+        add_custom_command (
+            TARGET "${target}" POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy -t "$<TARGET_FILE_DIR:${target}>"
+                    "$<TARGET_RUNTIME_DLLS:${target}>" USES_TERMINAL COMMAND_EXPAND_LISTS
+        )
+    endif ()
+endfunction ()
+
 message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
-#MAKE this build on any build system, i.e conditionals for the mingw stuff
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -47,17 +57,13 @@ add_custom_command(TARGET UCSG POST_BUILD
     COMMENT "Copying resources to output directory"
 )
 
-#Copy DLLS to binary folder
-add_custom_command(TARGET UCSG POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/lib/glfw3.dll ${CMAKE_CURRENT_BINARY_DIR}/bin
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/lib/libjson-c-5.dll ${CMAKE_CURRENT_BINARY_DIR}/bin
-    COMMENT "Copying DLL's to output directory")
+copy_dlls(UCSG)
 
 #Install rules
 install(TARGETS UCSG RUNTIME DESTINATION ".")
 install(DIRECTORY "resources/" DESTINATION "resources")
-install(FILES "lib/glfw3.dll" DESTINATION ".")
-install(FILES "lib/libjson-c-5.dll" DESTINATION ".")
+
+#TODO: Install dlls with cpack
 
 #End of installer
 set(CPACK_GENERATOR "ZIP")

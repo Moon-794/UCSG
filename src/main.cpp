@@ -99,7 +99,7 @@ int main(int argc, char** args)
 
         while (std::chrono::high_resolution_clock::now() < frameEnd + timeLeft) 
         {
-            // Just spinning
+            // Just spinnin
         }
     }
 
