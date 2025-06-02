@@ -15,11 +15,17 @@ public:
     Renderer(std::string windowName, int windowWidth, int windowHeight);
 
     GLFWwindow* window = nullptr;
+
     int windowWidth;
     int windowHeight;
     unsigned int quadVAO;
+
     glm::vec3 cameraPos = glm::vec3(0);
     glm::mat4 projection = glm::mat4(1.0f);
+
+    void SwapBuffers();
+    void Clear();
+    void SetClearColor(float r, float g, float b, float a);
 
 private:
 };

@@ -27,7 +27,10 @@ void Debugger::DrawDebugger(DebuggerInfo info)
     ImGui::NewFrame();
 
     ImGui::Begin("Debugger");
-    std::string playerPosText("Player Position: [" + std::to_string(info.playerPosition.x) + " - " + std::to_string(info.playerPosition.y) + "]");
+    int roundedX = std::round(info.playerPosition.x * 100.0f);
+    int roundedY = std::round(info.playerPosition.y * 100.0f);
+
+    std::string playerPosText("Player Position: [" + std::to_string(roundedX) + " - " + std::to_string(roundedY) + "]");
     ImGui::Text(playerPosText.c_str());
     ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);  
     ImGui::End();

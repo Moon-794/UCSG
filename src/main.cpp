@@ -15,6 +15,8 @@
 int main(int argc, char** args)
 {
     Renderer renderer("Space Game", 2560, 1440);
+    renderer.SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+
     Shader s = Shader("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
     Debugger debugger(&renderer);
 
@@ -36,12 +38,9 @@ int main(int argc, char** args)
     double timeDiff = 0.0f;
     unsigned int counter = 0;
 
-    DebuggerInfo debugInfo;
-    debugInfo.area = &area;
-
     URect playerRect = {16, 16, 1, 1};
     URect tileRect = {0, 0, 1, 1};
-
+ 
     while (!glfwWindowShouldClose(renderer.window))
     {
         auto frameStart = std::chrono::high_resolution_clock::now();
@@ -79,19 +78,17 @@ int main(int argc, char** args)
         renderer.cameraPos.x = player.position.x;
         renderer.cameraPos.y = player.position.y;
 
-        glClearColor(0.30f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
 
         area.DrawLayer(renderer, 0);
         DrawSprite(renderer, player);
-        area.DrawLayer(renderer, 1);
 
+        DebuggerInfo debugInfo;
+        debugInfo.area = &area;
         debugInfo.playerPosition = player.position;
         debugger.DrawDebugger(debugInfo);
 
-        glfwSwapBuffers(renderer.window);
-        glfwPollEvents();
-        glFinish();
+        renderer.SwapBuffers();
 
         auto frameEnd = std::chrono::high_resolution_clock::now();
         auto frameDuration = std::chrono::duration_cast<std::chrono::microseconds>(frameEnd - frameStart);

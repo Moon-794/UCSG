@@ -29,8 +29,7 @@ set(APP_SRCS
     src/input.cpp 
     src/renderer.cpp 
     src/sprite.cpp 
-    src/area.cpp 
-    src/debugger.cpp
+    src/area.cpp
 )
 
 set(IMGUI_SRCS 
@@ -41,6 +40,9 @@ set(IMGUI_SRCS
     src/imgui/imgui_draw.cpp 
     src/imgui/imgui_impl_opengl3.cpp
 )
+
+#Make this conditional based on build type
+list(APPEND APP_SRCS src/debugger.cpp)
 
 add_executable(UCSG ${APP_SRCS} ${IMGUI_SRCS})
 

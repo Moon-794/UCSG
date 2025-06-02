@@ -1,12 +1,5 @@
 #include "renderer.hpp"
 
-void error_callback(int error, const char* description);
-
-void error_callback(int error, const char* description) 
-{
-    printf("GLFW Error: %d - %s\n", error, description);
-}
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -118,4 +111,21 @@ void DrawSprite(Renderer& renderer, Sprite& sprite)
     glBindTexture(GL_TEXTURE_2D, sprite.textureID);
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void Renderer::SwapBuffers()
+{
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+    glFinish();
+}
+
+void Renderer::SetClearColor(float r, float g, float b, float a)
+{
+    glClearColor(r, g, b,a);
+}
+
+void Renderer::Clear()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
 }
