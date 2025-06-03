@@ -45,10 +45,20 @@ public:
         for (size_t i = 0; i < array_len; i++)
         {
             json_object *elem = json_object_array_get_idx(layers, i);
-            json_object *data;
-            json_object_object_get_ex(elem, "data", &data);
 
-            this->layers.push_back(ProcessAreaLayer(data));
+            json_object* layerType;
+            json_object_object_get_ex(elem, "type", &layerType);
+
+            std::cout << json_object_get_string(layerType) << "\n";
+            
+            if(std::string(json_object_get_string(layerType)) == "tilelayer")
+            {
+                std::cout << "hha" << std::endl;
+                json_object *data;
+                json_object_object_get_ex(elem, "data", &data);
+                
+                this->layers.push_back(ProcessAreaLayer(data));
+            }
         }
     }
 

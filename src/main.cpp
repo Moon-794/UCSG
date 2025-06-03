@@ -6,8 +6,8 @@
 #include "input.h"
 #include "collision.h"
 
-#include <iostream>
 #include "unistd.h"
+#include <iostream>
 #include <array>
 #include <thread>
 #include <chrono>
