@@ -9,6 +9,11 @@
 #include "shader.hpp"
 #include <string>
 
+//An improvement over previous engines at this point is to try and encapsulate all the glfw calls I'll
+//be using within this renderer class, even for simple function calls it could really clean things up
+
+//Window class might also be useful, with a GetWindow() for just grabbing the basic properties
+
 class Renderer
 {
 public:

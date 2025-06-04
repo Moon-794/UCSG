@@ -41,12 +41,6 @@
          "offsetx":0,
          "offsety":0,
          "opacity":1,
-         "properties":[
-                {
-                 "name":"AreaID",
-                 "type":"int",
-                 "value":0
-                }],
          "type":"tilelayer",
          "visible":true,
          "width":32,

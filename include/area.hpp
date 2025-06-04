@@ -48,9 +48,7 @@ public:
 
             json_object* layerType;
             json_object_object_get_ex(elem, "type", &layerType);
-
-            std::cout << json_object_get_string(layerType) << "\n";
-            
+         
             if(std::string(json_object_get_string(layerType)) == "tilelayer")
             {
                 std::cout << "hha" << std::endl;
@@ -87,5 +85,72 @@ private:
     unsigned int areaWidth;
     unsigned int areaHeight;
 };
+
+//Additional stuff:
+//Give areas a custom property of vector2: "DefaultSpawn" for warping
+//Or even a list of spawn locations for use in the debugger
+
+enum LayerType
+{
+    TILE_LAYER,
+    COLLISION_LAYER,
+    OBJECT_GROUP
+};
+
+struct TileLayer
+{
+    std::vector<int> tileData;
+    unsigned int layerTextureID;
+};
+
+//AreaObjects might be silly, could perhaps be better to have a general object instead?
+//For the sake of not getting into the DynamicObject + staticObject problem, might want a mix
+struct AreaObject
+{
+
+}
+
+struct ObjectGroup
+{
+    //List of specific types of objects
+    //Concrete objects such as area transitions will have a class associated with them
+}
+
+struct AreaTransition
+{
+    int newAreaID;
+    glm::vec2 spawnPosition;
+};
+
+struct Tileset
+{
+    //A map of tileIDS to tile properties
+};
+
+struct AreaData
+{
+    unsigned int areaID;
+    std::string areaName;                    //Used for area transitions
+
+    unsigned int areaWidth, areaHeight;     //Width and height map in tiles
+    unsigned int tileWidth, tileHeight;     //Width and height of tiles in pixels
+
+    Tileset areaTileset;
+    std::vector<TileLayer> tileLayers;      //Map + collision data  
+};
+
+//Liking this so far
+//This is looking to be a core game system, on par with the renderer
+class AreaManager
+{
+    AreaData* getCurrentArea();
+    AreaData* getArea(std::string areaName);
+
+    void Transition(AreaTransition areaTransition);
+
+private:
+    std::unordered_map<std::string, AreaData*> areas;
+    AreaData* currentArea;
+}
 
 #endif
