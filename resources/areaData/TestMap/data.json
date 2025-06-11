@@ -97,11 +97,6 @@
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
  "tileheight":16,
- "tilesets":[
-        {
-         "firstgid":1,
-         "source":"..\/..\/..\/..\/Tile shennanigans\/ShipTileset.tsx"
-        }],
  "tilewidth":16,
  "type":"map",
  "version":"1.10",

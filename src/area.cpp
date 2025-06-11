@@ -1,5 +1,20 @@
 #include "area.hpp"
 
+
+int JSONGetInt(json_object* obj, std::string fieldName)
+{
+    json_object* value;
+    json_object_object_get_ex(obj, fieldName.c_str(), &value);
+
+    if(value == nullptr)
+    {
+        std::cout << "Fieldname \"" << fieldName << "\" not found." << std::endl;
+        return -1;
+    }
+
+    return json_object_get_int(value);
+}
+
 Layer ProcessAreaLayer(json_object* layerData)
 {
     int data_len = json_object_array_length(layerData);
@@ -141,7 +156,7 @@ std::map<int, bool> GenerateCollisionMap(std::string areaData)
 {
     std::map<int,bool> colMap;
 
-    std::string filePath("resources/areaData/" + areaData + "/" + areaData + "Tileset.json");
+    std::string filePath("resources/areaData/" + areaData + "/Tileset.json");
     json_object *root = json_object_from_file(filePath.c_str());
 
     json_object *tiles;
@@ -165,4 +180,44 @@ std::map<int, bool> GenerateCollisionMap(std::string areaData)
     }
     
     return colMap;
+}
+
+AreaManager::AreaManager()
+{
+    std::cout << "Initialising Area Manager" << "\n";
+    areas = AreaManager::LoadAllAreas();
+}
+
+std::unordered_map<std::string, AreaData*> AreaManager::LoadAllAreas()
+{
+    std::unordered_map<std::string, AreaData*> areas;
+
+    //Get all area folders in resources/areaData
+    std::string resourcesPath = "resources/areaData";
+    for(const auto& entry : fs::directory_iterator(resourcesPath))
+    {
+        //Gives a linux + windows friendly folderpath
+        std::string folderPath = std::regex_replace(entry.path().string(), std::regex("\\\\"), "/");
+
+        //Erase the first part of the path to use in file names
+        std::string areaName = folderPath.erase(0, 19);
+        AreaData area = LoadAreaData(areaName);
+    }
+
+    return areas;
+}
+
+//Loads an area from disk, filepath is areaData folder (e.g "resources/areaData/[AREANAME]")
+AreaData AreaManager::LoadAreaData(std::string areaName)
+{
+    AreaData area;
+
+    std::string filePath("resources/areaData/" + areaName + "/data.json");
+    json_object *root = json_object_from_file(filePath.c_str());
+    json_object *value;
+    
+    json_object_object_get_ex(root, "width", &value);
+    int areaWidth = json_object_get_int(value);
+
+    return area;
 }

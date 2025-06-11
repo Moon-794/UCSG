@@ -12,6 +12,7 @@
 #include <thread>
 #include <chrono>
 
+
 int main(int argc, char** args)
 {
     Renderer renderer("Space Game", 2560, 1440);
@@ -19,6 +20,8 @@ int main(int argc, char** args)
 
     Shader s = Shader("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
     Debugger debugger(&renderer);
+
+    AreaManager areaManager;
 
     Area area(std::string("TestMap"));
     area.SetShader(&s);

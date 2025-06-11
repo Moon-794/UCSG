@@ -7,7 +7,13 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <unordered_map>
+#include <filesystem>
+#include <regex>
+
 #include <json-c/json.h>
+
+namespace fs = std::filesystem;
 
 struct Layer
 {
@@ -15,6 +21,12 @@ public:
     std::vector<std::vector<int>> tiles;
     unsigned int textureID;
 };
+
+//JSON RELATED
+
+int JSONGetInt(json_object* obj, std::string fieldName);
+
+// __ __ __ __ _ _ _ _
 
 Layer ProcessAreaLayer(json_object* layerData);
 std::map<int, bool> GenerateCollisionMap(std::string areaData);
@@ -35,7 +47,7 @@ public:
 
     void ProcessTilemaps(std::string areaData)
     {
-        std::string filePath("resources/areaData/" + areaData + "/" + areaData + ".json");
+        std::string filePath("resources/areaData/" + areaData + "/data.json");
         json_object *root = json_object_from_file(filePath.c_str());
 
         json_object *layers;
@@ -51,7 +63,6 @@ public:
          
             if(std::string(json_object_get_string(layerType)) == "tilelayer")
             {
-                std::cout << "hha" << std::endl;
                 json_object *data;
                 json_object_object_get_ex(elem, "data", &data);
                 
@@ -108,13 +119,13 @@ struct TileLayer
 struct AreaObject
 {
 
-}
+};
 
 struct ObjectGroup
 {
     //List of specific types of objects
     //Concrete objects such as area transitions will have a class associated with them
-}
+};
 
 struct AreaTransition
 {
@@ -141,16 +152,25 @@ struct AreaData
 
 //Liking this so far
 //This is looking to be a core game system, on par with the renderer
+//Although I'm not too sure how I want different game systems similar to this one to easily talk to each other
 class AreaManager
 {
+public:
+    AreaManager();
+
     AreaData* getCurrentArea();
     AreaData* getArea(std::string areaName);
 
     void Transition(AreaTransition areaTransition);
+    void Transition(int newAreaID, glm::vec2 spawnPosition);
+    void Transition(std::string areaName, glm::vec2 spawnPosition);
 
 private:
     std::unordered_map<std::string, AreaData*> areas;
     AreaData* currentArea;
-}
+
+    std::unordered_map<std::string, AreaData*> LoadAllAreas();
+    AreaData LoadAreaData(std::string areaName);
+};
 
 #endif
