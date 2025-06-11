@@ -15,6 +15,13 @@ int JSONGetInt(json_object* obj, std::string fieldName)
     return json_object_get_int(value);
 }
 
+json_object* GetRootAreaDataFromFile(std::string areaName)
+{
+    std::string filePath("resources/areaData/" + areaName + "/data.json");
+    json_object *root = json_object_from_file(filePath.c_str());
+    return root;
+}
+
 Layer ProcessAreaLayer(json_object* layerData)
 {
     int data_len = json_object_array_length(layerData);
@@ -212,12 +219,125 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
 {
     AreaData area;
 
-    std::string filePath("resources/areaData/" + areaName + "/data.json");
-    json_object *root = json_object_from_file(filePath.c_str());
-    json_object *value;
+    json_object* root = GetRootAreaDataFromFile(areaName);
     
-    json_object_object_get_ex(root, "width", &value);
-    int areaWidth = json_object_get_int(value);
+    int areaWidth = JSONGetInt(root, "width");
+    int areaHeight = JSONGetInt(root, "height");
 
+    if((areaWidth <= 0 || areaWidth >= 128) && (areaHeight <= 0 || areaHeight >= 128))
+    {
+        std::cout << "Error: Area width and height must be between 1 and 127.\n";
+        std::cout << "AreaWidth: " << areaWidth << " " << "AreaHeight: " << areaHeight << std::endl;
+        return area;
+    }
+
+    //Area dimensions
+    area.areaWidth = areaWidth;
+    area.areaHeight = areaHeight;
+
+    //Area Identifiers
+    //Unique ID given out by areaManager
+    area.areaID = nextAvailableID;
+    nextAvailableID++;
+    area.areaName = areaName;
+
+    //Tile information
+    int tileWidth = JSONGetInt(root, "tilewidth");
+    int tileHeight = JSONGetInt(root, "tileheight");
+    area.tileWidth = tileWidth;
+    area.tileHeight = tileHeight;
+
+    //Some properties are parsed directly into member variables, based on whether they will change
+    std::unordered_map<std::string, std::string> properties = LoadAreaProperties(areaName);
+
+    //Use areaname property for name, if it doesnt exist just use the resources folder directory name
+    if(properties.count("areaName"))
+        area.areaName = properties["areaName"];
+    
+    //Properties, can contain anything
+    area.properties = properties;
+
+    //Tileset
+    
+    area.tileset = LoadTileset(areaName);
+
+    //Layers
+    
     return area;
+}
+
+std::unordered_map<std::string, std::string> AreaManager::LoadAreaProperties(std::string areaName)
+{
+    std::unordered_map<std::string, std::string> properties;
+    json_object* root = GetRootAreaDataFromFile(areaName);
+
+    json_object *propertyArray;
+    json_object_object_get_ex(root, "properties", &propertyArray);
+    int array_len = json_object_array_length(propertyArray);
+
+    for (size_t i = 0; i < array_len; i++)
+    {
+        json_object *elem = json_object_array_get_idx(propertyArray, i);
+        json_object *subElement;
+
+        json_object_object_get_ex(elem, "name", &subElement);
+        std::string propertyName(json_object_get_string(subElement));
+
+        json_object_object_get_ex(elem, "value", &subElement);
+        std::string propertyValue(json_object_get_string(subElement));
+
+        properties.insert({propertyName, propertyValue});
+    }
+
+    return properties;
+}
+
+std::unordered_map<unsigned int, Tile> AreaManager::LoadTileset(std::string areaName)
+{
+    std::unordered_map<unsigned int, Tile> tileset;
+
+    std::string filePath("resources/areaData/" + areaName + "/Tileset.json");
+    json_object *root = json_object_from_file(filePath.c_str());
+
+    json_object *tileArray;
+    json_object_object_get_ex(root, "tiles", &tileArray);
+    int array_len = json_object_array_length(tileArray);
+    
+    //Loop through Tiles
+    for (size_t i = 0; i < array_len; i++)
+    {
+        Tile tile;
+
+        json_object *tile_obj = json_object_array_get_idx(tileArray, i);
+        json_object *elem;
+        json_object_object_get_ex(tile_obj, "type", &elem);
+        
+        tile.tileType = std::string(json_object_get_string(elem));
+        unsigned int tileID = JSONGetInt(tile_obj, "id");
+
+        json_object* propertyArray;
+        json_object_object_get_ex(tile_obj, "properties", &propertyArray);
+        int prop_array_len = json_object_array_length(propertyArray);
+
+        //Loop through properties of each tile
+        std::unordered_map<std::string, std::string> tileProperties;
+        for (size_t j = 0; j < prop_array_len; j++)
+        {
+            json_object *elem = json_object_array_get_idx(propertyArray, j);
+            json_object *subElement;
+
+            json_object_object_get_ex(elem, "name", &subElement);
+            std::string propertyName(json_object_get_string(subElement));
+
+            json_object_object_get_ex(elem, "value", &subElement);
+            std::string propertyValue(json_object_get_string(subElement));
+
+            tileProperties.insert({propertyName, propertyValue});
+        }
+
+        tile.tileProperties = tileProperties;
+        tileset.insert({tileID, tile});
+    }
+
+    return tileset;
 }

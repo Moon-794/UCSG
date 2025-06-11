@@ -25,6 +25,7 @@ public:
 //JSON RELATED
 
 int JSONGetInt(json_object* obj, std::string fieldName);
+json_object* GetRootAreaDataFromFile(std::string areaName);
 
 // __ __ __ __ _ _ _ _
 
@@ -127,27 +128,30 @@ struct ObjectGroup
     //Concrete objects such as area transitions will have a class associated with them
 };
 
+struct Tile
+{
+    std::string tileType;
+    std::unordered_map<std::string, std::string> tileProperties;
+};
+
 struct AreaTransition
 {
     int newAreaID;
     glm::vec2 spawnPosition;
 };
 
-struct Tileset
-{
-    //A map of tileIDS to tile properties
-};
-
 struct AreaData
 {
     unsigned int areaID;
-    std::string areaName;                    //Used for area transitions
+    std::string areaName;                                       //Used for area transitions
 
-    unsigned int areaWidth, areaHeight;     //Width and height map in tiles
-    unsigned int tileWidth, tileHeight;     //Width and height of tiles in pixels
+    unsigned int areaWidth, areaHeight;                         //Width and height map in tiles
+    unsigned int tileWidth, tileHeight;                         //Width and height of tiles in pixels
 
-    Tileset areaTileset;
-    std::vector<TileLayer> tileLayers;      //Map + collision data  
+    std::unordered_map<unsigned int, Tile> tileset;             //holds tileIDS -> tileProperties
+    std::vector<TileLayer> tileLayers;                          //Map + collision data
+    
+    std::unordered_map<std::string, std::string> properties;
 };
 
 //Liking this so far
@@ -160,17 +164,28 @@ public:
 
     AreaData* getCurrentArea();
     AreaData* getArea(std::string areaName);
+    AreaData* getArea(unsigned int areaID);
 
     void Transition(AreaTransition areaTransition);
-    void Transition(int newAreaID, glm::vec2 spawnPosition);
-    void Transition(std::string areaName, glm::vec2 spawnPosition);
+    void ForceTransition(std::string areaName, glm::vec2 spawnPosition);
 
 private:
     std::unordered_map<std::string, AreaData*> areas;
+
     AreaData* currentArea;
+    unsigned int nextAvailableID = 0;
 
     std::unordered_map<std::string, AreaData*> LoadAllAreas();
+
     AreaData LoadAreaData(std::string areaName);
+    std::unordered_map<std::string, std::string> LoadAreaProperties(std::string areaName);
+
+    std::unordered_map<unsigned int, Tile> LoadTileset(std::string areaName);
+
+    void AddArea(AreaData* areaData);
+
+    void RemoveArea(unsigned int areaID);
+    void RemoveArea(std::string areaName);
 };
 
 #endif

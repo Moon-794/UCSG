@@ -21,7 +21,7 @@ int main(int argc, char** args)
     Shader s = Shader("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
     Debugger debugger(&renderer);
 
-    AreaManager areaManager;
+    
 
     Area area(std::string("TestMap"));
     area.SetShader(&s);
@@ -43,6 +43,8 @@ int main(int argc, char** args)
 
     URect playerRect = {16, 16, 1, 1};
     URect tileRect = {0, 0, 1, 1};
+
+    AreaManager areaManager;
  
     while (!glfwWindowShouldClose(renderer.window))
     {
