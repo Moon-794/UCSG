@@ -62,7 +62,7 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
                 {
                     if(debugSprite.position.x < 32 && debugSprite.position.y < 32)
                     {
-                            int type = info.area->layers[0].tiles[debugSprite.position.y][debugSprite.position.x];
+                            int type = info.area->layers[0].tiles[debugSprite.position.x][debugSprite.position.y];
                             if(info.area->collisionMap[type] == true)
                             {
                                  debugShader.setVec3("tcolor", blueColor);

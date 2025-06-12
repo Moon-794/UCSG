@@ -23,6 +23,15 @@ json_object* GetRootAreaDataFromFile(std::string areaName)
 
 unsigned int LoadImageData(const std::string& areaName, ImageData& data)
 {
+    stbi_set_flip_vertically_on_load(false);
+    std::string path("resources/areaData/" + areaName + "/" + areaName + ".png");
+    stbi_uc* image = stbi_load(path.c_str(), &data.width, &data.height, &data.nrChannels, 4);
+    
+    if(!image)
+        return -1;
+
+    data.imageData = image;
+
     return 0;
 }
 
@@ -40,13 +49,13 @@ Layer ProcessAreaLayer(json_object* layerData)
     {
         for (size_t ty = 0; ty < 32; ty++)
         {
-            json_object* tile = json_object_array_get_idx(layerData, (tx * 32) + ty);
+            json_object* tile = json_object_array_get_idx(layerData, (ty * 32) + tx);
             int val = json_object_get_int(tile) - 1;
             tileIDS[tx][ty] = val;
         }
     }
 
-    stbi_set_flip_vertically_on_load(false);
+    stbi_set_flip_vertically_on_load(true);
     stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
     int length = width * height * 4;
 
@@ -61,7 +70,7 @@ Layer ProcessAreaLayer(json_object* layerData)
     {
         for (size_t y = 0; y < 16; y++)
         {
-            int offset = ((x * 16) + y) * 4;
+            int offset = ((y * 16) + x) * 4;
             emptyImage[offset + 0] = 0;
             emptyImage[offset + 1] = 0;
             emptyImage[offset + 2] = 0;
@@ -76,8 +85,8 @@ Layer ProcessAreaLayer(json_object* layerData)
         {
             for (size_t y = 0; y < 16; y++)
             {
-                int parentOffset = ((x * 80) + y + (spriteWidth * n)) * 4;
-                int childOffset = ((x * 16) + y) * 4;
+                int parentOffset = ((y * 80) + x + (spriteWidth * n)) * 4;
+                int childOffset = ((y * 16) + x) * 4;
                 subImages[n][childOffset + 0] = image[parentOffset + 0];
                 subImages[n][childOffset + 1] = image[parentOffset + 1];
                 subImages[n][childOffset + 2] = image[parentOffset + 2];
@@ -97,37 +106,24 @@ Layer ProcessAreaLayer(json_object* layerData)
         {
             int tileID = tileIDS[x][y];
 
-            unsigned char* dataSource;
-            if(tileID == -1)
-            {
-                dataSource = emptyImage;
-            }
-            else
-            {
-                dataSource = subImages[tileID];
-            }
+            unsigned char* dataSource = (tileID == -1) ? emptyImage : subImages[tileID];
 
-            //Copy subImage to tilemapImage
-            for (size_t i = 0; i < 16; i++)
+            // Copy subImage to tileMapImage
+            for (size_t i = 0; i < 16; i++) // tile row
             {
-                for (size_t j = 0; j < 16; j++)
+                for (size_t j = 0; j < 16; j++) // tile column
                 {
-                    //Move down 16 lines for each y
-                    int mapOffsetY = (512 * 512 * 4) - ((x * 16) + i) * (16 * mapWidth * 4);
-                    //Move down 1 line per j
-                    int subOffsetY = i * 16 * 4;
-                    
-                    //Move 16 pixels across for each x
-                    int mapOffsetX = y * (16 * 4);
-                    int subOffsetX = j * 4;
+                    // Where we're writing into the final image (top-down layout)
+                    int pixelX = x * 16 + j; // horizontal pixel in tilemap
+                    int pixelY = (mapHeight - 1 - y) * 16 + i; // vertical pixel in tilemap
 
-                    int subOffset = subOffsetY + subOffsetX;
-                    int mapOffset = mapOffsetY + mapOffsetX;
+                    int mapOffset = (pixelY * 512 + pixelX) * 4;
+                    int subOffset = (i * 16 + j) * 4;
 
-                    tileMapImage[mapOffset + subOffsetX + 0] = dataSource[subOffset + 0];
-                    tileMapImage[mapOffset + subOffsetX + 1] = dataSource[subOffset + 1];
-                    tileMapImage[mapOffset + subOffsetX + 2] = dataSource[subOffset + 2];
-                    tileMapImage[mapOffset + subOffsetX + 3] = dataSource[subOffset + 3];
+                    tileMapImage[mapOffset + 0] = dataSource[subOffset + 0];
+                    tileMapImage[mapOffset + 1] = dataSource[subOffset + 1];
+                    tileMapImage[mapOffset + 2] = dataSource[subOffset + 2];
+                    tileMapImage[mapOffset + 3] = dataSource[subOffset + 3];
                 }
             }
         }
@@ -389,17 +385,24 @@ unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object*
     {
         for (size_t ty = 0; ty < 32; ty++)
         {
-            json_object* tile = json_object_array_get_idx(element, (tx * 32) + ty);
+            json_object* tile = json_object_array_get_idx(element, (ty * 32) + tx);
             int val = json_object_get_int(tile) - 1;
-            tileLayer.layerData[tx][ty] = val;
+            tileIDS[tx][ty] = val;
         }
     }
 
     return 0;
 }
 
-unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& layerData, int spriteWidth)
+unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth)
 {
+    ImageData imageData;
+    if(LoadImageData(areaName, imageData) == -1)
+    {
+        std::cout << "Failed to load image data\n";
+    }
+
     
+
     return 0;
 }

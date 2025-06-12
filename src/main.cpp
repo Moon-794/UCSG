@@ -21,8 +21,6 @@ int main(int argc, char** args)
     Shader s = Shader("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
     Debugger debugger(&renderer);
 
-    
-
     Area area(std::string("TestMap"));
     area.SetShader(&s);
 

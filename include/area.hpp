@@ -31,6 +31,15 @@ json_object* GetRootAreaDataFromFile(std::string areaName);
 
 //IMAGE RELATED
 
+struct ImageData
+{
+    int width;
+    int height;
+    int nrChannels;
+
+    unsigned char* imageData;
+};
+
 unsigned int LoadImageData(const std::string& areaName, ImageData& data);
 
 // -- --------   -----
@@ -104,15 +113,6 @@ private:
     unsigned int areaHeight;
 };
 
-struct ImageData
-{
-    int width;
-    int height;
-    int nrChannels;
-
-    unsigned char* imageData;
-};
-
 struct TileLayer
 {
     std::vector<std::vector<int>> layerData;
@@ -173,7 +173,7 @@ private:
     std::vector<TileLayer> LoadLayers(std::string areaName);
 
     unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element);
-    unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& layerData, int spriteWidth);
+    unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth);
 
     void AddArea(AreaData* areaData);
     void RemoveArea(unsigned int areaID);
