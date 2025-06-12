@@ -18,18 +18,14 @@ int main(int argc, char** args)
     Renderer renderer("Space Game", 2560, 1440);
     renderer.SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
-    Shader s = Shader("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
+    std::shared_ptr<Shader> s = std::make_shared<Shader>("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
     Debugger debugger(&renderer);
-
-    Area area(std::string("TestMap"));
-    area.SetShader(&s);
-
     InputMap* inputMap = new InputMap();
 
     glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void*>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
-    Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), &s);
+    Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), s);
     player.scale = glm::vec2(1, 1);
     player.position = glm::vec2(16, 16);
 
@@ -42,7 +38,7 @@ int main(int argc, char** args)
     URect playerRect = {16, 16, 1, 1};
     URect tileRect = {0, 0, 1, 1};
 
-    AreaManager areaManager;
+    AreaManager areaManager(s);
  
     while (!glfwWindowShouldClose(renderer.window))
     {
@@ -83,13 +79,11 @@ int main(int argc, char** args)
 
         renderer.Clear();
 
-        area.DrawLayer(renderer, 0);
+        DrawSprite(renderer, areaManager.GetCurrentArea()->tileLayers[0].layerSprite);
         DrawSprite(renderer, player);
 
         DebuggerInfo debugInfo;
-        debugInfo.area = &area;
         debugInfo.playerPosition = player.position;
-        debugger.DrawDebugger(debugInfo);
 
         renderer.SwapBuffers();
 

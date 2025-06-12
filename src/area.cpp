@@ -23,139 +23,15 @@ json_object* GetRootAreaDataFromFile(std::string areaName)
 
 unsigned int LoadImageData(const std::string& areaName, ImageData& data)
 {
-    stbi_set_flip_vertically_on_load(false);
+    stbi_set_flip_vertically_on_load(true);
     std::string path("resources/areaData/" + areaName + "/" + areaName + ".png");
     stbi_uc* image = stbi_load(path.c_str(), &data.width, &data.height, &data.nrChannels, 4);
     
     if(!image)
         return -1;
 
-    data.imageData = image;
-
+    data.data = image;
     return 0;
-}
-
-Layer ProcessAreaLayer(json_object* layerData)
-{
-    int data_len = json_object_array_length(layerData);
-
-    std::vector<std::vector<int>> tileIDS(32, std::vector<int>(32));
-    int width = 32;
-    int height = 32;
-    int nrChannels = 0;
-    int spriteWidth = 16;
-
-    for (size_t tx = 0; tx < 32; tx++)
-    {
-        for (size_t ty = 0; ty < 32; ty++)
-        {
-            json_object* tile = json_object_array_get_idx(layerData, (ty * 32) + tx);
-            int val = json_object_get_int(tile) - 1;
-            tileIDS[tx][ty] = val;
-        }
-    }
-
-    stbi_set_flip_vertically_on_load(true);
-    stbi_uc* image = stbi_load("resources/areaData/TestMap/TestMap.png", &width, &height, &nrChannels, 4);
-    int length = width * height * 4;
-
-    //Num sprites in image + 1 for empty sprite (tiledID 0)
-    int numImages = (width / spriteWidth);
-    
-    std::vector<unsigned char*> subImages(numImages);
-    unsigned char emptyImage[16 * 16 * 4];
-    
-    //Create Empty Image //TODO: Make this a constant variable somewhere relevant
-    for (size_t x = 0; x < 16; x++)
-    {
-        for (size_t y = 0; y < 16; y++)
-        {
-            int offset = ((y * 16) + x) * 4;
-            emptyImage[offset + 0] = 0;
-            emptyImage[offset + 1] = 0;
-            emptyImage[offset + 2] = 0;
-            emptyImage[offset + 3] = 0;
-        }
-    }
-
-    for (size_t n = 0; n < numImages; n++)
-    {
-        subImages[n] = new unsigned char[16 * 16 * 4]; 
-        for (size_t x = 0; x < 16; x++)
-        {
-            for (size_t y = 0; y < 16; y++)
-            {
-                int parentOffset = ((y * 80) + x + (spriteWidth * n)) * 4;
-                int childOffset = ((y * 16) + x) * 4;
-                subImages[n][childOffset + 0] = image[parentOffset + 0];
-                subImages[n][childOffset + 1] = image[parentOffset + 1];
-                subImages[n][childOffset + 2] = image[parentOffset + 2];
-                subImages[n][childOffset + 3] = image[parentOffset + 3];
-            }
-        }
-    }
-    
-    //Begin stitching together tilemap
-    int mapWidth = 32;
-    int mapHeight = 32;
-    unsigned char* tileMapImage = new unsigned char[512 * 512 * 4];
-
-    for (size_t x = 0; x < mapWidth; x++)
-    {
-        for (size_t y = 0; y < mapHeight; y++)
-        {
-            int tileID = tileIDS[x][y];
-
-            unsigned char* dataSource = (tileID == -1) ? emptyImage : subImages[tileID];
-
-            // Copy subImage to tileMapImage
-            for (size_t i = 0; i < 16; i++) // tile row
-            {
-                for (size_t j = 0; j < 16; j++) // tile column
-                {
-                    // Where we're writing into the final image (top-down layout)
-                    int pixelX = x * 16 + j; // horizontal pixel in tilemap
-                    int pixelY = (mapHeight - 1 - y) * 16 + i; // vertical pixel in tilemap
-
-                    int mapOffset = (pixelY * 512 + pixelX) * 4;
-                    int subOffset = (i * 16 + j) * 4;
-
-                    tileMapImage[mapOffset + 0] = dataSource[subOffset + 0];
-                    tileMapImage[mapOffset + 1] = dataSource[subOffset + 1];
-                    tileMapImage[mapOffset + 2] = dataSource[subOffset + 2];
-                    tileMapImage[mapOffset + 3] = dataSource[subOffset + 3];
-                }
-            }
-        }
-    }
-
-    unsigned int texture = 0;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, tileMapImage);
-
-    //Free stb data
-    
-    //Delete image data
-    for(int i = 0; i < subImages.size(); i++)
-    {
-        delete(subImages[i]);
-    }
-
-    delete(tileMapImage);
-    stbi_image_free(image);
-
-    Layer areaLayer;
-    areaLayer.textureID = texture;
-    areaLayer.tiles = tileIDS;
-
-    return areaLayer;
 }
 
 //Generates a list of collider values based on the area tilemap, only layer 0 is considered when generating the collision map
@@ -189,10 +65,19 @@ std::map<int, bool> GenerateCollisionMap(std::string areaData)
     return colMap;
 }
 
-AreaManager::AreaManager()
+AreaManager::AreaManager(std::shared_ptr<Shader> areaShader)
 {
     std::cout << "Initialising Area Manager" << "\n";
+
+    this->areaShader = areaShader;
+
     areas = AreaManager::LoadAllAreas();
+    currentArea = areas["TestMap"];
+}
+
+std::shared_ptr<AreaData> AreaManager::GetCurrentArea()
+{
+    return currentArea;
 }
 
 std::unordered_map<std::string, std::shared_ptr<AreaData>> AreaManager::LoadAllAreas()
@@ -262,11 +147,17 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
 
     //Layers
     std::vector<TileLayer> layers = LoadLayers(areaName);
+    
     for (size_t i = 0; i < layers.size(); i++)
     {
-        layers[i].layerTextureID = GenerateLayerTextureID(areaName, layers[i].layerData, tileWidth);
+        unsigned int textureID = GenerateLayerTextureID(areaName, layers[i].layerData, tileWidth, areaWidth, areaHeight);
+        Sprite layerSprite(textureID, glm::vec2(0, 0), areaShader);
+        layerSprite.scale = glm::vec2(areaWidth, areaHeight);
+
+        layers[i].layerSprite = layerSprite;
     }
-    
+
+    area.tileLayers = layers;
     
     return area;
 }
@@ -371,6 +262,8 @@ std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName)
 
             TileLayer tileLayer;
             LoadTileLayer(tileLayer, data);
+
+            tileLayers.push_back(tileLayer);
         }
     }
 
@@ -387,22 +280,105 @@ unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object*
         {
             json_object* tile = json_object_array_get_idx(element, (ty * 32) + tx);
             int val = json_object_get_int(tile) - 1;
-            tileIDS[tx][ty] = val;
+            tileLayer.layerData[tx][ty] = val;
         }
     }
 
     return 0;
 }
 
-unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth)
+unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight)
 {
+    const int NUM_CHANNELS = 4;
+
     ImageData imageData;
     if(LoadImageData(areaName, imageData) == -1)
     {
         std::cout << "Failed to load image data\n";
     }
 
-    
+    //Num sprites in image + 1 for empty sprite (tiledID 0)
+    int numImages = (imageData.width / spriteWidth);
 
-    return 0;
+    //Extract each individual texture from the tileset
+    std::vector<unsigned char*> subImages(numImages);
+    for (size_t n = 0; n < numImages; n++)
+    {
+        subImages[n] = new unsigned char[spriteWidth * spriteWidth * NUM_CHANNELS] {0}; 
+        for (size_t x = 0; x < spriteWidth; x++)
+        {
+            for (size_t y = 0; y < spriteWidth; y++)
+            { 
+                int parentOffset = ((y * imageData.width) + x + (spriteWidth * n)) * NUM_CHANNELS;
+                int childOffset = ((y * spriteWidth) + x) * NUM_CHANNELS;
+
+                subImages[n][childOffset + 0] = imageData.data[parentOffset + 0];
+                subImages[n][childOffset + 1] = imageData.data[parentOffset + 1];
+                subImages[n][childOffset + 2] = imageData.data[parentOffset + 2];
+                subImages[n][childOffset + 3] = imageData.data[parentOffset + 3];    
+            }
+        }
+    }
+
+    //Empty texture (black square)
+    unsigned char emptyImage[spriteWidth * spriteWidth * NUM_CHANNELS] = {0};
+
+    //Begin stitching together tilemap
+    unsigned char* tileMapImage = new unsigned char[(mapWidth * spriteWidth) * (mapHeight * spriteWidth) * NUM_CHANNELS];
+
+    for (size_t x = 0; x < mapWidth; x++)
+    {
+        for (size_t y = 0; y < mapHeight; y++)
+        {
+            int tileID = tileIDS[x][y];
+
+            unsigned char* dataSource = (tileID == -1) ? emptyImage : subImages[tileID];
+
+            // Copy subImage to tileMapImage
+            for (size_t i = 0; i < spriteWidth; i++) // tile row
+            {
+                for (size_t j = 0; j < spriteWidth; j++) // tile column
+                {
+                    // Where we're writing into the final image (top-down layout)
+                    int pixelX = x * 16 + j; // horizontal pixel in tilemap
+                    int pixelY = (31 - y) * 16 + i; // vertical pixel in tilemap
+
+                    int mapOffset = (pixelY * 512 + pixelX) * 4;
+                    int subOffset = (i * 16 + j) * 4;
+
+                    //if(tileID == 2 && i == 0 && j == 0)
+                        //std::cout << (int)dataSource[subOffset + 0] << " " << (int)dataSource[subOffset + 1] << " " << (int)dataSource[subOffset + 2] << " " << (int)dataSource[subOffset + 3] << "\n";
+
+                    tileMapImage[mapOffset + 0] = dataSource[subOffset + 0];
+                    tileMapImage[mapOffset + 1] = dataSource[subOffset + 1];
+                    tileMapImage[mapOffset + 2] = dataSource[subOffset + 2];
+                    tileMapImage[mapOffset + 3] = dataSource[subOffset + 3];
+
+                }
+            }
+        }
+    }
+
+    //This can have its own function
+    unsigned int texture = 0;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (mapWidth * spriteWidth), (mapHeight * spriteWidth), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileMapImage);
+
+    //Delete image data
+    for(int i = 0; i < subImages.size(); i++)
+    {
+        delete(subImages[i]);
+    }
+
+    delete(tileMapImage);
+    stbi_image_free(imageData.data);
+
+    return texture;
 }

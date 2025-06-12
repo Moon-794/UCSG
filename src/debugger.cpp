@@ -4,8 +4,8 @@ Debugger::Debugger(Renderer* renderer)
 {
     this->renderer = renderer;
 
-    debugShader = Shader("resources/shaders/debugger/vertex.vert", "resources/shaders/debugger/fragment.frag");
-    debugSprite = Sprite("d_selector.png", glm::vec2(0, 0), &debugShader);
+    debugShader = std::make_shared<Shader>(Shader("resources/shaders/debugger/vertex.vert", "resources/shaders/debugger/fragment.frag"));
+    debugSprite = Sprite("d_selector.png", glm::vec2(0, 0), debugShader);
     debugSprite.scale = glm::vec2(1, 1);
 
     //Enable ImGUI
@@ -55,8 +55,8 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
             {   
                 debugSprite.position = glm::vec3(playerX + x, playerY + y, 0);
 
-                debugShader.use();
-                debugShader.setVec3("tcolor", redColor);
+                debugShader->use();
+                debugShader->setVec3("tcolor", redColor);
 
                 if(debugSprite.position.x >= 0 && debugSprite.position.y >= 0)
                 {
@@ -65,11 +65,11 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
                             int type = info.area->layers[0].tiles[debugSprite.position.x][debugSprite.position.y];
                             if(info.area->collisionMap[type] == true)
                             {
-                                 debugShader.setVec3("tcolor", blueColor);
+                                 debugShader->setVec3("tcolor", blueColor);
                             }
                             else
                             {
-                                debugShader.setVec3("tcolor", redColor);
+                                debugShader->setVec3("tcolor", redColor);
                             }
 
                             DrawSprite((*renderer), debugSprite);

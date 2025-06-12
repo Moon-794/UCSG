@@ -33,7 +33,7 @@ public:
 
 private:
     Renderer* renderer;
-    Shader debugShader;
+    std::shared_ptr<Shader> debugShader;
     Sprite debugSprite;
     DebuggerState state;
 };

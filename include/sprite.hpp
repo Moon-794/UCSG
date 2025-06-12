@@ -2,7 +2,6 @@
 #define U_SPRITE
 
 #include "stb_image.h"
-
 #include "shader.hpp"
 
 namespace SpriteConstants
@@ -33,7 +32,7 @@ public:
         
     }
 
-    Sprite(unsigned int textureID, glm::vec2 position, Shader* s)
+    Sprite(unsigned int textureID, glm::vec2 position, std::shared_ptr<Shader> s)
     {
         this->textureID = textureID;
         this->position = position;
@@ -42,7 +41,7 @@ public:
         shader = s;
     }
 
-    Sprite(std::string textureFile, glm::vec2 position, Shader* s)
+    Sprite(std::string textureFile, glm::vec2 position, std::shared_ptr<Shader> s)
     {
         textureID = GenerateTextureID(textureFile.c_str());
         this->position = position;
@@ -52,7 +51,7 @@ public:
     }
 
     unsigned int textureID;
-    Shader* shader;
+    std::shared_ptr<Shader> shader;
 
     glm::vec2 position;
     glm::vec2 scale;
