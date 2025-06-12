@@ -98,34 +98,10 @@ private:
     unsigned int areaHeight;
 };
 
-//Additional stuff:
-//Give areas a custom property of vector2: "DefaultSpawn" for warping
-//Or even a list of spawn locations for use in the debugger
-
-enum LayerType
-{
-    TILE_LAYER,
-    COLLISION_LAYER,
-    OBJECT_GROUP
-};
-
 struct TileLayer
 {
-    std::vector<int> tileData;
+    std::vector<int> layerData;
     unsigned int layerTextureID;
-};
-
-//AreaObjects might be silly, could perhaps be better to have a general object instead?
-//For the sake of not getting into the DynamicObject + staticObject problem, might want a mix
-struct AreaObject
-{
-
-};
-
-struct ObjectGroup
-{
-    //List of specific types of objects
-    //Concrete objects such as area transitions will have a class associated with them
 };
 
 struct Tile
@@ -154,7 +130,6 @@ struct AreaData
     std::unordered_map<std::string, std::string> properties;
 };
 
-//Liking this so far
 //This is looking to be a core game system, on par with the renderer
 //Although I'm not too sure how I want different game systems similar to this one to easily talk to each other
 class AreaManager
@@ -170,20 +145,19 @@ public:
     void ForceTransition(std::string areaName, glm::vec2 spawnPosition);
 
 private:
-    std::unordered_map<std::string, AreaData*> areas;
+    std::unordered_map<std::string, std::shared_ptr<AreaData>> areas;
 
     AreaData* currentArea;
     unsigned int nextAvailableID = 0;
 
-    std::unordered_map<std::string, AreaData*> LoadAllAreas();
+    std::unordered_map<std::string, std::shared_ptr<AreaData>> LoadAllAreas();
 
     AreaData LoadAreaData(std::string areaName);
     std::unordered_map<std::string, std::string> LoadAreaProperties(std::string areaName);
-
     std::unordered_map<unsigned int, Tile> LoadTileset(std::string areaName);
+    std::vector<TileLayer> LoadTileLayers(std::string areaName);
 
     void AddArea(AreaData* areaData);
-
     void RemoveArea(unsigned int areaID);
     void RemoveArea(std::string areaName);
 };

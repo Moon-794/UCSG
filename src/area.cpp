@@ -193,11 +193,14 @@ AreaManager::AreaManager()
 {
     std::cout << "Initialising Area Manager" << "\n";
     areas = AreaManager::LoadAllAreas();
+
+    std::cout << "Finished loading areas. Final area count: " << areas.size() << "\n";
+    std::cout << "Area 0: Width:" << areas["TestMap"]->areaWidth << " - Height: " <<  areas["TestMap"]->areaWidth << "\n";
 }
 
-std::unordered_map<std::string, AreaData*> AreaManager::LoadAllAreas()
+std::unordered_map<std::string, std::shared_ptr<AreaData>> AreaManager::LoadAllAreas()
 {
-    std::unordered_map<std::string, AreaData*> areas;
+    std::unordered_map<std::string, std::shared_ptr<AreaData>> areas;
 
     //Get all area folders in resources/areaData
     std::string resourcesPath = "resources/areaData";
@@ -209,6 +212,7 @@ std::unordered_map<std::string, AreaData*> AreaManager::LoadAllAreas()
         //Erase the first part of the path to use in file names
         std::string areaName = folderPath.erase(0, 19);
         AreaData area = LoadAreaData(areaName);
+        areas.insert({areaName, std::make_shared<AreaData>(std::move(area))});
     }
 
     return areas;
@@ -258,7 +262,6 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
     area.properties = properties;
 
     //Tileset
-    
     area.tileset = LoadTileset(areaName);
 
     //Layers
@@ -340,4 +343,15 @@ std::unordered_map<unsigned int, Tile> AreaManager::LoadTileset(std::string area
     }
 
     return tileset;
+}
+
+std::vector<TileLayer> AreaManager::LoadTileLayers(std::string areaName)
+{
+    std::vector<TileLayer> tileLayers;
+    json_object* root = GetRootAreaDataFromFile(areaName);
+
+    json_object* layerArray;
+    json_object_object_get_ex(root, "layers", &layerArray);
+
+    return tileLayers;
 }

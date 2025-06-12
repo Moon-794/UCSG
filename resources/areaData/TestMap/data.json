@@ -90,11 +90,6 @@
  "orientation":"orthogonal",
  "properties":[
         {
-         "name":"areaID",
-         "type":"int",
-         "value":0
-        },
-        {
          "name":"areaName",
          "type":"string",
          "value":"TestMap"
