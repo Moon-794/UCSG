@@ -1,6 +1,5 @@
 #include "area.hpp"
 
-
 int JSONGetInt(json_object* obj, std::string fieldName)
 {
     json_object* value;
@@ -20,6 +19,11 @@ json_object* GetRootAreaDataFromFile(std::string areaName)
     std::string filePath("resources/areaData/" + areaName + "/data.json");
     json_object *root = json_object_from_file(filePath.c_str());
     return root;
+}
+
+unsigned int LoadImageData(const std::string& areaName, ImageData& data)
+{
+    return 0;
 }
 
 Layer ProcessAreaLayer(json_object* layerData)
@@ -193,9 +197,6 @@ AreaManager::AreaManager()
 {
     std::cout << "Initialising Area Manager" << "\n";
     areas = AreaManager::LoadAllAreas();
-
-    std::cout << "Finished loading areas. Final area count: " << areas.size() << "\n";
-    std::cout << "Area 0: Width:" << areas["TestMap"]->areaWidth << " - Height: " <<  areas["TestMap"]->areaWidth << "\n";
 }
 
 std::unordered_map<std::string, std::shared_ptr<AreaData>> AreaManager::LoadAllAreas()
@@ -224,7 +225,6 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
     AreaData area;
 
     json_object* root = GetRootAreaDataFromFile(areaName);
-    
     int areaWidth = JSONGetInt(root, "width");
     int areaHeight = JSONGetInt(root, "height");
 
@@ -265,6 +265,12 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
     area.tileset = LoadTileset(areaName);
 
     //Layers
+    std::vector<TileLayer> layers = LoadLayers(areaName);
+    for (size_t i = 0; i < layers.size(); i++)
+    {
+        layers[i].layerTextureID = GenerateLayerTextureID(areaName, layers[i].layerData, tileWidth);
+    }
+    
     
     return area;
 }
@@ -345,13 +351,55 @@ std::unordered_map<unsigned int, Tile> AreaManager::LoadTileset(std::string area
     return tileset;
 }
 
-std::vector<TileLayer> AreaManager::LoadTileLayers(std::string areaName)
+std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName)
 {
     std::vector<TileLayer> tileLayers;
     json_object* root = GetRootAreaDataFromFile(areaName);
 
     json_object* layerArray;
     json_object_object_get_ex(root, "layers", &layerArray);
+    int array_len = json_object_array_length(layerArray);
+    
+    for (size_t i = 0; i < array_len; i++)
+    {
+        json_object *elem = json_object_array_get_idx(layerArray, i);
+
+        json_object* layerType;
+        json_object_object_get_ex(elem, "type", &layerType);
+        std::string tileLayerType = std::string(json_object_get_string(layerType));
+        
+        if(tileLayerType == "tilelayer")
+        {
+            json_object *data;
+            json_object_object_get_ex(elem, "data", &data);
+
+            TileLayer tileLayer;
+            LoadTileLayer(tileLayer, data);
+        }
+    }
 
     return tileLayers;
+}
+
+unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object* element)
+{
+    tileLayer.layerData = std::vector<std::vector<int>>(32, std::vector<int>(32));
+
+    for (size_t tx = 0; tx < 32; tx++)
+    {
+        for (size_t ty = 0; ty < 32; ty++)
+        {
+            json_object* tile = json_object_array_get_idx(element, (tx * 32) + ty);
+            int val = json_object_get_int(tile) - 1;
+            tileLayer.layerData[tx][ty] = val;
+        }
+    }
+
+    return 0;
+}
+
+unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& layerData, int spriteWidth)
+{
+    
+    return 0;
 }

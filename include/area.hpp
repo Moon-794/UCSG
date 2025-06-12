@@ -29,6 +29,12 @@ json_object* GetRootAreaDataFromFile(std::string areaName);
 
 // __ __ __ __ _ _ _ _
 
+//IMAGE RELATED
+
+unsigned int LoadImageData(const std::string& areaName, ImageData& data);
+
+// -- --------   -----
+
 Layer ProcessAreaLayer(json_object* layerData);
 std::map<int, bool> GenerateCollisionMap(std::string areaData);
 
@@ -98,9 +104,18 @@ private:
     unsigned int areaHeight;
 };
 
+struct ImageData
+{
+    int width;
+    int height;
+    int nrChannels;
+
+    unsigned char* imageData;
+};
+
 struct TileLayer
 {
-    std::vector<int> layerData;
+    std::vector<std::vector<int>> layerData;
     unsigned int layerTextureID;
 };
 
@@ -155,7 +170,10 @@ private:
     AreaData LoadAreaData(std::string areaName);
     std::unordered_map<std::string, std::string> LoadAreaProperties(std::string areaName);
     std::unordered_map<unsigned int, Tile> LoadTileset(std::string areaName);
-    std::vector<TileLayer> LoadTileLayers(std::string areaName);
+    std::vector<TileLayer> LoadLayers(std::string areaName);
+
+    unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element);
+    unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& layerData, int spriteWidth);
 
     void AddArea(AreaData* areaData);
     void RemoveArea(unsigned int areaID);
