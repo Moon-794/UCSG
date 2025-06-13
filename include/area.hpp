@@ -75,7 +75,7 @@ struct AreaData
     std::unordered_map<unsigned int, Tile> tileset;             //holds tileIDS -> tileProperties
     std::vector<TileLayer> tileLayers;                          //Map + collision data
     
-    std::unordered_map<std::string, std::string> properties;
+    std::unordered_map<std::string, std::string> properties;    //Custom properties of the area (e.g Type = "Ship", Room = "Quarters")
 };
 
 void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex);
@@ -113,10 +113,6 @@ private:
 
     unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element, int areaWidth, int areaHeight);
     unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight);
-
-    void AddArea(AreaData* areaData);
-    void RemoveArea(unsigned int areaID);
-    void RemoveArea(std::string areaName);
 };
 
 #endif
