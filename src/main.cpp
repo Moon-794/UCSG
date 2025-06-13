@@ -13,9 +13,15 @@
 #include <chrono>
 
 //Next todo
+//Turn std::shared_ptr<AreaData> to hold a container instead of the direct data
 //Collision map/collision checker
 //Get new areamanager working with debugger
 //Area transition!
+
+//Shader Manager within renderer to avoid having to pass around?
+//Improve renderer in general to allow drawing of parented objects etc
+
+//Gameobject structure might be useful soon, 
 
 int main(int argc, char** args)
 {
@@ -43,7 +49,10 @@ int main(int argc, char** args)
     URect tileRect = {0, 0, 1, 1}; 
 
     AreaManager areaManager(s);
-    //std::shared_ptr<AreaData> currentArea; 
+    std::shared_ptr<const AreaData> currentArea = areaManager.getCurrentArea();
+
+    bool keyDown = false;
+    bool hallway = true;
  
     while (!glfwWindowShouldClose(renderer.window))
     {
@@ -75,6 +84,25 @@ int main(int argc, char** args)
 
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
             player.position.y += playerSpeed;
+
+        if(inputMap->GetKey(GLFW_KEY_F) == 1 && keyDown == false)
+        {
+            keyDown = true;
+            hallway = !hallway;
+
+            if(hallway)
+            {
+                areaManager.ForceTransition("Hallway", glm::vec2(0, 16), player.position.x, player.position.y);
+            }
+            else
+            {
+                areaManager.ForceTransition("TestMap", glm::vec2(30, 13), player.position.x, player.position.y);
+            }
+        }
+        else if(inputMap->GetKey(GLFW_KEY_F) == 0)
+        {
+            keyDown = false;
+        }
 
         playerRect.x = player.position.x;
         playerRect.y = player.position.y;

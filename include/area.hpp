@@ -89,12 +89,12 @@ public:
 
     void DrawCurrentAreaLayer(int layerIndex);
 
-    std::shared_ptr<const AreaData> getCurrentArea();
+    std::shared_ptr<const AreaData> getCurrentArea() const;
     std::shared_ptr<AreaData> getArea(std::string areaName);
     std::shared_ptr<AreaData> getArea(unsigned int areaID);
 
     void Transition(AreaTransition areaTransition);
-    void ForceTransition(std::string areaName, glm::vec2 spawnPosition);
+    void ForceTransition(std::string areaName, glm::vec2 spawnPosition, float& playerX, float& playerY);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<AreaData>> areas;
@@ -109,9 +109,9 @@ private:
     AreaData LoadAreaData(std::string areaName);
     std::unordered_map<std::string, std::string> LoadAreaProperties(std::string areaName);
     std::unordered_map<unsigned int, Tile> LoadTileset(std::string areaName);
-    std::vector<TileLayer> LoadLayers(std::string areaName);
+    std::vector<TileLayer> LoadLayers(std::string areaName, int areaWidth, int areaHeight);
 
-    unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element);
+    unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element, int areaWidth, int areaHeight);
     unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight);
 
     void AddArea(AreaData* areaData);

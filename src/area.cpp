@@ -77,10 +77,17 @@ AreaManager::AreaManager(std::shared_ptr<Shader> areaShader)
     this->areaShader = areaShader;
 
     areas = AreaManager::LoadAllAreas();
-    currentArea = areas["TestMap"];
+    currentArea = areas["Hallway"];
 }
 
-std::shared_ptr<const AreaData> AreaManager::getCurrentArea()
+void AreaManager::ForceTransition(std::string areaName, glm::vec2 spawnPosition, float& playerX, float& playerY)
+{
+    currentArea = areas[areaName];
+    playerX = spawnPosition.x;
+    playerY = spawnPosition.y;
+}
+
+std::shared_ptr<const AreaData> AreaManager::getCurrentArea() const
 {
     return currentArea;
 }
@@ -137,13 +144,14 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
     area.tileWidth = tileWidth;
     area.tileHeight = tileHeight;
 
+
     //Some properties are parsed directly into member variables, based on whether they will change
     std::unordered_map<std::string, std::string> properties = LoadAreaProperties(areaName);
 
     //Use areaname property for name, if it doesnt exist just use the resources folder directory name
     if(properties.count("areaName"))
         area.areaName = properties["areaName"];
-    
+
     //Properties, can contain anything
     area.properties = properties;
 
@@ -151,7 +159,7 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
     area.tileset = LoadTileset(areaName);
 
     //Layers
-    std::vector<TileLayer> layers = LoadLayers(areaName);
+    std::vector<TileLayer> layers = LoadLayers(areaName, areaWidth, areaHeight);
     
     for (size_t i = 0; i < layers.size(); i++)
     {
@@ -161,10 +169,10 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
 
         layers[i].layerSprite = layerSprite;
     }
+    
 
     area.tileLayers = layers;
-    
-    return area;
+    return area;    
 }
 
 std::unordered_map<std::string, std::string> AreaManager::LoadAreaProperties(std::string areaName)
@@ -243,7 +251,7 @@ std::unordered_map<unsigned int, Tile> AreaManager::LoadTileset(std::string area
     return tileset;
 }
 
-std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName)
+std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName, int areaWidth, int areaHeight)
 {
     std::vector<TileLayer> tileLayers;
     json_object* root = GetRootAreaDataFromFile(areaName);
@@ -266,7 +274,7 @@ std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName)
             json_object_object_get_ex(elem, "data", &data);
 
             TileLayer tileLayer;
-            LoadTileLayer(tileLayer, data);
+            LoadTileLayer(tileLayer, data, areaWidth, areaHeight);
 
             tileLayers.push_back(tileLayer);
         }
@@ -275,15 +283,15 @@ std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName)
     return tileLayers;
 }
 
-unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object* element)
+unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object* element, int areaWidth, int areaHeight)
 {
-    tileLayer.layerData = std::vector<std::vector<int>>(32, std::vector<int>(32));
+    tileLayer.layerData = std::vector<std::vector<int>>(areaWidth, std::vector<int>(areaHeight));
 
-    for (size_t tx = 0; tx < 32; tx++)
+    for (size_t tx = 0; tx < areaWidth; tx++)
     {
-        for (size_t ty = 0; ty < 32; ty++)
+        for (size_t ty = 0; ty < areaHeight; ty++)
         {
-            json_object* tile = json_object_array_get_idx(element, (ty * 32) + tx);
+            json_object* tile = json_object_array_get_idx(element, (ty * areaWidth) + tx);
             int val = json_object_get_int(tile) - 1;
             tileLayer.layerData[tx][ty] = val;
         }
@@ -346,13 +354,10 @@ unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, co
                 {
                     // Where we're writing into the final image (top-down layout)
                     int pixelX = x * 16 + j; // horizontal pixel in tilemap
-                    int pixelY = (31 - y) * 16 + i; // vertical pixel in tilemap
+                    int pixelY = (mapHeight - 1 - y) * 16 + i; // vertical pixel in tilemap
 
-                    int mapOffset = (pixelY * 512 + pixelX) * 4;
+                    int mapOffset = (pixelY * (spriteWidth * mapWidth) + pixelX) * 4;
                     int subOffset = (i * 16 + j) * 4;
-
-                    //if(tileID == 2 && i == 0 && j == 0)
-                        //std::cout << (int)dataSource[subOffset + 0] << " " << (int)dataSource[subOffset + 1] << " " << (int)dataSource[subOffset + 2] << " " << (int)dataSource[subOffset + 3] << "\n";
 
                     tileMapImage[mapOffset + 0] = dataSource[subOffset + 0];
                     tileMapImage[mapOffset + 1] = dataSource[subOffset + 1];
