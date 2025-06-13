@@ -65,6 +65,11 @@ std::map<int, bool> GenerateCollisionMap(std::string areaData)
     return colMap;
 }
 
+void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex)
+{
+    DrawSprite(renderer, areaData.tileLayers[layerIndex].layerSprite);
+}
+
 AreaManager::AreaManager(std::shared_ptr<Shader> areaShader)
 {
     std::cout << "Initialising Area Manager" << "\n";
@@ -75,7 +80,7 @@ AreaManager::AreaManager(std::shared_ptr<Shader> areaShader)
     currentArea = areas["TestMap"];
 }
 
-std::shared_ptr<AreaData> AreaManager::GetCurrentArea()
+std::shared_ptr<const AreaData> AreaManager::getCurrentArea()
 {
     return currentArea;
 }

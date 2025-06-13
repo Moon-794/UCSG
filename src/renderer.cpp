@@ -76,7 +76,7 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
 }
 
-void DrawSprite(Renderer& renderer, Sprite& sprite)
+void DrawSprite(Renderer& renderer, const Sprite& sprite)
 {
     glUseProgram(sprite.shader->ID);
 

@@ -53,7 +53,7 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
         {
             for (int y = -1; y < 2; y++)
             {   
-                debugSprite.position = glm::vec3(playerX + x, playerY + y, 0);
+                /*debugSprite.position = glm::vec3(playerX + x, playerY + y, 0);
 
                 debugShader->use();
                 debugShader->setVec3("tcolor", redColor);
@@ -74,7 +74,7 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
 
                             DrawSprite((*renderer), debugSprite);
                     }
-                }
+                }*/
 
             }
         }

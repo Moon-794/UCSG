@@ -12,6 +12,10 @@
 #include <thread>
 #include <chrono>
 
+//Next todo
+//Collision map/collision checker
+//Get new areamanager working with debugger
+//Area transition!
 
 int main(int argc, char** args)
 {
@@ -36,9 +40,10 @@ int main(int argc, char** args)
     unsigned int counter = 0;
 
     URect playerRect = {16, 16, 1, 1};
-    URect tileRect = {0, 0, 1, 1};
+    URect tileRect = {0, 0, 1, 1}; 
 
     AreaManager areaManager(s);
+    //std::shared_ptr<AreaData> currentArea; 
  
     while (!glfwWindowShouldClose(renderer.window))
     {
@@ -79,7 +84,7 @@ int main(int argc, char** args)
 
         renderer.Clear();
 
-        DrawSprite(renderer, areaManager.GetCurrentArea()->tileLayers[0].layerSprite);
+        DrawAreaLayer(renderer, *(areaManager.getCurrentArea()), 0);
         DrawSprite(renderer, player);
 
         DebuggerInfo debugInfo;

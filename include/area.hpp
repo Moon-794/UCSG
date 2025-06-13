@@ -78,6 +78,8 @@ struct AreaData
     std::unordered_map<std::string, std::string> properties;
 };
 
+void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex);
+
 //This is looking to be a core game system, on par with the renderer
 //Although I'm not too sure how I want different game systems similar to this one to easily talk to each other
 class AreaManager
@@ -87,7 +89,7 @@ public:
 
     void DrawCurrentAreaLayer(int layerIndex);
 
-    std::shared_ptr<AreaData> GetCurrentArea();
+    std::shared_ptr<const AreaData> getCurrentArea();
     std::shared_ptr<AreaData> getArea(std::string areaName);
     std::shared_ptr<AreaData> getArea(unsigned int areaID);
 
