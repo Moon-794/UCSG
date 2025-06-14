@@ -16,7 +16,7 @@ struct DebuggerState
 
 struct DebuggerInfo
 {
-    std::shared_ptr<const AreaData> areaData;
+    const AreaData& areaData;
     glm::vec2 playerPosition;
 };
 

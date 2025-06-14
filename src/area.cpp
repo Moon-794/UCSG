@@ -87,9 +87,9 @@ void AreaManager::ForceTransition(std::string areaName, glm::vec2 spawnPosition,
     playerY = spawnPosition.y;
 }
 
-std::shared_ptr<const AreaData> AreaManager::getCurrentArea() const
+const AreaData& AreaManager::getCurrentArea() const
 {
-    return currentArea;
+    return *currentArea;
 }
 
 std::unordered_map<std::string, std::shared_ptr<AreaData>> AreaManager::LoadAllAreas()
@@ -168,9 +168,10 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
         layerSprite.scale = glm::vec2(areaWidth, areaHeight);
 
         layers[i].layerSprite = layerSprite;
+
+        GenerateTileLayerCollisionMap(layers[i], area.tileset, areaWidth, areaHeight);
     }
     
-
     area.tileLayers = layers;
     return area;    
 }
@@ -201,9 +202,9 @@ std::unordered_map<std::string, std::string> AreaManager::LoadAreaProperties(std
     return properties;
 }
 
-std::unordered_map<unsigned int, Tile> AreaManager::LoadTileset(std::string areaName)
+std::vector<Tile> AreaManager::LoadTileset(std::string areaName)
 {
-    std::unordered_map<unsigned int, Tile> tileset;
+    std::vector<Tile> tileset;
 
     std::string filePath("resources/areaData/" + areaName + "/Tileset.json");
     json_object *root = json_object_from_file(filePath.c_str());
@@ -245,7 +246,7 @@ std::unordered_map<unsigned int, Tile> AreaManager::LoadTileset(std::string area
         }
 
         tile.tileProperties = tileProperties;
-        tileset.insert({tileID, tile});
+        tileset.push_back(tile);
     }
 
     return tileset;
@@ -391,4 +392,39 @@ unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, co
     stbi_image_free(imageData.data);
 
     return texture;
+}
+
+void AreaManager::GenerateTileLayerCollisionMap(TileLayer& layer, const Tileset& tileset, const int areaWidth, const int areaHeight)
+{
+    for (size_t i = 0; i < tileset.size(); i++)
+    {
+        bool isCollider = GetTilePropertyBool(tileset[i], "collider");
+        layer.collisionMap.insert({i, isCollider});
+    }
+}
+
+std::string GetTilePropertyString(const Tile& tile, const std::string& key)
+{
+    if(tile.tileProperties.find(key) == tile.tileProperties.end())
+    {
+        std::cout << "Failed to find tile property for tile: " << tile.tileType << ". Key: " << key << "\n";
+        return "null";
+    }
+
+    return tile.tileProperties.at(key); 
+}
+
+bool GetTilePropertyBool(const Tile& tile, const std::string& key)
+{
+    std::string value = GetTilePropertyString(tile, key);
+
+    if(value == "null")
+    {
+        std::cout << "Failed to convert tile property to bool: " << tile.tileType << ". Key: " << key << " Value: " << value <<  ", returning false.\n";
+        return false;
+    }
+    else
+    {
+        return value == "true";
+    }
 }

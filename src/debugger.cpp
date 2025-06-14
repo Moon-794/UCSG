@@ -32,7 +32,12 @@ void Debugger::DrawDebugger(DebuggerInfo info)
 
     std::string playerPosText("Player Position: [" + std::to_string(roundedX) + " - " + std::to_string(roundedY) + "]");
     ImGui::Text(playerPosText.c_str());
-    ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);  
+
+    ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);
+
+    std::string areaDataText("Area: " + info.areaData.areaName);
+    ImGui::Text(areaDataText.c_str());  
+
     ImGui::End();
 
     ImGui::Render();
@@ -53,17 +58,19 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
         {
             for (int y = -1; y < 2; y++)
             {   
-                /*debugSprite.position = glm::vec3(playerX + x, playerY + y, 0);
+                debugSprite.position = glm::vec3(playerX + x, playerY + y, 0);
 
                 debugShader->use();
                 debugShader->setVec3("tcolor", redColor);
 
                 if(debugSprite.position.x >= 0 && debugSprite.position.y >= 0)
                 {
-                    if(debugSprite.position.x < 32 && debugSprite.position.y < 32)
+                    if(debugSprite.position.x < info.areaData.areaWidth && debugSprite.position.y < info.areaData.areaHeight)
                     {
-                            int type = info.area->layers[0].tiles[debugSprite.position.x][debugSprite.position.y];
-                            if(info.area->collisionMap[type] == true)
+                            int tileID = info.areaData.tileLayers[0].layerData[debugSprite.position.x][debugSprite.position.y];
+                            bool isCollider = info.areaData.tileLayers[0].collisionMap.at(tileID);
+                            
+                            if(isCollider == true)
                             {
                                  debugShader->setVec3("tcolor", blueColor);
                             }
@@ -74,7 +81,7 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
 
                             DrawSprite((*renderer), debugSprite);
                     }
-                }*/
+                }
 
             }
         }

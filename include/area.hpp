@@ -48,15 +48,22 @@ std::map<int, bool> GenerateCollisionMap(std::string areaData);
 
 struct TileLayer
 {
+public:
     std::vector<std::vector<int>> layerData;
+    std::unordered_map<int, bool> collisionMap;
+
     Sprite layerSprite;
 };
 
 struct Tile
 {
+public:
     std::string tileType;
     std::unordered_map<std::string, std::string> tileProperties;
 };
+
+std::string GetTilePropertyString(const Tile& tile, const std::string& key);
+bool GetTilePropertyBool(const Tile& tile, const std::string& key);
 
 struct AreaTransition
 {
@@ -72,13 +79,15 @@ struct AreaData
     unsigned int areaWidth, areaHeight;                         //Width and height map in tiles
     unsigned int tileWidth, tileHeight;                         //Width and height of tiles in pixels
 
-    std::unordered_map<unsigned int, Tile> tileset;             //holds tileIDS -> tileProperties
+    std::vector<Tile> tileset;                                  //holds tileIDS -> tileProperties
     std::vector<TileLayer> tileLayers;                          //Map + collision data
     
     std::unordered_map<std::string, std::string> properties;    //Custom properties of the area (e.g Type = "Ship", Room = "Quarters")
 };
 
 void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex);
+
+typedef std::vector<Tile> Tileset;
 
 //This is looking to be a core game system, on par with the renderer
 //Although I'm not too sure how I want different game systems similar to this one to easily talk to each other
@@ -89,7 +98,7 @@ public:
 
     void DrawCurrentAreaLayer(int layerIndex);
 
-    std::shared_ptr<const AreaData> getCurrentArea() const;
+    const AreaData& getCurrentArea() const;
     std::shared_ptr<AreaData> getArea(std::string areaName);
     std::shared_ptr<AreaData> getArea(unsigned int areaID);
 
@@ -108,8 +117,10 @@ private:
 
     AreaData LoadAreaData(std::string areaName);
     std::unordered_map<std::string, std::string> LoadAreaProperties(std::string areaName);
-    std::unordered_map<unsigned int, Tile> LoadTileset(std::string areaName);
+    std::vector<Tile> LoadTileset(std::string areaName);
     std::vector<TileLayer> LoadLayers(std::string areaName, int areaWidth, int areaHeight);
+
+    void GenerateTileLayerCollisionMap(TileLayer& layer, const Tileset& tileset, const int areaWidth, const int areaHeight);
 
     unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element, int areaWidth, int areaHeight);
     unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight);

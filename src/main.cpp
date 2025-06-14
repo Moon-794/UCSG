@@ -49,13 +49,14 @@ int main(int argc, char** args)
     URect tileRect = {0, 0, 1, 1}; 
 
     AreaManager areaManager(s);
-    std::shared_ptr<const AreaData> currentArea = areaManager.getCurrentArea();
-
+    
     bool keyDown = false;
     bool hallway = true;
  
     while (!glfwWindowShouldClose(renderer.window))
     {
+        const AreaData& currentArea = areaManager.getCurrentArea();
+
         auto frameStart = std::chrono::high_resolution_clock::now();
 
         currentTime = glfwGetTime();
@@ -85,6 +86,69 @@ int main(int argc, char** args)
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
             player.position.y += playerSpeed;
 
+        playerRect.x = player.position.x;
+        playerRect.y = player.position.y;
+
+        renderer.cameraPos.x = player.position.x;
+        renderer.cameraPos.y = player.position.y;
+
+        
+        for (int x = -1; x < 2; x++)
+        {
+            for (int y = -1; y < 2; y++)
+            {   
+                tileRect.x = player.position.x + x;
+                tileRect.y = player.position.y + y;
+
+                if(tileRect.x >= 0 && tileRect.y >= 0)
+                {
+                    int tileID = currentArea.tileLayers[0].layerData[tileRect.x][tileRect.y];
+                    
+                    if(currentArea.tileLayers[0].collisionMap.at(tileID) == true)
+                    {
+                        if(PlayerAABBIntersect(playerRect, tileRect))
+                        {
+                            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
+                            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
+
+                            float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
+                            float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
+
+                            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
+                            float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
+
+                            if (std::abs(resolveX) < std::abs(resolveY)) 
+                            {
+                                player.position.x -= resolveX;
+                            } 
+                            else 
+                            {
+                                player.position.y -= resolveY;
+                            }
+
+                            playerRect.x = player.position.x;
+                            playerRect.y = player.position.y;
+                        }   
+                    }
+                }
+            }   
+        }
+
+        renderer.Clear();
+
+        DrawAreaLayer(renderer, currentArea, 0);
+        DrawSprite(renderer, player);
+
+        DebuggerInfo debugInfo = 
+        {
+            currentArea,
+            player.position
+        };
+        
+        debugger.DrawDebugger(debugInfo);
+
+        renderer.SwapBuffers();
+
         if(inputMap->GetKey(GLFW_KEY_F) == 1 && keyDown == false)
         {
             keyDown = true;
@@ -103,22 +167,6 @@ int main(int argc, char** args)
         {
             keyDown = false;
         }
-
-        playerRect.x = player.position.x;
-        playerRect.y = player.position.y;
-
-        renderer.cameraPos.x = player.position.x;
-        renderer.cameraPos.y = player.position.y;
-
-        renderer.Clear();
-
-        DrawAreaLayer(renderer, *(areaManager.getCurrentArea()), 0);
-        DrawSprite(renderer, player);
-
-        DebuggerInfo debugInfo;
-        debugInfo.playerPosition = player.position;
-
-        renderer.SwapBuffers();
 
         auto frameEnd = std::chrono::high_resolution_clock::now();
         auto frameDuration = std::chrono::duration_cast<std::chrono::microseconds>(frameEnd - frameStart);
