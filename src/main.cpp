@@ -66,8 +66,8 @@ int main(int argc, char** args)
     while (!glfwWindowShouldClose(renderer.window))
     {
         const AreaData& currentArea = areaManager.getCurrentArea();
-
-        
+        float moveX = 0.0f;
+        float moveY = 0.0f;
 
         auto frameStart = std::chrono::high_resolution_clock::now();
 
@@ -87,19 +87,19 @@ int main(int argc, char** args)
         }
 
         if(inputMap->GetKey(GLFW_KEY_D) == 1)
-            player.position.x += playerSpeed;
+            moveX += playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_A) == 1)
-            player.position.x -= playerSpeed;
+            moveX -= playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_W) == 1)
-            player.position.y -= playerSpeed;
+            moveY -= playerSpeed;
 
         if(inputMap->GetKey(GLFW_KEY_S) == 1)
-            player.position.y += playerSpeed;
+            moveY += playerSpeed;
 
+        player.position.x += moveX;
         playerRect.x = player.position.x;
-        playerRect.y = player.position.y;
 
         for (int x = -1; x < 2; x++)
         {
@@ -119,22 +119,37 @@ int main(int argc, char** args)
                             float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
                             float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
 
+                            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
+                            player.position.x -= resolveX;
+                            playerRect.x = player.position.x;
+                        }   
+                    }
+                }
+            }   
+        }
+
+        player.position.y += moveY;
+        playerRect.y = player.position.y;
+
+        for (int x = -1; x < 2; x++)
+        {
+            for (int y = -1; y < 2; y++)
+            {   
+                tileRect.x = std::floor(player.position.x + 0.5f + x);
+                tileRect.y = std::floor(player.position.y + 0.5f + y);
+
+                if(tileRect.x >= 0 && tileRect.y >= 0)
+                {
+                    int tileID = currentArea.tileLayers[0].layerData[tileRect.x][tileRect.y];
+
+                    if(currentArea.tileLayers[0].collisionMap.at(tileID) == true)
+                    {
+                        if(PlayerAABBIntersect(playerRect, tileRect))
+                        {           
                             float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
                             float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
-
-                            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
                             float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
-
-                            if (std::abs(resolveX) < std::abs(resolveY)) 
-                            {
-                                player.position.x -= resolveX;
-                            } 
-                            else 
-                            {
-                                player.position.y -= resolveY;
-                            }
-
-                            playerRect.x = player.position.x;
+                            player.position.y -= resolveY;
                             playerRect.y = player.position.y;
                         }   
                     }

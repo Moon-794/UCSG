@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-const float SKIN = 0.0001f;
+const float SKIN = 0.001f;
 
 typedef struct
 {
