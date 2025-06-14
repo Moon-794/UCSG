@@ -25,6 +25,16 @@
 
 int main(int argc, char** args)
 {
+    float a = 0.1f;
+    float b = 0.2f;
+
+    float c = a + b;
+
+    if(a + b == 0.3f)
+    {
+        std::cout << "YAY\n";
+    }
+
     Renderer renderer("Space Game", 2560, 1440);
     renderer.SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
@@ -56,6 +66,8 @@ int main(int argc, char** args)
     while (!glfwWindowShouldClose(renderer.window))
     {
         const AreaData& currentArea = areaManager.getCurrentArea();
+
+        
 
         auto frameStart = std::chrono::high_resolution_clock::now();
 
@@ -89,21 +101,17 @@ int main(int argc, char** args)
         playerRect.x = player.position.x;
         playerRect.y = player.position.y;
 
-        renderer.cameraPos.x = player.position.x;
-        renderer.cameraPos.y = player.position.y;
-
-        
         for (int x = -1; x < 2; x++)
         {
             for (int y = -1; y < 2; y++)
             {   
-                tileRect.x = player.position.x + x;
-                tileRect.y = player.position.y + y;
+                tileRect.x = std::floor(player.position.x + 0.5f + x);
+                tileRect.y = std::floor(player.position.y + 0.5f + y);
 
                 if(tileRect.x >= 0 && tileRect.y >= 0)
                 {
                     int tileID = currentArea.tileLayers[0].layerData[tileRect.x][tileRect.y];
-                    
+
                     if(currentArea.tileLayers[0].collisionMap.at(tileID) == true)
                     {
                         if(PlayerAABBIntersect(playerRect, tileRect))
@@ -134,17 +142,20 @@ int main(int argc, char** args)
             }   
         }
 
+        renderer.cameraPos.x = player.position.x;
+        renderer.cameraPos.y = player.position.y;
+
         renderer.Clear();
 
         DrawAreaLayer(renderer, currentArea, 0);
         DrawSprite(renderer, player);
-
+        
         DebuggerInfo debugInfo = 
         {
             currentArea,
             player.position
         };
-        
+
         debugger.DrawDebugger(debugInfo);
 
         renderer.SwapBuffers();
