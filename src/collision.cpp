@@ -1,17 +1,4 @@
-#ifndef U_COLLISION
-#define U_COLLISION
-
-#include <glm/glm.hpp>
-
-const float SKIN = 0.001f;
-
-typedef struct
-{
-    float x;
-    float y;
-    float width;
-    float height;
-} URect;
+#include "collision.hpp"
 
 bool PlayerAABBIntersectX(URect& player, URect& other)
 {
@@ -27,5 +14,3 @@ bool PlayerAABBIntersect(URect& player, URect& other)
 {
     return PlayerAABBIntersectX(player, other) && PlayerAABBIntersectY(player, other);
 }
-
-#endif

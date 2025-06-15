@@ -4,7 +4,7 @@
 #include "debugger.hpp"
 #include "area.hpp"
 #include "input.h"
-#include "collision.h"
+#include "collision.hpp"
 
 #include "unistd.h"
 #include <iostream>
@@ -12,16 +12,22 @@
 #include <thread>
 #include <chrono>
 
-//Gamestate should hold core data about the game at a given moment
-//I.E - Current Area, Playerstats
-struct GameState
-{
-
-}
-
 class Game
 {
+public:
+    Game();
 
-}
+    void Start();           //Initial setup
+    void Update();          //Update current GameState
+    void Draw();            //Draw current GameState
+
+    void QuitGame();        //Close down the application
+
+private:
+    bool isRunning = true;
+
+    std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<AreaManager> areaManager;
+};
 
 #endif

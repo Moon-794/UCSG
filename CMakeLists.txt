@@ -24,7 +24,9 @@ endif()
 
 #Create sources + executable
 set(APP_SRCS
-    src/main.cpp 
+    src/main.cpp
+    src/game.cpp
+    src/collision.cpp 
     src/glad.c 
     src/input.cpp 
     src/renderer.cpp 

@@ -1,10 +1,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 
+#include "game.hpp"
 #include "renderer.hpp"
 #include "debugger.hpp"
 #include "area.hpp"
 #include "input.h"
-#include "collision.h"
+#include "collision.hpp"
 
 #include "unistd.h"
 #include <iostream>
@@ -25,15 +26,7 @@
 
 int main(int argc, char** args)
 {
-    float a = 0.1f;
-    float b = 0.2f;
-
-    float c = a + b;
-
-    if(a + b == 0.3f)
-    {
-        std::cout << "YAY\n";
-    }
+    Game game();
 
     Renderer renderer("Space Game", 2560, 1440);
     renderer.SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
