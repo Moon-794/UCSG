@@ -34,37 +34,6 @@ unsigned int LoadImageData(const std::string& areaName, ImageData& data)
     return 0;
 }
 
-//Generates a list of collider values based on the area tilemap, only layer 0 is considered when generating the collision map
-std::map<int, bool> GenerateCollisionMap(std::string areaData)
-{
-    std::map<int,bool> colMap;
-
-    std::string filePath("resources/areaData/" + areaData + "/Tileset.json");
-    json_object *root = json_object_from_file(filePath.c_str());
-
-    json_object *tiles;
-    json_object_object_get_ex(root, "tiles", &tiles);
-    int array_len = json_object_array_length(tiles);
-
-    //Loop through each 
-    for (size_t i = 0; i < array_len; i++)
-    {
-        json_object *elem = json_object_array_get_idx(tiles, i);
-        json_object *properties;
-        json_object_object_get_ex(elem, "properties", &properties);
-
-        json_object *collider = json_object_array_get_idx(properties, 0);
-        json_object *value;
-        json_object_object_get_ex(collider, "value", &value);
-
-        bool val = json_object_get_boolean(value);
-
-        colMap.insert(std::pair<int, bool>(i, val));
-    }
-    
-    return colMap;
-}
-
 void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex)
 {
     DrawSprite(renderer, areaData.tileLayers[layerIndex].layerSprite);
@@ -104,7 +73,7 @@ std::unordered_map<std::string, std::shared_ptr<AreaData>> AreaManager::LoadAllA
         std::string folderPath = std::regex_replace(entry.path().string(), std::regex("\\\\"), "/");
 
         //Erase the first part of the path to use in file names
-        std::string areaName = folderPath.erase(0, 19);
+        std::string areaName(entry.path().filename().string());
         AreaData area = LoadAreaData(areaName);
         areas.insert({areaName, std::make_shared<AreaData>(std::move(area))});
     }

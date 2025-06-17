@@ -1,6 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "game.hpp"
+#include "resource_manager.hpp"
 #include "renderer.hpp"
 #include "debugger.hpp"
 #include "area.hpp"
@@ -14,24 +15,22 @@
 #include <chrono>
 
 //Next todo
-//Turn std::shared_ptr<AreaData> to hold a container instead of the direct data
-//Collision map/collision checker
-//Get new areamanager working with debugger
-//Area transition!
 
-//Shader Manager within renderer to avoid having to pass around?
+//Resource manager
+//throw main function in Game class
 //Improve renderer in general to allow drawing of parented objects etc
-
 //Gameobject structure might be useful soon, 
 
 int main(int argc, char** args)
 {
-    Game game();
+    Game game;
 
     Renderer renderer("Space Game", 2560, 1440);
     renderer.SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
-    std::shared_ptr<Shader> s = std::make_shared<Shader>("resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
+    ResourceManager resourceManager;
+
+    std::shared_ptr<Shader> s = std::make_shared<Shader>("diffuse", "resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
     Debugger debugger(&renderer);
     InputMap* inputMap = new InputMap();
 

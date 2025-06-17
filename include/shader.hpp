@@ -18,6 +18,8 @@ class Shader
 {
 public:
     unsigned int ID;
+    std::string name;
+
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
     Shader()
@@ -25,8 +27,11 @@ public:
        
     }
 
-    Shader(const char* vertexPath, const char* fragmentPath)
+    Shader(const char* name, const char* vertexPath, const char* fragmentPath)
     {
+        //0. Name shader for the resource manager
+        this->name = std::string(name);
+
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;

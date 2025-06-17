@@ -4,7 +4,7 @@ Debugger::Debugger(Renderer* renderer)
 {
     this->renderer = renderer;
 
-    debugShader = std::make_shared<Shader>(Shader("resources/shaders/debugger/vertex.vert", "resources/shaders/debugger/fragment.frag"));
+    debugShader = std::make_shared<Shader>("debugger", "resources/shaders/debugger/vertex.vert", "resources/shaders/debugger/fragment.frag");
     debugSprite = Sprite("d_selector.png", glm::vec2(0, 0), debugShader);
     debugSprite.scale = glm::vec2(1, 1);
 
