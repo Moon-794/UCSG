@@ -12,7 +12,7 @@ unsigned int GenerateTextureID(std::string file)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // load and generate the texture
     int width, height, nrChannels;
-    std::string filePath = "resources/sprites/" + file;
+    std::string filePath = "resources/textures/" + file;
     stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
     if (data)

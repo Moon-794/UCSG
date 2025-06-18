@@ -2,6 +2,7 @@
 #define U_RESOURCE_MANAGER
 
 #include "shader.hpp"
+#include "sprite.hpp"
 
 #include <unordered_map>
 #include <regex>

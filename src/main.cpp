@@ -30,14 +30,14 @@ int main(int argc, char** args)
 
     ResourceManager resourceManager;
 
-    std::shared_ptr<Shader> s = std::make_shared<Shader>("diffuse", "resources/shaders/base/vertex.vert", "resources/shaders/base/fragment.frag");
+    std::shared_ptr<Shader> baseShader = resourceManager.GetShader(std::string("base"));
     Debugger debugger(&renderer);
     InputMap* inputMap = new InputMap();
 
     glfwSetWindowUserPointer(renderer.window, reinterpret_cast<void*>(inputMap));
     glfwSetKeyCallback(renderer.window, key_callback);
 
-    Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), s);
+    Sprite player(std::string("wurmo.png"), glm::vec2(0, 0), baseShader);
     player.scale = glm::vec2(1, 1);
     player.position = glm::vec2(16, 16);
 
@@ -50,7 +50,7 @@ int main(int argc, char** args)
     URect playerRect = {16, 16, 1, 1};
     URect tileRect = {0, 0, 1, 1}; 
 
-    AreaManager areaManager(s);
+    AreaManager areaManager(baseShader);
     
     bool keyDown = false;
     bool hallway = true;
