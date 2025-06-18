@@ -14,12 +14,20 @@
 #include <thread>
 #include <chrono>
 
-//Next todo
+//This is getting very messy very quickly, some things are going to have to be addressed
+//before moving on.
+//
+// 1 - Everything is in the main function, this sucks
+// 2 - Data and rendering is tightly coupled, sprites are both data + graphics, this is also
+// bad.
+// 3 - AreaManager holds collision data, this wont scale well if the game SCENE also has entities
+// that can be collided with
+// 4 - The current collision algorithm just doesnt work
 
-//Resource manager
-//throw main function in Game class
-//Improve renderer in general to allow drawing of parented objects etc
-//Gameobject structure might be useful soon, 
+//Current solutions
+//1 - Start moving everything into the Game class
+
+//this is actually so hard lol
 
 int main(int argc, char** args)
 {

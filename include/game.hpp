@@ -22,9 +22,7 @@ public:
     Game();
 
     void Start();           //Initial setup
-    void Update();          //Update current GameState
-    void Draw();            //Draw current GameState
-
+    void Tick();            //Update current GameState
     void QuitGame();        //Close down the application
 
 private:
