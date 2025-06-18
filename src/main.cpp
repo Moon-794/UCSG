@@ -23,8 +23,6 @@
 
 int main(int argc, char** args)
 {
-    Game game;
-
     Renderer renderer("Space Game", 2560, 1440);
     renderer.SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
@@ -91,36 +89,8 @@ int main(int argc, char** args)
             moveY += playerSpeed;
 
         player.position.x += moveX;
-        playerRect.x = player.position.x;
-
-        for (int x = -1; x < 2; x++)
-        {
-            for (int y = -1; y < 2; y++)
-            {   
-                tileRect.x = std::floor(player.position.x + 0.5f + x);
-                tileRect.y = std::floor(player.position.y + 0.5f + y);
-
-                if(tileRect.x >= 0 && tileRect.y >= 0)
-                {
-                    int tileID = currentArea.tileLayers[0].layerData[tileRect.x][tileRect.y];
-
-                    if(currentArea.tileLayers[0].collisionMap.at(tileID) == true)
-                    {
-                        if(PlayerAABBIntersect(playerRect, tileRect))
-                        {
-                            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
-                            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
-
-                            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
-                            player.position.x -= resolveX;
-                            playerRect.x = player.position.x;
-                        }   
-                    }
-                }
-            }   
-        }
-
         player.position.y += moveY;
+        playerRect.x = player.position.x;
         playerRect.y = player.position.y;
 
         for (int x = -1; x < 2; x++)
@@ -136,14 +106,26 @@ int main(int argc, char** args)
 
                     if(currentArea.tileLayers[0].collisionMap.at(tileID) == true)
                     {
-                        if(PlayerAABBIntersect(playerRect, tileRect))
-                        {           
+                        if(AABBIntersect(playerRect, tileRect))
+                        {
+                            float overlapX1 = (tileRect.x + tileRect.width) - playerRect.x;
+                            float overlapX2 = (playerRect.x + playerRect.width) - tileRect.x;
+
+                            float resolveX = (overlapX1 < overlapX2) ? -overlapX1 : overlapX2;
+
+                            player.position.x -= resolveX;
+                            playerRect.x = player.position.x;
+                        }
+                        
+                        if(AABBIntersect(playerRect, tileRect))
+                        {
                             float overlapY1 = (tileRect.y + tileRect.height) - playerRect.y;
                             float overlapY2 = (playerRect.y + playerRect.height) - tileRect.y;
                             float resolveY = (overlapY1 < overlapY2) ? -overlapY1 : overlapY2;
+
                             player.position.y -= resolveY;
                             playerRect.y = player.position.y;
-                        }   
+                        }
                     }
                 }
             }   

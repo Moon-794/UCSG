@@ -13,10 +13,12 @@ typedef struct
     float height;
 } URect;
 
-bool PlayerAABBIntersectX(URect& player, URect& other);
+bool AABBIntersectX(URect& player, URect& other);
 
-bool PlayerAABBIntersectY(URect& player, URect& other);
+bool AABBIntersectY(URect& player, URect& other);
 
-bool PlayerAABBIntersect(URect& player, URect& other);
+bool AABBIntersect(URect& player, URect& other);
+
+void ResolveSeperateAxisCollision(URect& a, URect& b);
 
 #endif

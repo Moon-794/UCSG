@@ -6,6 +6,10 @@
 #include "input.h"
 #include "collision.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "unistd.h"
 #include <iostream>
 #include <array>

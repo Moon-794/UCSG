@@ -1,16 +1,21 @@
 #include "collision.hpp"
 
-bool PlayerAABBIntersectX(URect& player, URect& other)
+bool AABBIntersectX(URect& a, URect& b)
 {
-    return (player.x < other.x + other.width - SKIN && player.x + player.width > other.x + SKIN);
+    return (a.x < b.x + b.width - SKIN && a.x + a.width > b.x + SKIN);
 }
 
-bool PlayerAABBIntersectY(URect& player, URect& other)
+bool AABBIntersectY(URect& a, URect& b)
 {
-    return (player.y < other.y + other.height - SKIN && player.y + player.height > other.y + SKIN);
+    return (a.y < b.y + b.height - SKIN && a.y + a.height > b.y + SKIN);
 }
 
-bool PlayerAABBIntersect(URect& player, URect& other)
+bool AABBIntersect(URect& a, URect& b)
 {
-    return PlayerAABBIntersectX(player, other) && PlayerAABBIntersectY(player, other);
+    return AABBIntersectX(a, b) && AABBIntersectY(a, b);
+}
+
+void ResolveSeperateAxisCollision(URect& a, URect& b)
+{
+    
 }
