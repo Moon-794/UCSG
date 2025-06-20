@@ -48,7 +48,6 @@ std::map<int, bool> GenerateCollisionMap(std::string areaData);
 
 struct TileLayer
 {
-public:
     std::vector<std::vector<int>> layerData;
     std::unordered_map<int, bool> collisionMap;
 
@@ -57,7 +56,6 @@ public:
 
 struct Tile
 {
-public:
     std::string tileType;
     std::unordered_map<std::string, std::string> tileProperties;
 };

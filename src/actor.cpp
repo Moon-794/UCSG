@@ -12,3 +12,13 @@ void Actor::Move(float dx, float dy)
 
     MoveY(dx);
 }
+
+void Actor::MoveY(float dy)
+{
+
+}
+
+void Actor::MoveX(float dx)
+{
+    
+}

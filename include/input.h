@@ -19,7 +19,7 @@ public:
     }
 
 private:
-    std::array<int, 90> keyMap;
+    std::array<int, 160> keyMap;
 };
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

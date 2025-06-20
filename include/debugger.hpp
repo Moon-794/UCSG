@@ -27,6 +27,7 @@ Should not be included in release builds at this point. May in future become an 
 class Debugger
 {
 public:
+    Debugger();
     Debugger(Renderer* renderer);
     void DrawDebugger(DebuggerInfo info);
     void ProcessDebugger(DebuggerInfo info);

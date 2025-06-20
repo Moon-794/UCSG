@@ -1,5 +1,10 @@
 #include "debugger.hpp"
 
+Debugger::Debugger()
+{
+    
+}
+
 Debugger::Debugger(Renderer* renderer)
 {
     this->renderer = renderer;

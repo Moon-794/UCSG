@@ -10,8 +10,7 @@ public:
 
     void SetPosition(float x, float y);
     void Move(float dx, float dy);
-    const Sprite& getSprite();
-
+    
 private:
     glm::vec2 position;
     glm::vec2 scale;
