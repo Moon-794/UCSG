@@ -20,7 +20,7 @@ void Game::Init()
     glfwSetKeyCallback(renderer->window, key_callback);
 
     //Resource Manager setup
-    resourceManager = std::make_unique<ResourceManager>();
+    assetManager = std::make_unique<AssetManager>();
 
     //AreaManager Setup
     this->areaManager = std::make_unique<AreaManager>();
@@ -67,13 +67,11 @@ void Game::Render()
     const AreaData& currentArea = areaManager->getCurrentArea();
 
     renderer->Clear();
-    DrawAreaLayer(*renderer, currentArea, 0);
-
+    
     DebuggerInfo debugInfo = {currentArea, glm::vec2(0, 0)};
     debugger->DrawDebugger(*renderer, debugInfo);
     
     renderer->SwapBuffers();
-
     isRunning = !glfwWindowShouldClose(renderer->window);
 }
 

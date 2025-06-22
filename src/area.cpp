@@ -21,29 +21,9 @@ json_object* GetRootAreaDataFromFile(std::string areaName)
     return root;
 }
 
-unsigned int LoadImageData(const std::string& areaName, ImageData& data)
-{
-    stbi_set_flip_vertically_on_load(true);
-    std::string path("resources/areaData/" + areaName + "/" + areaName + ".png");
-    stbi_uc* image = stbi_load(path.c_str(), &data.width, &data.height, &data.nrChannels, 4);
-    
-    if(!image)
-        return -1;
-
-    data.data = image;
-    return 0;
-}
-
-void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex)
-{
-    DrawSprite(renderer, areaData.tileLayers[layerIndex].layerSprite);
-}
-
-AreaManager::AreaManager(std::shared_ptr<Shader> areaShader)
+AreaManager::AreaManager()
 {
     std::cout << "Initialising Area Manager" << "\n";
-
-    this->areaShader = areaShader;
 
     areas = AreaManager::LoadAllAreas();
     currentArea = areas["Hallway"];
@@ -132,12 +112,6 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
     
     for (size_t i = 0; i < layers.size(); i++)
     {
-        unsigned int textureID = GenerateLayerTextureID(areaName, layers[i].layerData, tileWidth, areaWidth, areaHeight);
-        Sprite layerSprite(textureID, glm::vec2(0, 0), areaShader);
-        layerSprite.scale = glm::vec2(areaWidth, areaHeight);
-
-        layers[i].layerSprite = layerSprite;
-
         GenerateTileLayerCollisionMap(layers[i], area.tileset, areaWidth, areaHeight);
     }
     
@@ -268,108 +242,6 @@ unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object*
     }
 
     return 0;
-}
-
-//Bad, Area manager should not be responsible for generating textures
-//So ideally, area sprites should be kept in the resource manager, which is decidely a render side system for now
-//Having the manager class hold all the area data also seems wrong, maybe a GameData class which contains all areaDatas?
-//But it does seem convenient that the AreaMANAGER has all areas at its disposal... so i dont really know what the overall
-//requirements are i guess
-//
-//Ok so i have two problems then it seems:
-//1 - Game data system has renderer data, yucky and gross
-//2 - Not too sure who should hold the AreaData
-unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight)
-{
-    const int NUM_CHANNELS = 4;
-
-    ImageData imageData;
-    if(LoadImageData(areaName, imageData) == -1)
-    {
-        std::cout << "Failed to load image data\n";
-    }
-
-    //Num sprites in image + 1 for empty sprite (tiledID 0)
-    int numImages = (imageData.width / spriteWidth);
-
-    //Extract each individual texture from the tileset
-    std::vector<unsigned char*> subImages(numImages);
-    for (size_t n = 0; n < numImages; n++)
-    {
-        subImages[n] = new unsigned char[spriteWidth * spriteWidth * NUM_CHANNELS] {0}; 
-        for (size_t x = 0; x < spriteWidth; x++)
-        {
-            for (size_t y = 0; y < spriteWidth; y++)
-            { 
-                int parentOffset = ((y * imageData.width) + x + (spriteWidth * n)) * NUM_CHANNELS;
-                int childOffset = ((y * spriteWidth) + x) * NUM_CHANNELS;
-
-                subImages[n][childOffset + 0] = imageData.data[parentOffset + 0];
-                subImages[n][childOffset + 1] = imageData.data[parentOffset + 1];
-                subImages[n][childOffset + 2] = imageData.data[parentOffset + 2];
-                subImages[n][childOffset + 3] = imageData.data[parentOffset + 3];    
-            }
-        }
-    }
-
-    //Empty texture (black square)
-    unsigned char emptyImage[spriteWidth * spriteWidth * NUM_CHANNELS] = {0};
-
-    //Begin stitching together tilemap
-    unsigned char* tileMapImage = new unsigned char[(mapWidth * spriteWidth) * (mapHeight * spriteWidth) * NUM_CHANNELS];
-
-    for (size_t x = 0; x < mapWidth; x++)
-    {
-        for (size_t y = 0; y < mapHeight; y++)
-        {
-            int tileID = tileIDS[x][y];
-
-            unsigned char* dataSource = (tileID == -1) ? emptyImage : subImages[tileID];
-
-            // Copy subImage to tileMapImage
-            for (size_t i = 0; i < spriteWidth; i++) // tile row
-            {
-                for (size_t j = 0; j < spriteWidth; j++) // tile column
-                {
-                    // Where we're writing into the final image (top-down layout)
-                    int pixelX = x * 16 + j; // horizontal pixel in tilemap
-                    int pixelY = (mapHeight - 1 - y) * 16 + i; // vertical pixel in tilemap
-
-                    int mapOffset = (pixelY * (spriteWidth * mapWidth) + pixelX) * 4;
-                    int subOffset = (i * 16 + j) * 4;
-
-                    tileMapImage[mapOffset + 0] = dataSource[subOffset + 0];
-                    tileMapImage[mapOffset + 1] = dataSource[subOffset + 1];
-                    tileMapImage[mapOffset + 2] = dataSource[subOffset + 2];
-                    tileMapImage[mapOffset + 3] = dataSource[subOffset + 3];
-
-                }
-            }
-        }
-    }
-
-    //This can have its own function
-    unsigned int texture = 0;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (mapWidth * spriteWidth), (mapHeight * spriteWidth), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileMapImage);
-
-    //Delete image data
-    for(int i = 0; i < subImages.size(); i++)
-    {
-        delete(subImages[i]);
-    }
-
-    delete(tileMapImage);
-    stbi_image_free(imageData.data);
-
-    return texture;
 }
 
 void AreaManager::GenerateTileLayerCollisionMap(TileLayer& layer, const Tileset& tileset, const int areaWidth, const int areaHeight)

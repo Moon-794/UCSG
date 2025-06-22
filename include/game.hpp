@@ -35,7 +35,7 @@ private:
 
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<AreaManager> areaManager;
-    std::unique_ptr<ResourceManager> resourceManager;
+    std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<Debugger> debugger;
     
     std::shared_ptr<InputMap> inputMap;

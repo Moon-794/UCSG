@@ -5,9 +5,10 @@
 #include "GLFW/glfw3.h"
 
 #include <GL/gl.h>
+#include <string>
+
 #include "sprite.hpp"
 #include "shader.hpp"
-#include <string>
 
 //An improvement over previous engines at this point is to try and encapsulate all the glfw calls I'll
 //be using within this renderer class, even for simple function calls it could really clean things up

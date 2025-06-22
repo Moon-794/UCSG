@@ -1,6 +1,6 @@
 #include "asset_manager.hpp"
 
-AssetManager::ResourceManager()
+AssetManager::AssetManager()
 {
     std::cout << "Loading resources..." << std::endl;
 

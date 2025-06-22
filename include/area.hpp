@@ -8,8 +8,11 @@
 #include <unordered_map>
 #include <filesystem>
 #include <regex>
+#include <iostream>
 
 #include <json-c/json.h>
+
+#include "glm/glm.hpp"
 
 namespace fs = std::filesystem;
 
@@ -48,8 +51,6 @@ struct TileLayer
 {
     std::vector<std::vector<int>> layerData;
     std::unordered_map<int, bool> collisionMap;
-
-    Sprite layerSprite;
 };
 
 struct Tile
