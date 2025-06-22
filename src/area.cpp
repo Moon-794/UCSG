@@ -270,6 +270,15 @@ unsigned int AreaManager::LoadTileLayer(TileLayer& tileLayer, const json_object*
     return 0;
 }
 
+//Bad, Area manager should not be responsible for generating textures
+//So ideally, area sprites should be kept in the resource manager, which is decidely a render side system for now
+//Having the manager class hold all the area data also seems wrong, maybe a GameData class which contains all areaDatas?
+//But it does seem convenient that the AreaMANAGER has all areas at its disposal... so i dont really know what the overall
+//requirements are i guess
+//
+//Ok so i have two problems then it seems:
+//1 - Game data system has renderer data, yucky and gross
+//2 - Not too sure who should hold the AreaData
 unsigned int AreaManager::GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight)
 {
     const int NUM_CHANNELS = 4;

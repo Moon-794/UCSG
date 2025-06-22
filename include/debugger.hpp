@@ -28,12 +28,12 @@ class Debugger
 {
 public:
     Debugger();
-    Debugger(Renderer* renderer);
-    void DrawDebugger(DebuggerInfo info);
-    void ProcessDebugger(DebuggerInfo info);
+    void InitImGUI(GLFWwindow* window);
+
+    void DrawDebugger(Renderer& renderer, DebuggerInfo info);
+    void ProcessDebugger(Renderer& renderer, DebuggerInfo info);
 
 private:
-    Renderer* renderer;
     std::shared_ptr<Shader> debugShader;
     Sprite debugSprite;
     DebuggerState state;

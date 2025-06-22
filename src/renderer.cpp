@@ -88,8 +88,8 @@ void DrawSprite(Renderer& renderer, const Sprite& sprite)
     int windowHeight;
     glfwGetFramebufferSize(renderer.window, &windowWidth, &windowHeight);
 
-    float vW = (float)windowWidth / 2;
-    float vH = (float)windowHeight / 2;
+    float vW = (float) windowWidth / 2;
+    float vH = (float) windowHeight / 2;
     renderer.projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
     
     float camX = 64 * -renderer.cameraPos.x;
@@ -116,7 +116,6 @@ void DrawSprite(Renderer& renderer, const Sprite& sprite)
 void Renderer::SwapBuffers()
 {
     glfwSwapBuffers(window);
-    glfwPollEvents();
     glFinish();
 }
 

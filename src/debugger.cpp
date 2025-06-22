@@ -2,30 +2,26 @@
 
 Debugger::Debugger()
 {
-    
-}
-
-Debugger::Debugger(Renderer* renderer)
-{
-    this->renderer = renderer;
-
     debugShader = std::make_shared<Shader>("debugger", "resources/shaders/debugger/vertex.vert", "resources/shaders/debugger/fragment.frag");
     debugSprite = Sprite("d_selector.png", glm::vec2(0, 0), debugShader);
     debugSprite.scale = glm::vec2(1, 1);
+}
 
+void Debugger::InitImGUI(GLFWwindow* window)
+{
     //Enable ImGUI
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(renderer->window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void Debugger::DrawDebugger(DebuggerInfo info)
+void Debugger::DrawDebugger(Renderer& renderer, DebuggerInfo info)
 {
-    ProcessDebugger(info);
+    ProcessDebugger(renderer, info);
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -49,7 +45,7 @@ void Debugger::DrawDebugger(DebuggerInfo info)
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Debugger::ProcessDebugger(DebuggerInfo info)
+void Debugger::ProcessDebugger(Renderer& renderer, DebuggerInfo info)
 {
     if(state.showActiveColliders)
     {
@@ -84,7 +80,7 @@ void Debugger::ProcessDebugger(DebuggerInfo info)
                                 debugShader->setVec3("tcolor", redColor);
                             }
 
-                            DrawSprite((*renderer), debugSprite);
+                            DrawSprite(renderer, debugSprite);
                     }
                 }
 

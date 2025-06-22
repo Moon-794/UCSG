@@ -11,7 +11,8 @@ void Game::Init()
     this->renderer = std::make_unique<Renderer>("Space Game", 2560, 1440);    
     this->renderer->SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
-    debugger = Debugger(renderer.get());
+    debugger = std::make_unique<Debugger>();
+    debugger->InitImGUI(renderer->window);
 
     //Input setup Note: Relies on renderer
     this->inputMap = std::make_shared<InputMap>();
@@ -22,11 +23,9 @@ void Game::Init()
     resourceManager = std::make_unique<ResourceManager>();
 
     //AreaManager Setup
-    baseShader = resourceManager->GetShader(std::string("base"));   //<----- yucky!
-    this->areaManager = std::make_unique<AreaManager>(baseShader); //<----- area manager should not need a shader!!!
+    this->areaManager = std::make_unique<AreaManager>();
 
     renderer->cameraPos = glm::vec3(16, 16, 0);
-
     Run();
 }
 
@@ -55,7 +54,7 @@ void Game::Run()
 
 void Game::UpdateInputs()
 {
-    
+    glfwPollEvents();
 }
 
 void Game::Tick()
@@ -66,12 +65,13 @@ void Game::Tick()
 void Game::Render()
 {
     const AreaData& currentArea = areaManager->getCurrentArea();
+
     renderer->Clear();
-
     DrawAreaLayer(*renderer, currentArea, 0);
-    DebuggerInfo debugInfo = {currentArea, glm::vec2(16, 16)};
-    debugger.DrawDebugger(debugInfo);
 
+    DebuggerInfo debugInfo = {currentArea, glm::vec2(0, 0)};
+    debugger->DrawDebugger(*renderer, debugInfo);
+    
     renderer->SwapBuffers();
 
     isRunning = !glfwWindowShouldClose(renderer->window);

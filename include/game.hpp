@@ -5,7 +5,7 @@
 #include "area.hpp"
 #include "input.h"
 #include "collision.hpp"
-#include "resource_manager.hpp"
+#include "asset_manager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -36,11 +36,11 @@ private:
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<AreaManager> areaManager;
     std::unique_ptr<ResourceManager> resourceManager;
-
+    std::unique_ptr<Debugger> debugger;
+    
     std::shared_ptr<InputMap> inputMap;
     std::shared_ptr<Shader> baseShader;
 
-    Debugger debugger;
 };
 
 #endif

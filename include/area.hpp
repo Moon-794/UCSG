@@ -1,8 +1,6 @@
 #ifndef U_AREA
 #define U_AREA
 
-#include "renderer.hpp"
-
 #include <map>
 #include <string>
 #include <cstdint>
@@ -83,8 +81,6 @@ struct AreaData
     std::unordered_map<std::string, std::string> properties;    //Custom properties of the area (e.g Type = "Ship", Room = "Quarters")
 };
 
-void DrawAreaLayer(Renderer& renderer, const AreaData& areaData, int layerIndex);
-
 typedef std::vector<Tile> Tileset;
 
 //This is looking to be a core game system, on par with the renderer
@@ -92,9 +88,7 @@ typedef std::vector<Tile> Tileset;
 class AreaManager
 {
 public:
-    AreaManager(std::shared_ptr<Shader> areaShader);
-
-    void DrawCurrentAreaLayer(int layerIndex);
+    AreaManager();
 
     const AreaData& getCurrentArea() const;
     std::shared_ptr<AreaData> getArea(std::string areaName);
@@ -109,8 +103,6 @@ private:
     std::shared_ptr<AreaData> currentArea;
     unsigned int nextAvailableID = 0;
 
-    std::shared_ptr<Shader> areaShader;
-
     std::unordered_map<std::string, std::shared_ptr<AreaData>> LoadAllAreas();
 
     AreaData LoadAreaData(std::string areaName);
@@ -119,9 +111,7 @@ private:
     std::vector<TileLayer> LoadLayers(std::string areaName, int areaWidth, int areaHeight);
 
     void GenerateTileLayerCollisionMap(TileLayer& layer, const Tileset& tileset, const int areaWidth, const int areaHeight);
-
     unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element, int areaWidth, int areaHeight);
-    unsigned int GenerateLayerTextureID(const std::string& areaName, const std::vector<std::vector<int>>& tileIDS, int spriteWidth, int mapWidth, int mapHeight);
 };
 
 #endif

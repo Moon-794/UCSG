@@ -1,6 +1,6 @@
-#include "resource_manager.hpp"
+#include "asset_manager.hpp"
 
-ResourceManager::ResourceManager()
+AssetManager::ResourceManager()
 {
     std::cout << "Loading resources..." << std::endl;
 
@@ -9,7 +9,7 @@ ResourceManager::ResourceManager()
 }
 
 //Create and store a shader for each subfolder in the resources/shaders directory
-void ResourceManager::LoadShaders()
+void AssetManager::LoadShaders()
 {
     //Get all shader folders in resources/shaders
     int folderCount = 0;
@@ -35,7 +35,7 @@ void ResourceManager::LoadShaders()
     std::cout << "Loaded " << folderCount << " shaders..." << std::endl;
 }
 
-void ResourceManager::LoadTextures()
+void AssetManager::LoadTextures()
 {
     //Get all shader folders in resources/shaders
     int folderCount = 0;
@@ -58,12 +58,12 @@ void ResourceManager::LoadTextures()
     std::cout << "Loaded " << folderCount << " textures..." << std::endl;
 }
 
-unsigned int ResourceManager::GetTexture(const std::string& textureName) const 
+unsigned int AssetManager::GetTexture(const std::string& textureName) const 
 {
     return 0;
 }
 
-std::shared_ptr<Shader> ResourceManager::GetShader(const std::string& shaderName) const
+std::shared_ptr<Shader> AssetManager::GetShader(const std::string& shaderName) const
 {
     return shaderMap.at(shaderName);
 }

@@ -1,5 +1,5 @@
-#ifndef U_RESOURCE_MANAGER
-#define U_RESOURCE_MANAGER
+#ifndef U_ASSET_MANAGER
+#define U_ASSET_MANAGER
 
 #include "shader.hpp"
 #include "sprite.hpp"
@@ -11,17 +11,18 @@
 
 namespace fs = std::filesystem;
 
-struct FolderData
+class AreaTextures
 {
-
+    std::vector<unsigned int> sprites;
+    bool isProcedural = false;
 };
 
 //Resource manager holds references to commonly used data types
-//such as texture IDS, shader programs, sounds, tilesets etc.
-class ResourceManager
+//such as texture IDS, shader programs, sounds etc.
+class AssetManager
 {
 public:
-    ResourceManager();
+    AssetManager();
 
     void LoadShaders();
     void LoadTextures();
@@ -29,9 +30,15 @@ public:
     unsigned int GetTexture(const std::string& textureName) const;
     std::shared_ptr<Shader> GetShader(const std::string& shaderName) const;
 
+    AreaTextures GetAreaTextures(const AreaData& areaData) const;
+    AreaTextures GenerateAreaTextures(const AreaData& areaData) const;
+    unsigned int GenerateLayerTexture(const AreaData& areaData, int layer) const;
+    
 private:
     std::unordered_map<std::string, std::shared_ptr<Shader>> shaderMap;
     std::unordered_map<std::string, unsigned int> textureMap;
+
+    std::unordered_map<std::string, AreaTextures> areaTextures;
 };
 
 #endif
