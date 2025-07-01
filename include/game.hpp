@@ -40,7 +40,6 @@ private:
     
     std::shared_ptr<InputMap> inputMap;
     std::shared_ptr<Shader> baseShader;
-
 };
 
 #endif

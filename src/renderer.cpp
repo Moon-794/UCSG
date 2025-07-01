@@ -78,6 +78,7 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
 
 void DrawSprite(Renderer& renderer, const Sprite& sprite)
 {
+    
     glUseProgram(sprite.shader->ID);
 
     //Base uniforms, different shaders will likely have different uniforms

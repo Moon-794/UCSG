@@ -23,14 +23,8 @@ public:
     unsigned int textureID;
 };
 
-//JSON RELATED
-
 int JSONGetInt(json_object* obj, std::string fieldName);
 json_object* GetRootAreaDataFromFile(std::string areaName);
-
-// __ __ __ __ _ _ _ _
-
-//IMAGE RELATED
 
 struct ImageData
 {
@@ -43,7 +37,6 @@ struct ImageData
 
 unsigned int LoadImageData(const std::string& areaName, ImageData& data);
 
-// -- --------   -----
 
 std::map<int, bool> GenerateCollisionMap(std::string areaData);
 

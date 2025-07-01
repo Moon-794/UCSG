@@ -106,15 +106,13 @@ AreaData AreaManager::LoadAreaData(std::string areaName)
 
     //Tileset
     area.tileset = LoadTileset(areaName);
-
     //Layers
     std::vector<TileLayer> layers = LoadLayers(areaName, areaWidth, areaHeight);
-    
+
     for (size_t i = 0; i < layers.size(); i++)
     {
         GenerateTileLayerCollisionMap(layers[i], area.tileset, areaWidth, areaHeight);
     }
-    
     area.tileLayers = layers;
     return area;    
 }
@@ -203,7 +201,6 @@ std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName, int areaWid
     json_object* layerArray;
     json_object_object_get_ex(root, "layers", &layerArray);
     int array_len = json_object_array_length(layerArray);
-    
     for (size_t i = 0; i < array_len; i++)
     {
         json_object *elem = json_object_array_get_idx(layerArray, i);
@@ -211,7 +208,7 @@ std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName, int areaWid
         json_object* layerType;
         json_object_object_get_ex(elem, "type", &layerType);
         std::string tileLayerType = std::string(json_object_get_string(layerType));
-        
+
         if(tileLayerType == "tilelayer")
         {
             json_object *data;
@@ -223,7 +220,7 @@ std::vector<TileLayer> AreaManager::LoadLayers(std::string areaName, int areaWid
             tileLayers.push_back(tileLayer);
         }
     }
-
+    
     return tileLayers;
 }
 

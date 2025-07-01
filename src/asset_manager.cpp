@@ -49,8 +49,11 @@ void AssetManager::LoadTextures()
         //Erase the first part of the path to use in file names
         std::string textureName(entry.path().filename().string());
 
+        std::filesystem::path croppedTextureName(textureName);
+        std::string croppedString(croppedTextureName.stem().string());
+
         unsigned int textureID = GenerateTextureID(textureName);
-        textureMap.insert({textureName, textureID});
+        textureMap.insert({croppedString, textureID});
 
         folderCount++;
     }
@@ -60,7 +63,7 @@ void AssetManager::LoadTextures()
 
 unsigned int AssetManager::GetTexture(const std::string& textureName) const 
 {
-    return 0;
+    return textureMap.at(textureName);
 }
 
 std::shared_ptr<Shader> AssetManager::GetShader(const std::string& shaderName) const

@@ -79,7 +79,8 @@ void Debugger::ProcessDebugger(Renderer& renderer, DebuggerInfo info)
                             {
                                 debugShader->setVec3("tcolor", redColor);
                             }
-
+                            
+                            std::cout << playerX + x << " " << playerY + y << "\n";
                             DrawSprite(renderer, debugSprite);
                     }
                 }

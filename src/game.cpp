@@ -14,7 +14,7 @@ void Game::Init()
     debugger = std::make_unique<Debugger>();
     debugger->InitImGUI(renderer->window);
 
-    //Input setup Note: Relies on renderer
+    //Input setup Note: Relies on renderer, narsty
     this->inputMap = std::make_shared<InputMap>();
     glfwSetWindowUserPointer(renderer->window, reinterpret_cast<void*>(inputMap.get()));
     glfwSetKeyCallback(renderer->window, key_callback);
@@ -24,8 +24,6 @@ void Game::Init()
 
     //AreaManager Setup
     this->areaManager = std::make_unique<AreaManager>();
-
-    renderer->cameraPos = glm::vec3(16, 16, 0);
     Run();
 }
 
@@ -67,7 +65,7 @@ void Game::Render()
     const AreaData& currentArea = areaManager->getCurrentArea();
 
     renderer->Clear();
-    
+
     DebuggerInfo debugInfo = {currentArea, glm::vec2(0, 0)};
     debugger->DrawDebugger(*renderer, debugInfo);
     
