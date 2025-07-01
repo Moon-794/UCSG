@@ -1,6 +1,5 @@
-{ "compressionlevel":-1,
+{
  "height":32,
- "infinite":false,
  "layers":[
         {
          "data":[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -35,17 +34,7 @@
             5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
             5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
             5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-         "height":32,
-         "id":1,
-         "name":"",
-         "offsetx":0,
-         "offsety":0,
-         "opacity":1,
-         "type":"tilelayer",
-         "visible":true,
-         "width":32,
-         "x":0,
-         "y":0
+         "type":"tilelayer"
         }, 
         {
          "draworder":"topdown",
@@ -85,20 +74,13 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":36,
- "orientation":"orthogonal",
  "properties":[
         {
          "name":"areaName",
          "type":"string",
          "value":"TestMap"
         }],
- "renderorder":"right-down",
- "tiledversion":"1.11.2",
  "tileheight":16,
  "tilewidth":16,
- "type":"map",
- "version":"1.10",
  "width":32
 }
