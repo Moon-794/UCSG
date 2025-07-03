@@ -63,6 +63,12 @@ add_custom_command(TARGET UCSG POST_BUILD
     COMMENT "Copying resources to output directory"
 )
 
+add_custom_command(TARGET UCSG POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/resources "bin/mods"
+    COMMENT "Copying mods to output directory"
+)
+
 copy_dlls(UCSG)
 
 #Install rules

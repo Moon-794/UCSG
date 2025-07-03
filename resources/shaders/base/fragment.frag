@@ -8,7 +8,6 @@ uniform sampler2D texture_diffuse1;
 void main()
 {
     vec4 texColor = texture(texture_diffuse1, TexCoords);
-    if(texColor.a < 0.1)
-        discard;
-    FragColor = texColor;
+    vec4 color = vec4(1, 0, 0, 1);
+    FragColor = color;
 }

@@ -6,6 +6,7 @@
 
 #include <GL/gl.h>
 #include <string>
+#include <vector>
 
 #include "sprite.hpp"
 #include "shader.hpp"
@@ -33,11 +34,16 @@ public:
     void Clear();
     void SetClearColor(float r, float g, float b, float a);
 
+    unsigned int chunkVAO;
+
 private:
 };
 
 unsigned int CreateQuadVAO();
 void DrawSprite(Renderer& renderer, const Sprite& sprite);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+unsigned int CreateChunkVAO();
+void DrawChunk();
 
 #endif

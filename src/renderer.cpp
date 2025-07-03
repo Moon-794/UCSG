@@ -74,6 +74,8 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     float vW = (float)windowWidth / 2;
     float vH = (float)windowHeight / 2;
     projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
+
+    chunkVAO = CreateChunkVAO();
 }
 
 void DrawSprite(Renderer& renderer, const Sprite& sprite)
@@ -128,4 +130,55 @@ void Renderer::SetClearColor(float r, float g, float b, float a)
 void Renderer::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT);
+}
+
+unsigned int CreateChunkVAO()
+{
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    unsigned int width = 16;
+    unsigned int height = 16;
+
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+
+    //Generate a grid of quads x wide and y tall, quads do not share vertices to support UV indexing
+    for (size_t x = 0; x < width; x++)
+    {
+        for (size_t y = 0; y < height; y++)
+        {   
+            //Quad vertices
+            unsigned int index = static_cast<unsigned int>(vertices.size() / 5);
+            float xPos = (float)x;
+            float yPos = (float)y;
+
+            vertices.insert(vertices.end(), {xPos + 1.0f,  yPos,            0.0f,   1.0f, 1.0f});         
+            vertices.insert(vertices.end(), {xPos + 1.0f,  yPos - 1.0f,     0.0f,   1.0f, 0.0f}); 
+            vertices.insert(vertices.end(), {xPos,         yPos - 1.0f,     0.0f,   0.0f, 0.0f});         
+            vertices.insert(vertices.end(), {xPos,         yPos,            0.0f,   0.0f, 1.0f});
+            
+            indices.insert(indices.end(), {index, index + 1, index + 3, index + 1, index + 2, index + 3});
+        }
+    }
+
+    std::cout << "Vertices: " << vertices.size() / 5 << "\n";
+    std::cout << "Indices: " << indices.size() << "\n";
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);  
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    return VAO;
 }
