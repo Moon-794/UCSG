@@ -35,11 +35,6 @@ struct ImageData
     unsigned char* data;
 };
 
-unsigned int LoadImageData(const std::string& areaName, ImageData& data);
-
-
-std::map<int, bool> GenerateCollisionMap(std::string areaData);
-
 struct TileLayer
 {
     std::vector<std::vector<int>> layerData;
@@ -51,9 +46,6 @@ struct Tile
     std::string tileType;
     std::unordered_map<std::string, std::string> tileProperties;
 };
-
-std::string GetTilePropertyString(const Tile& tile, const std::string& key);
-bool GetTilePropertyBool(const Tile& tile, const std::string& key);
 
 struct AreaTransition
 {
@@ -74,6 +66,11 @@ struct AreaData
     
     std::unordered_map<std::string, std::string> properties;    //Custom properties of the area (e.g Type = "Ship", Room = "Quarters")
 };
+
+unsigned int LoadImageData(const std::string& areaName, ImageData& data);
+std::map<int, bool> GenerateCollisionMap(std::string areaData);
+std::string GetTilePropertyString(const Tile& tile, const std::string& key);
+bool GetTilePropertyBool(const Tile& tile, const std::string& key);
 
 typedef std::vector<Tile> Tileset;
 

@@ -12,6 +12,22 @@ Goal/Win condition - Reach the center of the galaxy, where what remains of human
 
 Optional post win - Enter the black hole, emerge in a new universe with exotic materials to upgrade your ship/gear/factory.
 
+# Focusing in mechanics
+Thats obviously a lot for a solo dev project. The game needs to settle on 1 main playstyle. It would be ok to expand to the
+other stuff if thats all working fine.
+
+- Definitely want the player waking up in the far future, derelict spacecraft, only survivor etc
+- Do I want a set story? Might cramp replayability. Could be a more memorable experience? I don't have a good story to tell tho.
+- Optional story would be cool, maybe even a secret story?
+- I think the pillar of the ship being a mobile asteroid processing factory is one I really like.
+    - How does the player harvest asteroids?
+        - i dont know
+    - Is there any manual crafting?
+- What kind of gear should the player have?
+    - Weapons
+    - Armor
+    - Tools?
+
 # Mechanic Ideas
 
 # State machine discussion
