@@ -16,7 +16,7 @@ struct DebuggerState
 
 struct DebuggerInfo
 {
-    const AreaData& areaData;
+    const Area& areaData;
     glm::vec2 playerPosition;
 };
 

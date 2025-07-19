@@ -11,41 +11,11 @@
 #include <iostream>
 
 #include <json-c/json.h>
-
 #include "glm/glm.hpp"
 
+#include "tile_manager.hpp"
+
 namespace fs = std::filesystem;
-
-struct Layer
-{
-public:
-    std::vector<std::vector<int>> tiles;
-    unsigned int textureID;
-};
-
-int JSONGetInt(json_object* obj, std::string fieldName);
-json_object* GetRootAreaDataFromFile(std::string areaName);
-
-struct ImageData
-{
-    int width;
-    int height;
-    int nrChannels;
-
-    unsigned char* data;
-};
-
-struct TileLayer
-{
-    std::vector<std::vector<int>> layerData;
-    std::unordered_map<int, bool> collisionMap;
-};
-
-struct Tile
-{
-    std::string tileType;
-    std::unordered_map<std::string, std::string> tileProperties;
-};
 
 struct AreaTransition
 {
@@ -53,56 +23,44 @@ struct AreaTransition
     glm::vec2 spawnPosition;
 };
 
-struct AreaData
+struct AnimatedTile
 {
-    unsigned int areaID;
-    std::string areaName;                                       //Used for area transitions
+    const unsigned int x, y;                    //Position in tiles grid
+    const std::vector<unsigned int> frames;      //What tile ID to return to if the animation is cancelled or restarted.
+    const unsigned int ticksPerFrame;
 
-    unsigned int areaWidth, areaHeight;                         //Width and height map in tiles
-    unsigned int tileWidth, tileHeight;                         //Width and height of tiles in pixels
-
-    std::vector<Tile> tileset;                                  //holds tileIDS -> tileProperties
-    std::vector<TileLayer> tileLayers;                          //Map + collision data
-    
-    std::unordered_map<std::string, std::string> properties;    //Custom properties of the area (e.g Type = "Ship", Room = "Quarters")
+    unsigned int ticks = 0;
 };
 
-unsigned int LoadImageData(const std::string& areaName, ImageData& data);
-std::map<int, bool> GenerateCollisionMap(std::string areaData);
-std::string GetTilePropertyString(const Tile& tile, const std::string& key);
-bool GetTilePropertyBool(const Tile& tile, const std::string& key);
+struct Area
+{
+    const unsigned int id;
+    const std::string name;                                           //Used for area transitions
 
-typedef std::vector<Tile> Tileset;
+    const unsigned int width, height;                                 //Width and height map in tiles
+    const unsigned int tileSize;                                      //Width and height of tiles in pixels
 
-//This is looking to be a core game system, on par with the renderer
-//Although I'm not too sure how I want different game systems similar to this one to easily talk to each other
+    std::vector<std::vector<unsigned int>> tiles;
+    std::vector<AnimatedTile> animatedTiles;
+
+    std::unordered_map<std::string, std::string> properties;    //Custom properties of the area (e.g Type = "Ship", Room = "Quarters", Oxygen = "false")
+};
+
 class AreaManager
 {
 public:
     AreaManager();
 
-    const AreaData& getCurrentArea() const;
-    std::shared_ptr<AreaData> getArea(std::string areaName);
-    std::shared_ptr<AreaData> getArea(unsigned int areaID);
+    //const Area& getCurrentArea() const;
 
     void Transition(AreaTransition areaTransition);
     void ForceTransition(std::string areaName, glm::vec2 spawnPosition, float& playerX, float& playerY);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<AreaData>> areas;
+    std::shared_ptr<Area> currentArea;
+    std::unordered_map<std::string, std::shared_ptr<Area>> areas;
 
-    std::shared_ptr<AreaData> currentArea;
-    unsigned int nextAvailableID = 0;
-
-    std::unordered_map<std::string, std::shared_ptr<AreaData>> LoadAllAreas();
-
-    AreaData LoadAreaData(std::string areaName);
-    std::unordered_map<std::string, std::string> LoadAreaProperties(std::string areaName);
-    std::vector<Tile> LoadTileset(std::string areaName);
-    std::vector<TileLayer> LoadLayers(std::string areaName, int areaWidth, int areaHeight);
-
-    void GenerateTileLayerCollisionMap(TileLayer& layer, const Tileset& tileset, const int areaWidth, const int areaHeight);
-    unsigned int LoadTileLayer(TileLayer& tileLayer, const json_object* element, int areaWidth, int areaHeight);
+    //std::unordered_map<std::string, std::shared_ptr<Area>> LoadAllAreas();
 };
 
 #endif

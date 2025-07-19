@@ -1,14 +1,6 @@
-{ 
- "columns":5,
- "image":"Tiles.png",
- "imageheight":16,
- "imagewidth":80,
- "margin":0,
- "name":"ShipTileset",
- "spacing":0,
+{
  "tilecount":5,
- "tiledversion":"1.11.2",
- "tileheight":16,
+ "tilesize": 16,
  "tiles":[
         {
          "id":0,
@@ -18,7 +10,7 @@
                  "type":"bool",
                  "value":false
                 }],
-         "type":"Floor"
+         "type":"floor"
         }, 
         {
          "id":1,
@@ -28,7 +20,7 @@
                  "type":"bool",
                  "value":true
                 }],
-         "type":"Ceiling"
+         "type":"ceiling"
         }, 
         {
          "id":2,
@@ -38,7 +30,7 @@
                  "type":"bool",
                  "value":true
                 }],
-         "type":"Wall_Top"
+         "type":"wall_top"
         }, 
         {
          "id":3,
@@ -48,7 +40,7 @@
                  "type":"bool",
                  "value":true
                 }],
-         "type":"Wall_Bottom"
+         "type":"wall_bottom"
         }, 
         {
          "id":4,
@@ -58,9 +50,6 @@
                  "type":"bool",
                  "value":false
                 }],
-         "type":"Void"
-        }],
- "tilewidth":16,
- "type":"tileset",
- "version":"1.10"
+         "type":"void"
+        }]
 }

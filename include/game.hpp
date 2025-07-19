@@ -6,6 +6,7 @@
 #include "input.h"
 #include "collision.hpp"
 #include "asset_manager.hpp"
+#include "tile_manager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -36,6 +37,7 @@ private:
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<AreaManager> areaManager;
     std::unique_ptr<AssetManager> assetManager;
+    std::unique_ptr<TileManager> tileManager;
     std::unique_ptr<Debugger> debugger;
     
     std::shared_ptr<InputMap> inputMap;

@@ -7,22 +7,19 @@ Game::Game()
 
 void Game::Init()
 {
-    //Renderer setup
     this->renderer = std::make_unique<Renderer>("Space Game", 2560, 1440);    
     this->renderer->SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
     debugger = std::make_unique<Debugger>();
     debugger->InitImGUI(renderer->window);
 
-    //Input setup Note: Relies on renderer, narsty
     this->inputMap = std::make_shared<InputMap>();
     glfwSetWindowUserPointer(renderer->window, reinterpret_cast<void*>(inputMap.get()));
     glfwSetKeyCallback(renderer->window, key_callback);
 
-    //Resource Manager setup
-    assetManager = std::make_unique<AssetManager>();
+    this->tileManager = std::make_unique<TileManager>();
 
-    //AreaManager Setup
+    assetManager = std::make_unique<AssetManager>();
     this->areaManager = std::make_unique<AreaManager>();
     Run();
 }
@@ -62,8 +59,6 @@ void Game::Tick()
 
 void Game::Render()
 {
-    const AreaData& currentArea = areaManager->getCurrentArea();
-
     renderer->Clear();
 
     glUseProgram(assetManager->GetShader("base")->ID);
@@ -100,9 +95,6 @@ void Game::Render()
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6 * 16 * 16, GL_UNSIGNED_INT, 0);
-
-    DebuggerInfo debugInfo = {currentArea, glm::vec2(0, 0)};
-    debugger->DrawDebugger(*renderer, debugInfo);
     
     renderer->SwapBuffers();
     isRunning = !glfwWindowShouldClose(renderer->window);

@@ -12,7 +12,7 @@ Goal/Win condition - Reach the center of the galaxy, where what remains of human
 
 Optional post win - Enter the black hole, emerge in a new universe with exotic materials to upgrade your ship/gear/factory.
 
-# Focusing in mechanics
+# Mechanic Ideas
 Thats obviously a lot for a solo dev project. The game needs to settle on 1 main playstyle. It would be ok to expand to the
 other stuff if thats all working fine.
 
@@ -27,8 +27,15 @@ other stuff if thats all working fine.
     - Weapons
     - Armor
     - Tools?
+- Why would anyone bother modding this?
 
-# Mechanic Ideas
+# Focusing in Mechanics
+For the alpha build, the following features are good enough I think:
+
+- No ship travel
+- Unlocking 1-3 ship rooms
+- Factory floor + asteroid stuff
+- Goal: Repair ship thrusters
 
 # State machine discussion
 

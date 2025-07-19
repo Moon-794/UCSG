@@ -36,7 +36,7 @@ void Debugger::DrawDebugger(Renderer& renderer, DebuggerInfo info)
 
     ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);
 
-    std::string areaDataText("Area: " + info.areaData.areaName);
+    std::string areaDataText("Area: " + info.areaData.name);
     ImGui::Text(areaDataText.c_str());  
 
     ImGui::End();
@@ -49,43 +49,6 @@ void Debugger::ProcessDebugger(Renderer& renderer, DebuggerInfo info)
 {
     if(state.showActiveColliders)
     {
-        float playerX = glm::floor(info.playerPosition.x + 0.5f);
-        float playerY = glm::floor(info.playerPosition.y + 0.5f);
-
-        const glm::vec3 redColor(1, 0, 0);
-        const glm::vec3 blueColor(0, 0, 1);
-
-        for (int x = -1; x < 2; x++)
-        {
-            for (int y = -1; y < 2; y++)
-            {   
-                debugSprite.position = glm::vec3(playerX + x, playerY + y, 0);
-
-                debugShader->use();
-                debugShader->setVec3("tcolor", redColor);
-
-                if(debugSprite.position.x >= 0 && debugSprite.position.y >= 0)
-                {
-                    if(debugSprite.position.x < info.areaData.areaWidth && debugSprite.position.y < info.areaData.areaHeight)
-                    {
-                            int tileID = info.areaData.tileLayers[0].layerData[debugSprite.position.x][debugSprite.position.y];
-                            bool isCollider = info.areaData.tileLayers[0].collisionMap.at(tileID);
-                            
-                            if(isCollider == true)
-                            {
-                                 debugShader->setVec3("tcolor", blueColor);
-                            }
-                            else
-                            {
-                                debugShader->setVec3("tcolor", redColor);
-                            }
-                            
-                            std::cout << playerX + x << " " << playerY + y << "\n";
-                            DrawSprite(renderer, debugSprite);
-                    }
-                }
-
-            }
-        }
+        
     }
 }
