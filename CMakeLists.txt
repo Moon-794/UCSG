@@ -33,8 +33,6 @@ set(APP_SRCS
     src/input.cpp 
     src/renderer.cpp 
     src/sprite.cpp 
-    src/area.cpp
-    src/tile_manager.cpp
 )
 
 set(IMGUI_SRCS 

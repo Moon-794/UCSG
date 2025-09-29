@@ -36,9 +36,6 @@ void Debugger::DrawDebugger(Renderer& renderer, DebuggerInfo info)
 
     ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);
 
-    std::string areaDataText("Area: " + info.areaData.name);
-    ImGui::Text(areaDataText.c_str());  
-
     ImGui::End();
 
     ImGui::Render();

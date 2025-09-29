@@ -17,10 +17,7 @@ void Game::Init()
     glfwSetWindowUserPointer(renderer->window, reinterpret_cast<void*>(inputMap.get()));
     glfwSetKeyCallback(renderer->window, key_callback);
 
-    this->tileManager = std::make_unique<TileManager>();
-
     assetManager = std::make_unique<AssetManager>();
-    this->areaManager = std::make_unique<AreaManager>();
     Run();
 }
 
