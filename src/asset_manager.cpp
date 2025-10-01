@@ -35,30 +35,20 @@ void AssetManager::LoadShaders()
     std::cout << "Loaded " << folderCount << " shaders..." << std::endl;
 }
 
-void AssetManager::LoadTextures()
+void AssetManager::LoadSprites()
 {
     //Get all shader folders in resources/shaders
     int folderCount = 0;
 
-    const std::string resourcesPath = "resources/textures";
+    std::vector<RawSpriteData> spriteData;
+
+    const std::string resourcesPath = "resources/sprites";
     for(const auto& entry : fs::directory_iterator(resourcesPath))
     {
-        //Gives a linux + windows friendly folderpath
-        std::string folderPath = std::regex_replace(entry.path().string(), std::regex("\\\\"), "/");
 
-        //Erase the first part of the path to use in file names
-        std::string textureName(entry.path().filename().string());
-
-        std::filesystem::path croppedTextureName(textureName);
-        std::string croppedString(croppedTextureName.stem().string());
-
-        unsigned int textureID = GenerateTextureID(textureName);
-        textureMap.insert({croppedString, textureID});
-
-        folderCount++;
     }
 
-    std::cout << "Loaded " << folderCount << " textures..." << std::endl;
+    GenerateSpriteSheet();
 }
 
 unsigned int AssetManager::GetTexture(const std::string& textureName) const 
