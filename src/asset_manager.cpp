@@ -5,7 +5,7 @@ AssetManager::AssetManager()
     std::cout << "Loading resources..." << std::endl;
 
     LoadShaders();
-    LoadTextures();
+    LoadSprites();
 }
 
 //Create and store a shader for each subfolder in the resources/shaders directory
@@ -48,15 +48,15 @@ void AssetManager::LoadSprites()
 
     }
 
-    GenerateSpriteSheet();
-}
-
-unsigned int AssetManager::GetTexture(const std::string& textureName) const 
-{
-    return textureMap.at(textureName);
+    GenerateSpriteSheet(spriteData);
 }
 
 std::shared_ptr<Shader> AssetManager::GetShader(const std::string& shaderName) const
 {
     return shaderMap.at(shaderName);
+}
+
+void AssetManager::GenerateSpriteSheet(std::vector<RawSpriteData>& sprites)
+{
+    
 }

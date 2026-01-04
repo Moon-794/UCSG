@@ -26,9 +26,7 @@ endif()
 set(APP_SRCS
     src/main.cpp
     src/game.cpp
-    src/actor.cpp
     src/asset_manager.cpp
-    src/collision.cpp 
     src/glad.c 
     src/input.cpp 
     src/renderer.cpp 

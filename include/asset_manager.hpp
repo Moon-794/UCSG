@@ -21,7 +21,7 @@ struct RawSpriteData
     std::string spriteName;
     unsigned int width, height, channels;
     std::vector<unsigned char*> imageData;
-}
+};
 
 class AssetManager
 {
@@ -35,8 +35,7 @@ public:
     std::shared_ptr<Shader> GetShader(const std::string& shaderName) const;
 
 private:
-    void GenerateSpriteSheet(std::vector<RawSpriteData> sprites);
-
+    void GenerateSpriteSheet(std::vector<RawSpriteData>& sprites);
 
     std::unordered_map<std::string, std::shared_ptr<Shader>> shaderMap;
     std::unordered_map<std::string, unsigned int> textureMap;
