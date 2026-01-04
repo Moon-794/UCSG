@@ -88,7 +88,7 @@ void Game::Render()
     glBindVertexArray(renderer->chunkVAO);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, assetManager->GetTexture("wurmo"));
+    //glBindTexture(GL_TEXTURE_2D, assetManager->GetTexture("wurmo"));
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6 * 16 * 16, GL_UNSIGNED_INT, 0);
