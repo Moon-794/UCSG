@@ -1,4 +1,4 @@
-# Notes
+## Notes - Beginning
 In terms of complexity i mean walls can have multiple thin pipes running up and across them, and slight recesses into walls for custom control panels etc
 The game is intended for 3D, it will be developed in mind as a 3D game, this is final.
 However for a large part of development, gameplay will be the primary focus, not the 3D rendering system.
@@ -15,22 +15,33 @@ so scope will need to be limited till I have a better hand on things, and it wil
 In terms of complexity i mean walls can have multiple thin pipes running up and across them, 
 and slight recesses into walls for custom control panels etc
 
-# Version 1 World Data layout:
+# Notes 02/07/2026
+After a good bit of thinking, I think I want a dynamic "chisel and bits" based gameplay loop.
+So I think in terms of high level systems that are to be worked on, there are 3 main ones:
+- Base Building / World Setting
+- Dynamic bits / Processing
+- Asteroid Harvesting / Material Gathering
+
+I am happy enough with these 3 pillars, and will work on them without trying to introduce scope creep.
+
+## Version 1 World Data layout:
  
 2D grid of floor tiles.
 Each tile has a ceiling height in meters.
 That is it
 
-# Version 2 World Data Layout
+## Version 2 World Data Layout
  
 Each tile has 4 edges (North, East, South, West)
 Edges can define walls of various thicknesses / styles
 Walls have independent coordinates where wires and pipes can be attached.
 Wires and pipes can also be attached to ceilings.
 
-# Version 1 Asteroid harvesting:
+## Version 1 Asteroid harvesting:
  
 Asteroids of 2 types (copper/iron) appear randomly at a static height around ship.
 Player can spacewalk with basically no restrictions and mine them with a pick.
 Mining fills two global resource meters.
 Spend resources to expand ship.
+
+
