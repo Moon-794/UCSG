@@ -78,44 +78,6 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     chunkVAO = CreateChunkVAO();
 }
 
-void DrawSprite(Renderer& renderer, const Sprite& sprite)
-{
-    
-    glUseProgram(sprite.shader->ID);
-
-    //Base uniforms, different shaders will likely have different uniforms
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::mat4(1.0f);
-
-    int windowWidth;
-    int windowHeight;
-    glfwGetFramebufferSize(renderer.window, &windowWidth, &windowHeight);
-
-    float vW = (float) windowWidth / 2;
-    float vH = (float) windowHeight / 2;
-    renderer.projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
-    
-    float camX = 64 * -renderer.cameraPos.x;
-    float camY = 64 * renderer.cameraPos.y;
-
-    view  = glm::translate(view, glm::vec3((float)camX, (float)camY, 0.0f));
-    view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
-
-    model = glm::translate(model, glm::vec3((sprite.position.x * 64), -(sprite.position.y * 64), 0));
-    model = glm::scale(model, glm::vec3(sprite.scale.x * 64, sprite.scale.y * 64, 1));
-
-    sprite.shader->setMat4("projection", renderer.projection);
-    sprite.shader->setMat4("model", model);
-    sprite.shader->setMat4("view", view);
-
-    glBindVertexArray(renderer.quadVAO);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, sprite.textureID);
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-}
-
 void Renderer::SwapBuffers()
 {
     glfwSwapBuffers(window);

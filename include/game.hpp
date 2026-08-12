@@ -37,6 +37,10 @@ private:
     
     std::shared_ptr<InputMap> inputMap;
     std::shared_ptr<Shader> baseShader;
+
+    float playerx = 0.0f;
+    float playery = 0.0f;
+    float playerz = 0.0f;
 };
 
 #endif

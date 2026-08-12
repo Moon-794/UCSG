@@ -18,6 +18,9 @@ void Game::Init()
     glfwSetKeyCallback(renderer->window, key_callback);
 
     assetManager = std::make_unique<AssetManager>();
+
+    //Make a big ol voxel, 3D now i guess
+
     Run();
 }
 
@@ -51,7 +54,24 @@ void Game::UpdateInputs()
 
 void Game::Tick()
 {
+    //Player controls
+    if(inputMap->GetKey(GLFW_KEY_W))
+        playerz += 1;
     
+    if(inputMap->GetKey(GLFW_KEY_S))
+        playerz -= 1;
+
+    if(inputMap->GetKey(GLFW_KEY_A))
+        playerx += 1;
+    
+    if(inputMap->GetKey(GLFW_KEY_D))
+        playerx -= 1;
+
+    if(inputMap->GetKey(GLFW_KEY_SPACE))
+        playery -= 1;
+    
+    if(inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
+        playery += 1;
 }
 
 void Game::Render()
@@ -68,15 +88,11 @@ void Game::Render()
     int windowHeight;
     glfwGetFramebufferSize(renderer->window, &windowWidth, &windowHeight);
 
-    float vW = (float) windowWidth / 2;
-    float vH = (float) windowHeight / 2;
-    renderer->projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
-    
-    float camX = 64 * -renderer->cameraPos.x;
-    float camY = 64 * renderer->cameraPos.y;
+    renderer->projection = glm::perspective(90.0f, (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
 
-    view  = glm::translate(view, glm::vec3((float)0, (float)0, 0.0f));
-    view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
+    float t = glfwGetTime();
+
+    view  = glm::translate(view, glm::vec3(playerx, playery, playerz));
 
     model = glm::translate(model, glm::vec3(0, 0, 0));
     model = glm::scale(model, glm::vec3(1 * 64, 1 * 64, 1));
@@ -85,10 +101,11 @@ void Game::Render()
     assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 
+    std::cout << playerz << std::endl;
+
     glBindVertexArray(renderer->chunkVAO);
 
     glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, assetManager->GetTexture("wurmo"));
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6 * 16 * 16, GL_UNSIGNED_INT, 0);
