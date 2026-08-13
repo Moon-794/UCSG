@@ -1,8 +1,8 @@
 #ifndef U_SPRITE
 #define U_SPRITE
 
-#include "stb_image.h"
-#include "shader.hpp"
+#include "Third_Party/stb_image.h"
+#include "Engine/Graphics/shader.hpp"
 
 namespace SpriteConstants
 {

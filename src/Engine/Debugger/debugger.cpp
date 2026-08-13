@@ -1,4 +1,4 @@
-#include "debugger.hpp"
+#include "Engine/Debugger/debugger.hpp"
 
 Debugger::Debugger()
 {

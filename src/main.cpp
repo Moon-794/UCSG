@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "game.hpp"
+#include "Game/game.hpp"
 
 struct Voxel
 {

@@ -1,7 +1,7 @@
 #ifndef U_RENDERER
 #define U_RENDERER
 
-#include "glad/glad.h"
+#include "Third_Party/glad/glad.h"
 #include "GLFW/glfw3.h"
 
 #include <GL/gl.h>

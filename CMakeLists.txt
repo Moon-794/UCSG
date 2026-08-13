@@ -25,25 +25,25 @@ endif()
 #Create sources + executable
 set(APP_SRCS
     src/main.cpp
-    src/game.cpp
-    src/asset_manager.cpp
-    src/glad.c 
-    src/input.cpp 
-    src/renderer.cpp 
-    src/sprite.cpp 
+    src/Game/game.cpp
+    src/Engine/asset_manager.cpp
+    src/Third_Party/glad.c 
+    src/Engine/input.cpp 
+    src/Engine/Graphics/renderer.cpp 
+    src/Engine/Graphics/sprite.cpp 
 )
 
 set(IMGUI_SRCS 
-    src/imgui/imgui.cpp 
-    src/imgui/imgui_impl_glfw.cpp 
-    src/imgui/imgui_tables.cpp 
-    src/imgui/imgui_widgets.cpp
-    src/imgui/imgui_draw.cpp 
-    src/imgui/imgui_impl_opengl3.cpp
+    src/Third_Party/imgui/imgui.cpp 
+    src/Third_Party/imgui/imgui_impl_glfw.cpp 
+    src/Third_Party/imgui/imgui_tables.cpp 
+    src/Third_Party/imgui/imgui_widgets.cpp
+    src/Third_Party/imgui/imgui_draw.cpp 
+    src/Third_Party/imgui/imgui_impl_opengl3.cpp
 )
 
 #Make this conditional based on build type
-list(APPEND APP_SRCS src/debugger.cpp)
+list(APPEND APP_SRCS src/Engine/Debugger/debugger.cpp)
 
 add_executable(UCSG ${APP_SRCS} ${IMGUI_SRCS})
 
@@ -51,7 +51,7 @@ add_executable(UCSG ${APP_SRCS} ${IMGUI_SRCS})
 find_package(glfw3 REQUIRED)
 find_package(json-c CONFIG REQUIRED)
 target_link_libraries(UCSG PRIVATE json-c::json-c glfw)
-target_include_directories(UCSG PRIVATE include/ include/imgui/)
+target_include_directories(UCSG PRIVATE include/ include/Third_Party/imgui/)
 
 #Copy game resources
 add_custom_command(TARGET UCSG POST_BUILD

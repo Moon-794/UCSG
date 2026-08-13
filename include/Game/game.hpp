@@ -1,9 +1,9 @@
 #ifndef U_GAME
 
-#include "renderer.hpp"
-#include "debugger.hpp"
-#include "input.h"
-#include "asset_manager.hpp"
+#include "Engine/Graphics/renderer.hpp"
+#include "Engine/Debugger/debugger.hpp"
+#include "Engine/input.h"
+#include "Engine/asset_manager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

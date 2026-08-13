@@ -44,4 +44,31 @@ Player can spacewalk with basically no restrictions and mine them with a pick.
 Mining fills two global resource meters.
 Spend resources to expand ship.
 
+# Folder Structure
+
+Game/
+├── engine/
+│   ├── graphics/
+│   │   ├── Renderer.cpp
+│   │   └── Renderer.h
+│   ├── input/
+│   ├── audio/
+│   ├── assets/
+│   ├── debug/
+│   │   └── ImGuiLayer.cpp
+│   └── core/
+│
+├── game/
+│   ├── Player.cpp
+│   ├── Ship.cpp
+│   ├── Asteroid.cpp
+│   ├── Inventory.cpp
+│   └── ...
+│
+└── third_party/
+    ├── glad/
+    ├── stb/
+    ├── imgui/
+    └── entt/
+
 

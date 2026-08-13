@@ -1,7 +1,7 @@
 #ifndef U_INPUT
 #define U_INPUT
 
-#include "renderer.hpp"
+#include "Engine/Graphics/renderer.hpp"
 #include <array>
 
 class InputMap

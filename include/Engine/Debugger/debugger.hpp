@@ -1,11 +1,11 @@
 #ifndef U_DEBUGGER
 #define U_DEBUGGER
 
-#include "renderer.hpp"
+#include "Engine/Graphics/renderer.hpp"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
+#include <Third_Party/imgui/imgui.h>
+#include <Third_Party/imgui/imgui_impl_opengl3.h>
+#include <Third_Party/imgui/imgui_impl_glfw.h>
 
 struct DebuggerState
 {

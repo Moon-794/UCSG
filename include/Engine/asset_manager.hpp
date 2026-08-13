@@ -1,8 +1,8 @@
 #ifndef U_ASSET_MANAGER
 #define U_ASSET_MANAGER
 
-#include "shader.hpp"
-#include "sprite.hpp"
+#include "Engine/Graphics/shader.hpp"
+#include "Engine/Graphics/sprite.hpp"
 
 #include <unordered_map>
 #include <regex>
