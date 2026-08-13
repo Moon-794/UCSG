@@ -41,7 +41,9 @@ private:
 
 unsigned int CreateQuadVAO();
 void DrawSprite(Renderer& renderer, const Sprite& sprite);
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+static void cursor_position_callback(GLFWwindow* window, double xPos, double yPos);
 
 unsigned int CreateChunkVAO();
 void DrawChunk();

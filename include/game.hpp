@@ -41,6 +41,11 @@ private:
     float playerx = 0.0f;
     float playery = 0.0f;
     float playerz = 0.0f;
+
+    double cameraX = 0.0f;
+    double cameraZ = 0.0f;
+
+    double lastCamX = 0.0f;
 };
 
 #endif

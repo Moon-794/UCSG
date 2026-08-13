@@ -50,10 +50,7 @@ void Game::Run()
 void Game::UpdateInputs()
 {
     glfwPollEvents();
-}
 
-void Game::Tick()
-{
     //Player controls
     if(inputMap->GetKey(GLFW_KEY_W))
         playerz += 1;
@@ -72,6 +69,27 @@ void Game::Tick()
     
     if(inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
         playery += 1;
+
+    //Camera Controls
+    if(inputMap->GetKey(GLFW_KEY_LEFT))
+        cameraX -= 1;
+    
+    if(inputMap->GetKey(GLFW_KEY_RIGHT))
+        cameraX += 1;
+
+    if(inputMap->GetKey(GLFW_KEY_UP))
+        cameraZ += 1;
+    
+    if(inputMap->GetKey(GLFW_KEY_DOWN))
+        cameraZ -= 1;
+
+    //Mouse Controls
+    glfwGetCursorPos(renderer->window, &cameraX, &cameraZ);
+}
+
+void Game::Tick()
+{
+    
 }
 
 void Game::Render()
@@ -88,10 +106,10 @@ void Game::Render()
     int windowHeight;
     glfwGetFramebufferSize(renderer->window, &windowWidth, &windowHeight);
 
-    renderer->projection = glm::perspective(90.0f, (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
-
+    renderer->projection = glm::perspective(glm::radians(80.0f), (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
     float t = glfwGetTime();
 
+    view = glm::rotate(view, glm::radians((float)cameraX), glm::vec3(0.0f, 1.0f, 0.0f));
     view  = glm::translate(view, glm::vec3(playerx, playery, playerz));
 
     model = glm::translate(model, glm::vec3(0, 0, 0));
@@ -101,7 +119,7 @@ void Game::Render()
     assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 
-    std::cout << playerz << std::endl;
+    //std::cout << playerz << std::endl;
 
     glBindVertexArray(renderer->chunkVAO);
 
