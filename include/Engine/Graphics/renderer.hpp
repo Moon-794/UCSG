@@ -36,6 +36,12 @@ public:
 
     unsigned int chunkVAO;
 
+    float lastMouseX = 1280.0f;
+    float lastMouseY = 720.0f;
+
+    float yaw = 0.0f;
+    float pitch = 0.0f;
+
 private:
 };
 

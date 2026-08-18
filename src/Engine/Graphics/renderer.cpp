@@ -1,4 +1,5 @@
 #include "Engine/Graphics/renderer.hpp"
+#include "Engine/engine.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -30,6 +31,7 @@ unsigned int CreateQuadVAO()
 
 Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
 {
+    //Initialise GLFW
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -48,7 +50,6 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSwapInterval(1);
 
     this->windowWidth = windowWidth;
@@ -66,16 +67,9 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     glEnable(GL_BLEND);
 
     quadVAO = CreateQuadVAO();
-
-    float tilesVertically = 10.0f;
-    float aspectRatio = (float)windowWidth / (float)windowHeight;
-
-    //Move into its own callback for window resizing
-    float vW = (float)windowWidth / 2;
-    float vH = (float)windowHeight / 2;
-    projection = glm::ortho(-vW, vW, -vH, vH, 0.1f, 15.0f);
-
     chunkVAO = CreateChunkVAO();
+
+    SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 }
 
 void Renderer::SwapBuffers()

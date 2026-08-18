@@ -7,19 +7,8 @@ Game::Game()
 
 void Game::Init()
 {
-    this->renderer = std::make_unique<Renderer>("Space Game", 2560, 1440);    
-    this->renderer->SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-
-    debugger = std::make_unique<Debugger>();
-    debugger->InitImGUI(renderer->window);
-
-    this->inputMap = std::make_shared<InputMap>();
-    glfwSetWindowUserPointer(renderer->window, reinterpret_cast<void*>(inputMap.get()));
-    glfwSetKeyCallback(renderer->window, key_callback);
-
+    engine.Init();
     assetManager = std::make_unique<AssetManager>();
-
-    //Make a big ol voxel, 3D now i guess
 
     Run();
 }
@@ -52,49 +41,36 @@ void Game::UpdateInputs()
     glfwPollEvents();
 
     //Player controls
-    if(inputMap->GetKey(GLFW_KEY_W))
-        playerz += 1;
+    if(engine.inputMap->GetKey(GLFW_KEY_W))
+        cameraPos += cameraFront;
     
-    if(inputMap->GetKey(GLFW_KEY_S))
-        playerz -= 1;
+    if(engine.inputMap->GetKey(GLFW_KEY_S))
+        cameraPos -= cameraFront;
 
-    if(inputMap->GetKey(GLFW_KEY_A))
-        playerx += 1;
+    if(engine.inputMap->GetKey(GLFW_KEY_A))
+        cameraPos -= cameraRight;
     
-    if(inputMap->GetKey(GLFW_KEY_D))
-        playerx -= 1;
+    if(engine.inputMap->GetKey(GLFW_KEY_D))
+        cameraPos += cameraRight;
 
-    if(inputMap->GetKey(GLFW_KEY_SPACE))
-        playery -= 1;
+    if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
+        cameraPos += cameraUp;
     
-    if(inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
-        playery += 1;
-
-    //Camera Controls
-    if(inputMap->GetKey(GLFW_KEY_LEFT))
-        cameraX -= 1;
-    
-    if(inputMap->GetKey(GLFW_KEY_RIGHT))
-        cameraX += 1;
-
-    if(inputMap->GetKey(GLFW_KEY_UP))
-        cameraZ += 1;
-    
-    if(inputMap->GetKey(GLFW_KEY_DOWN))
-        cameraZ -= 1;
-
-    //Mouse Controls
-    glfwGetCursorPos(renderer->window, &cameraX, &cameraZ);
+    if(engine.inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
+        cameraPos -= cameraUp;
 }
 
 void Game::Tick()
 {
-    
+    //Update DeltaTime
+    float currentFrameTime = glfwGetTime();
+    deltaTime = currentFrameTime - lastFrame;
+    lastFrame = currentFrameTime;
 }
 
 void Game::Render()
 {
-    renderer->Clear();
+    engine.renderer->Clear();
 
     glUseProgram(assetManager->GetShader("base")->ID);
 
@@ -102,34 +78,39 @@ void Game::Render()
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
 
+    //Camera Angle
+    float yaw = engine.renderer->yaw;
+    float pitch = engine.renderer->pitch;
+
+    glm::vec3 direction;
+    direction.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+    direction.y = glm::sin(glm::radians(pitch));
+    direction.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
+
+    cameraFront = glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+    cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)));
+
     int windowWidth;
     int windowHeight;
-    glfwGetFramebufferSize(renderer->window, &windowWidth, &windowHeight);
+    glfwGetFramebufferSize(engine.renderer->window, &windowWidth, &windowHeight);
 
-    renderer->projection = glm::perspective(glm::radians(80.0f), (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
-    float t = glfwGetTime();
-
-    view = glm::rotate(view, glm::radians((float)cameraX), glm::vec3(0.0f, 1.0f, 0.0f));
-    view  = glm::translate(view, glm::vec3(playerx, playery, playerz));
+    engine.renderer->projection = glm::perspective(glm::radians(80.0f), (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
+    view = glm::lookAt(cameraPos, cameraPos + glm::normalize(direction), cameraUp);
 
     model = glm::translate(model, glm::vec3(0, 0, 0));
     model = glm::scale(model, glm::vec3(1 * 64, 1 * 64, 1));
 
-    assetManager->GetShader("base")->setMat4("projection", renderer->projection);
+    assetManager->GetShader("base")->setMat4("projection", engine.renderer->projection);
     assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 
-    //std::cout << playerz << std::endl;
-
-    glBindVertexArray(renderer->chunkVAO);
-
+    glBindVertexArray(engine.renderer->chunkVAO);
     glActiveTexture(GL_TEXTURE0);
-
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6 * 16 * 16, GL_UNSIGNED_INT, 0);
     
-    renderer->SwapBuffers();
-    isRunning = !glfwWindowShouldClose(renderer->window);
+    engine.renderer->SwapBuffers();
+    isRunning = !glfwWindowShouldClose(engine.renderer->window);
 }
 
 void Game::QuitGame()

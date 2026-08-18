@@ -1,13 +1,7 @@
 #ifndef U_GAME
+#define U_GAME
 
-#include "Engine/Graphics/renderer.hpp"
-#include "Engine/Debugger/debugger.hpp"
-#include "Engine/input.h"
-#include "Engine/asset_manager.hpp"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "Engine/engine.hpp"
 
 #include "unistd.h"
 #include <iostream>
@@ -31,21 +25,26 @@ private:
 
     bool isRunning = true;
 
-    std::unique_ptr<Renderer> renderer;
+    Engine engine;
+
     std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<Debugger> debugger;
-    
-    std::shared_ptr<InputMap> inputMap;
     std::shared_ptr<Shader> baseShader;
 
     float playerx = 0.0f;
     float playery = 0.0f;
     float playerz = 0.0f;
 
-    double cameraX = 0.0f;
-    double cameraZ = 0.0f;
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
 
-    double lastCamX = 0.0f;
+    glm::vec3 cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 cameraRight    = glm::vec3(0.0f, 1.0f,  0.0f);
+    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    glm::vec3 moveRight   = glm::vec3(0.0f, 0.0f, 0.0f); 
+    glm::vec3 moveForward = glm::vec3(0.0f, 0.0f, 0.0f);
 };
 
 #endif

@@ -30,7 +30,8 @@ set(APP_SRCS
     src/Third_Party/glad.c 
     src/Engine/input.cpp 
     src/Engine/Graphics/renderer.cpp 
-    src/Engine/Graphics/sprite.cpp 
+    src/Engine/Graphics/sprite.cpp
+    src/Engine/engine.cpp 
 )
 
 set(IMGUI_SRCS 
