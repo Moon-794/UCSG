@@ -2,7 +2,7 @@
 
 Engine::Engine()
 {
-    //Do nothing
+    //Do nothing, init From Game
 }
 
 void Engine::Init()
@@ -31,9 +31,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         engine->inputMap->SetKey(key, 0);
         return;
     }
-
-    
-    std::cout << "CURSOR CALLBACK ADDR: " << engine->renderer.get() << "\n";
 }
 
 void cursor_position_callback(GLFWwindow* window, double xPos, double yPos)

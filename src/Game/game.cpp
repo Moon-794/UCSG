@@ -72,6 +72,8 @@ void Game::Render()
 {
     engine.renderer->Clear();
 
+    //engine.renderer.DrawFrame
+
     glUseProgram(assetManager->GetShader("base")->ID);
 
     //Base uniforms, different shaders will likely have different uniforms
@@ -97,8 +99,9 @@ void Game::Render()
     engine.renderer->projection = glm::perspective(glm::radians(80.0f), (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
     view = glm::lookAt(cameraPos, cameraPos + glm::normalize(direction), cameraUp);
 
+    //These correspond to the 
     model = glm::translate(model, glm::vec3(0, 0, 0));
-    model = glm::scale(model, glm::vec3(1 * 64, 1 * 64, 1));
+    model = glm::scale(model, glm::vec3(1, 1, 1));
 
     assetManager->GetShader("base")->setMat4("projection", engine.renderer->projection);
     assetManager->GetShader("base")->setMat4("model", model);

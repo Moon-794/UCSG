@@ -31,10 +31,6 @@ private:
     std::unique_ptr<Debugger> debugger;
     std::shared_ptr<Shader> baseShader;
 
-    float playerx = 0.0f;
-    float playery = 0.0f;
-    float playerz = 0.0f;
-
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
