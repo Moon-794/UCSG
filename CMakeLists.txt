@@ -29,6 +29,8 @@ set(APP_SRCS
     src/Engine/asset_manager.cpp
     src/Third_Party/glad.c 
     src/Engine/input.cpp 
+    src/Engine/transform.cpp
+    src/Engine/Graphics/camera.cpp
     src/Engine/Graphics/renderer.cpp 
     src/Engine/Graphics/sprite.cpp
     src/Engine/engine.cpp 

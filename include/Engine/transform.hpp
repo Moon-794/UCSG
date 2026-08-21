@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <iostream>
+
 class Transform
 {
 public:
@@ -14,6 +16,7 @@ public:
     glm::vec3 GetPosition();
     void SetPosition(float x, float y, float z);
     void Translate(float dx, float dy, float dz);
+    void Translate(glm::vec3 translationVector);
 
     // --- Rotation ---
     glm::vec3 GetRotation();
@@ -31,9 +34,9 @@ public:
 
 private:
     //Single source of truth, don't use anything else pls
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
+    glm::vec3 position =    glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 rotation =    glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 scale =       glm::vec3(1.0f, 1.0f, 1.0f);
 };
 
 #endif

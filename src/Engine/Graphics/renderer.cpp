@@ -70,6 +70,10 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     chunkVAO = CreateChunkVAO();
 
     SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+
+    //Init camera stuff
+    camera.SetFOV(80.0f);
+    camera.SetAspectRatio((float)windowWidth/(float)windowHeight);
 }
 
 void Renderer::SwapBuffers()

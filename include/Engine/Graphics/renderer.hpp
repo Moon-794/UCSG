@@ -8,42 +8,37 @@
 #include <string>
 #include <vector>
 
-#include "sprite.hpp"
-#include "shader.hpp"
-
-//An improvement over previous engines at this point is to try and encapsulate all the glfw calls I'll
-//be using within this renderer class, even for simple function calls it could really clean things up
-
-//Window class might also be useful, with a GetWindow() for just grabbing the basic properties
+#include "Engine/Graphics/sprite.hpp"
+#include "Engine/Graphics/shader.hpp"
+#include "Engine/Graphics/camera.hpp"
 
 class Renderer
 {
 public:
     Renderer(std::string windowName, int windowWidth, int windowHeight);
 
+    // Can eventually go in a GameWindow Class or something
     GLFWwindow* window = nullptr;
-
     int windowWidth;
     int windowHeight;
-    unsigned int quadVAO;
+    //-------------------
 
-    glm::vec3 cameraPos = glm::vec3(0);
-    glm::mat4 projection = glm::mat4(1.0f);
-
+    Camera camera;
     void SwapBuffers();
     void Clear();
     void SetClearColor(float r, float g, float b, float a);
+    void Draw();
 
+    //This stuff can eventually go away or somewhere else
     unsigned int chunkVAO;
-
+    unsigned int quadVAO;
     float lastMouseX = 1280.0f;
     float lastMouseY = 720.0f;
 
-    float yaw = 0.0f;
-    float pitch = 0.0f;
-
 private:
 };
+
+//idek what to do with these sort it out later
 
 unsigned int CreateQuadVAO();
 void DrawSprite(Renderer& renderer, const Sprite& sprite);

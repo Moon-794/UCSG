@@ -44,13 +44,15 @@ void cursor_position_callback(GLFWwindow* window, double xPos, double yPos)
     xOffset *= sensitivity;
     yOffset *= sensitivity;
 
-    engine->renderer->yaw += xOffset;
-    engine->renderer->pitch += yOffset;
+    engine->renderer->camera.transform.Rotate(0.0f, -xOffset, 0.0f);
+    engine->renderer->camera.transform.Rotate(yOffset, 0.0f, 0.0f);
 
-    if(engine->renderer->pitch > 89.0f)
-    engine->renderer->pitch =  89.0f;
-    if(engine->renderer->pitch < -89.0f)
-    engine->renderer->pitch = -89.0f;
+    glm::vec3 camRotation = engine->renderer->camera.transform.GetRotation();
+
+    if(camRotation.y > 89.0f)
+        engine->renderer->camera.transform.SetRotation(89.0f, camRotation.y, camRotation.z);
+    if(camRotation.y < -89.0f)
+        engine->renderer->camera.transform.SetRotation(-89.0f, camRotation.y, camRotation.z);
 
     engine->renderer->lastMouseX = xPos;
     engine->renderer->lastMouseY = yPos;

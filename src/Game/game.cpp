@@ -40,24 +40,20 @@ void Game::UpdateInputs()
 {
     glfwPollEvents();
 
+    Transform& cameraTransform = engine.renderer->camera.transform;
+
     //Player controls
     if(engine.inputMap->GetKey(GLFW_KEY_W))
-        cameraPos += cameraFront;
+        cameraTransform.Translate(cameraTransform.Forward());
     
     if(engine.inputMap->GetKey(GLFW_KEY_S))
-        cameraPos -= cameraFront;
+        cameraTransform.Translate(-cameraTransform.Forward());
 
     if(engine.inputMap->GetKey(GLFW_KEY_A))
-        cameraPos -= cameraRight;
+        cameraTransform.Translate(cameraTransform.Right());
     
     if(engine.inputMap->GetKey(GLFW_KEY_D))
-        cameraPos += cameraRight;
-
-    if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
-        cameraPos += cameraUp;
-    
-    if(engine.inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
-        cameraPos -= cameraUp;
+        cameraTransform.Translate(-cameraTransform.Right());
 }
 
 void Game::Tick()
@@ -66,6 +62,8 @@ void Game::Tick()
     float currentFrameTime = glfwGetTime();
     deltaTime = currentFrameTime - lastFrame;
     lastFrame = currentFrameTime;
+
+    //Update Camera
 }
 
 void Game::Render()
@@ -80,30 +78,16 @@ void Game::Render()
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
 
-    //Camera Angle
-    float yaw = engine.renderer->yaw;
-    float pitch = engine.renderer->pitch;
+    Transform cameraTransform = engine.renderer->camera.transform;
+    glm::vec3 test = cameraTransform.Forward();
 
-    glm::vec3 direction;
-    direction.x = glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-    direction.y = glm::sin(glm::radians(pitch));
-    direction.z = glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch));
-
-    cameraFront = glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
-    cameraRight = glm::normalize(glm::cross(cameraFront, glm::vec3(0.0f, 1.0f, 0.0f)));
-
-    int windowWidth;
-    int windowHeight;
-    glfwGetFramebufferSize(engine.renderer->window, &windowWidth, &windowHeight);
-
-    engine.renderer->projection = glm::perspective(glm::radians(80.0f), (float)windowWidth / (float)windowHeight, 0.01f, 20000.0f);
-    view = glm::lookAt(cameraPos, cameraPos + glm::normalize(direction), cameraUp);
-
-    //These correspond to the 
+    view = glm::lookAt(cameraTransform.GetPosition(), cameraTransform.GetPosition() + cameraTransform.Forward(), cameraTransform.Up());
+    
+    //These correspond to the grid
     model = glm::translate(model, glm::vec3(0, 0, 0));
     model = glm::scale(model, glm::vec3(1, 1, 1));
 
-    assetManager->GetShader("base")->setMat4("projection", engine.renderer->projection);
+    assetManager->GetShader("base")->setMat4("projection", engine.renderer->camera.GetProjection());
     assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 

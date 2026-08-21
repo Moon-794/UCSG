@@ -33,14 +33,6 @@ private:
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
-
-    glm::vec3 cameraFront = glm::vec3(1.0f, 0.0f, 0.0f);
-    glm::vec3 cameraRight    = glm::vec3(0.0f, 1.0f,  0.0f);
-    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    glm::vec3 moveRight   = glm::vec3(0.0f, 0.0f, 0.0f); 
-    glm::vec3 moveForward = glm::vec3(0.0f, 0.0f, 0.0f);
 };
 
 #endif

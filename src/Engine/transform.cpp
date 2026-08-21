@@ -12,7 +12,7 @@ glm::vec3 Transform::GetRotation()
 
 void Transform::SetRotation(float x, float y, float z)
 {
-    rotation = glm::vec3(pitch, rotation.y, rotation.z);
+    rotation = glm::vec3(rotation.x, rotation.y, rotation.z);
 }
 
 void Transform::Rotate(float dx, float dy, float dz)
@@ -28,7 +28,7 @@ glm::vec3 Transform::Forward()
     forward.y = glm::sin(glm::radians(rotation.x));
     forward.z = glm::cos(glm::radians(rotation.x)) * glm::cos(glm::radians(rotation.y));
 
-    return glm::normalize(Forward());
+    return glm::normalize(forward);
 }
 
 glm::vec3 Transform::Right()
@@ -39,7 +39,7 @@ glm::vec3 Transform::Right()
     float y = glm::radians(rotation.y);
     float r = glm::radians(rotation.z);
 
-    right.x = glm::cos(y) * glm::cos(r) - glm::sin(p) * glm::sin(y) * glm::sin(r));
+    right.x = glm::cos(y) * glm::cos(r) - glm::sin(p) * glm::sin(y) * glm::sin(r);
     right.y = glm::cos(p) * glm::sin(r);
     right.z = -glm::sin(y) * glm::cos(r) - glm::sin(p) * glm::cos(y) * glm::sin(r);
 
@@ -49,6 +49,10 @@ glm::vec3 Transform::Right()
 glm::vec3 Transform::Up()
 {
     glm::vec3 up = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    float p = glm::radians(rotation.x);
+    float y = glm::radians(rotation.y);
+    float r = glm::radians(rotation.z);
 
     up.x = -glm::sin(p) * glm::sin(y) * glm::cos(r) - glm::cos(y) * glm::sin(r);
     up.y = glm::cos(p) * glm::cos(r);
@@ -70,6 +74,11 @@ void Transform::SetPosition(float x, float y, float z)
 void Transform::Translate(float dx, float dy, float dz)
 {
     position += glm::vec3(dx, dy, dz);
+}
+
+void Transform::Translate(glm::vec3 translationVector)
+{
+    position += translationVector;
 }
 
 glm::vec3 Transform::GetScale()
