@@ -74,6 +74,9 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     //Init camera stuff
     camera.SetFOV(80.0f);
     camera.SetAspectRatio((float)windowWidth/(float)windowHeight);
+
+    //Init AssetManager
+    assetManager = std::make_unique<AssetManager>();
 }
 
 void Renderer::SwapBuffers()
@@ -141,4 +144,35 @@ unsigned int CreateChunkVAO()
     glEnableVertexAttribArray(1);
 
     return VAO;
+}
+
+void Renderer::Draw()
+{
+    this->Clear();
+    glUseProgram(assetManager->GetShader("base")->ID);
+
+    //Base uniforms, different shaders will likely have different uniforms
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+
+    Transform cameraTransform = camera.transform;
+    glm::vec3 cameraPos = cameraTransform.GetPosition();
+    glm::vec3 cameraForward = cameraTransform.Forward();
+    view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+
+    //These correspond to the grid
+    model = glm::translate(model, glm::vec3(0, 0, 0));
+    model = glm::scale(model, glm::vec3(1, 1, 1));
+
+    assetManager->GetShader("base")->setMat4("projection", camera.GetProjection());
+    assetManager->GetShader("base")->setMat4("model", model);
+    assetManager->GetShader("base")->setMat4("view", view);
+
+    glBindVertexArray(chunkVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+    glDrawElements(GL_TRIANGLES, 6 * 16 * 16, GL_UNSIGNED_INT, 0);
+    
+    SwapBuffers();
+    windowCloseRequest = glfwWindowShouldClose(window);
 }

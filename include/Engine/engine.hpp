@@ -4,7 +4,6 @@
 #include "Engine/input.h"
 #include "Engine/Graphics/renderer.hpp"
 #include "Engine/Debugger/debugger.hpp"
-#include "Engine/asset_manager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

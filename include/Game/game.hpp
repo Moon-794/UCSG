@@ -27,10 +27,6 @@ private:
 
     Engine engine;
 
-    std::unique_ptr<AssetManager> assetManager;
-    std::unique_ptr<Debugger> debugger;
-    std::shared_ptr<Shader> baseShader;
-
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 };

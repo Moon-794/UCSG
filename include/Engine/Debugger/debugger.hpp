@@ -18,10 +18,6 @@ struct DebuggerInfo
     glm::vec2 playerPosition;
 };
 
-/* 
-Developer tool to allow visualisation + manipulation of game systems.
-Should not be included in release builds at this point. May in future become an in game console.
-*/
 class Debugger
 {
 public:

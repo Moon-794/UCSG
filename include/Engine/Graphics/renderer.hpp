@@ -7,10 +7,12 @@
 #include <GL/gl.h>
 #include <string>
 #include <vector>
+#include "stdbool.h"
 
 #include "Engine/Graphics/sprite.hpp"
 #include "Engine/Graphics/shader.hpp"
 #include "Engine/Graphics/camera.hpp"
+#include "Engine/Graphics/asset_manager.hpp"
 
 class Renderer
 {
@@ -21,7 +23,10 @@ public:
     GLFWwindow* window = nullptr;
     int windowWidth;
     int windowHeight;
+    bool windowCloseRequest = false;
     //-------------------
+
+    std::unique_ptr<AssetManager> assetManager;
 
     Camera camera;
     void SwapBuffers();
@@ -34,7 +39,6 @@ public:
     unsigned int quadVAO;
     float lastMouseX = 1280.0f;
     float lastMouseY = 720.0f;
-
 private:
 };
 
