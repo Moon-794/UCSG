@@ -14,6 +14,8 @@
 #include "Engine/Graphics/camera.hpp"
 #include "Engine/Graphics/asset_manager.hpp"
 
+#include "Game/asteroid.hpp"
+
 class Renderer
 {
 public:
@@ -32,25 +34,26 @@ public:
     void SwapBuffers();
     void Clear();
     void SetClearColor(float r, float g, float b, float a);
-    void Draw();
+    void DrawAsteroid(const Asteroid& asteroid);
 
     //This stuff can eventually go away or somewhere else
     unsigned int chunkVAO;
     unsigned int quadVAO;
+    unsigned int cubeVAO;
+    
     float lastMouseX = 1280.0f;
     float lastMouseY = 720.0f;
 private:
 };
 
-//idek what to do with these sort it out later
-
-unsigned int CreateQuadVAO();
-void DrawSprite(Renderer& renderer, const Sprite& sprite);
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-static void cursor_position_callback(GLFWwindow* window, double xPos, double yPos);
-
+unsigned int CreateQuadVAO(); //! as all of these are primitives these are very low concern, probs just throw it in voxel manager or something
+unsigned int CreateCubeVAO();
 unsigned int CreateChunkVAO();
-void DrawChunk();
+
+void DrawChunk();                                               //! Not doing the 2D chunks anymore so forget
+void DrawSprite(Renderer& renderer, const Sprite& sprite);      //! Will def be doing sprites for UI later but not a concern right now
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);              //!idek if these can be put somewhere nice but they need to exists so meh
+static void cursor_position_callback(GLFWwindow* window, double xPos, double yPos);
 
 #endif

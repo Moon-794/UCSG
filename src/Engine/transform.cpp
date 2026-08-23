@@ -5,7 +5,7 @@ Transform::Transform()
     //Do nothing
 }
 
-glm::vec3 Transform::GetRotation()
+glm::vec3 Transform::GetRotation() const
 {
     return rotation;
 }
@@ -61,7 +61,7 @@ glm::vec3 Transform::Up()
     return glm::normalize(up);
 }
 
-glm::vec3 Transform::GetPosition()
+glm::vec3 Transform::GetPosition() const
 {
     return position;
 }

@@ -3,6 +3,8 @@
 
 #include "Engine/engine.hpp"
 
+#include "Game/asteroid.hpp"
+
 #include "unistd.h"
 #include <iostream>
 #include <array>
@@ -26,9 +28,13 @@ private:
     bool isRunning = true;
 
     Engine engine;
+    
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
+
+    //Asteroid Related stuff
+    std::vector<Asteroid> asteroids;
 };
 
 #endif

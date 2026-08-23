@@ -13,13 +13,13 @@ public:
     Transform();
 
     // --- Position ---
-    glm::vec3 GetPosition();
+    glm::vec3 GetPosition() const;
     void SetPosition(float x, float y, float z);
     void Translate(float dx, float dy, float dz);
     void Translate(glm::vec3 translationVector);
 
     // --- Rotation ---
-    glm::vec3 GetRotation();
+    glm::vec3 GetRotation() const;
     void SetRotation(float x, float y, float z);
     void Rotate(float dx, float dy, float dz);
 

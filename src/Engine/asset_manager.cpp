@@ -37,7 +37,6 @@ void AssetManager::LoadShaders()
 
 void AssetManager::LoadSprites()
 {
-    //Get all shader folders in resources/shaders
     int folderCount = 0;
 
     std::vector<RawSpriteData> spriteData;

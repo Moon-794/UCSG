@@ -8,6 +8,27 @@ Game::Game()
 void Game::Init()
 {
     engine.Init();
+
+    //Setup Asteroids
+    for (size_t i = 0; i < 200; i++)
+    {
+        Asteroid a;
+        float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/200.0f));
+        float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/200.0f));
+        float z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/200.0f));
+
+        float type = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/30.0f));
+
+        if(type > 15.0f)
+            a.materialType = "iron";
+        else
+            a.materialType = "copper";
+
+        a.transform.SetPosition(x, y, z);
+        asteroids.push_back(a);
+    }
+    
+
     Run();
 }
 
@@ -42,16 +63,16 @@ void Game::UpdateInputs()
 
     //Player controls
     if(engine.inputMap->GetKey(GLFW_KEY_W))
-        cameraTransform.Translate(cameraTransform.Forward());
+        cameraTransform.Translate(cameraTransform.Forward() * 0.15f);
     
     if(engine.inputMap->GetKey(GLFW_KEY_S))
-        cameraTransform.Translate(-cameraTransform.Forward());
+        cameraTransform.Translate(-cameraTransform.Forward() * 0.15f);
 
     if(engine.inputMap->GetKey(GLFW_KEY_A))
-        cameraTransform.Translate(cameraTransform.Right());
+        cameraTransform.Translate(cameraTransform.Right() * 0.15f);
     
     if(engine.inputMap->GetKey(GLFW_KEY_D))
-        cameraTransform.Translate(-cameraTransform.Right());
+        cameraTransform.Translate(-cameraTransform.Right() * 0.15f);
 }
 
 void Game::Tick()
@@ -64,7 +85,14 @@ void Game::Tick()
 
 void Game::Render()
 {
-    engine.renderer->Draw();
+    engine.renderer->Clear();
+
+    for (size_t i = 0; i < asteroids.size(); i++)
+    {    
+        engine.renderer->DrawAsteroid(asteroids[i]);
+    }
+
+    engine.renderer->SwapBuffers();
 }
 
 void Game::QuitGame()

@@ -14,11 +14,34 @@ unsigned int CreateQuadVAO()
     
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);   
-    glBufferData(GL_ARRAY_BUFFER, sizeof(SpriteConstants::vertices), SpriteConstants::vertices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshConstants::vertices), MeshConstants::vertices, GL_DYNAMIC_DRAW);
     
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SpriteConstants::indices), SpriteConstants::indices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshConstants::indices), MeshConstants::indices, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    return VAO;
+}
+
+unsigned int CreateCubeVAO()
+{
+    unsigned int VAO, VBO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);   
+    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshConstants::cubeVertices), MeshConstants::cubeVertices, GL_DYNAMIC_DRAW);
+
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshConstants::cubeIndices), MeshConstants::cubeIndices, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -61,13 +84,13 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
         std::cout << "Failed to initialize GLAD" << std::endl;
     }
 
-    int viewX = windowWidth / 2;
-
     glViewport(0, 0, windowWidth, windowHeight);
     glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
 
     quadVAO = CreateQuadVAO();
     chunkVAO = CreateChunkVAO();
+    cubeVAO = CreateCubeVAO();
 
     SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
@@ -82,6 +105,7 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
 void Renderer::SwapBuffers()
 {
     glfwSwapBuffers(window);
+    windowCloseRequest = glfwWindowShouldClose(window);
     glFinish();
 }
 
@@ -92,7 +116,7 @@ void Renderer::SetClearColor(float r, float g, float b, float a)
 
 void Renderer::Clear()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 unsigned int CreateChunkVAO()
@@ -146,9 +170,8 @@ unsigned int CreateChunkVAO()
     return VAO;
 }
 
-void Renderer::Draw()
+void Renderer::DrawAsteroid(const Asteroid& a)
 {
-    this->Clear();
     glUseProgram(assetManager->GetShader("base")->ID);
 
     //Base uniforms, different shaders will likely have different uniforms
@@ -161,18 +184,25 @@ void Renderer::Draw()
     view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
 
     //These correspond to the grid
-    model = glm::translate(model, glm::vec3(0, 0, 0));
+    model = glm::translate(model, a.transform.GetPosition());
     model = glm::scale(model, glm::vec3(1, 1, 1));
 
     assetManager->GetShader("base")->setMat4("projection", camera.GetProjection());
     assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 
-    glBindVertexArray(chunkVAO);
-    glActiveTexture(GL_TEXTURE0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
-    glDrawElements(GL_TRIANGLES, 6 * 16 * 16, GL_UNSIGNED_INT, 0);
+    std::string mat = "copper";
+    glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    if(a.materialType == "iron")
+        color = glm::vec3(51.0f/255.0f, 163.0f/255.0f, 232.0f/255.0f);
+    else
+        color = glm::vec3(230.0f/255.0f, 78.0f/255.0f, 14.0f/255.0f);
     
-    SwapBuffers();
-    windowCloseRequest = glfwWindowShouldClose(window);
+    assetManager->GetShader("base")->setVec3("inputColor", color);
+
+    glBindVertexArray(cubeVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
