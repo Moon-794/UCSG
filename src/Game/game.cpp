@@ -24,11 +24,10 @@ void Game::Init()
         else
             a.materialType = "copper";
 
-        a.transform.SetPosition(x, y, z);
+        a.transform.SetPosition(x - 100.0f, y - 100.0f, z - 100.0f);
         asteroids.push_back(a);
     }
     
-
     Run();
 }
 
@@ -61,18 +60,26 @@ void Game::UpdateInputs()
 
     Transform& cameraTransform = engine.renderer->camera.transform;
 
+    float movespeed = 0.15f;
+
+    if(engine.inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
+        movespeed = 0.0002f;
+
     //Player controls
     if(engine.inputMap->GetKey(GLFW_KEY_W))
-        cameraTransform.Translate(cameraTransform.Forward() * 0.15f);
+        cameraTransform.Translate(cameraTransform.Forward() * movespeed);
     
     if(engine.inputMap->GetKey(GLFW_KEY_S))
-        cameraTransform.Translate(-cameraTransform.Forward() * 0.15f);
+        cameraTransform.Translate(-cameraTransform.Forward() * movespeed);
 
     if(engine.inputMap->GetKey(GLFW_KEY_A))
-        cameraTransform.Translate(cameraTransform.Right() * 0.15f);
+        cameraTransform.Translate(cameraTransform.Right() * movespeed);
     
     if(engine.inputMap->GetKey(GLFW_KEY_D))
-        cameraTransform.Translate(-cameraTransform.Right() * 0.15f);
+        cameraTransform.Translate(-cameraTransform.Right() * movespeed);
+    
+    if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
+        HitAsteroid();
 }
 
 void Game::Tick()
@@ -93,6 +100,22 @@ void Game::Render()
     }
 
     engine.renderer->SwapBuffers();
+}
+
+void Game::HitAsteroid()
+{
+    for (size_t i = 0; i < asteroids.size(); i++)
+    {
+        glm::vec3 hitPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+        if(Physics::Raycast(engine.renderer->camera.transform.GetPosition(), engine.renderer->camera.transform.Forward(), asteroids[i].transform.GetPosition(), hitPosition))
+        {
+            return;
+        }
+    }
+    
+    std::cout << "No hit detected..." << std::endl;
+    debugColor = glm::vec3(1, 0, 0);
+    return;
 }
 
 void Game::QuitGame()

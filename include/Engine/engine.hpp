@@ -2,6 +2,7 @@
 #define U_ENGINE
 
 #include "Engine/input.h"
+#include "Engine/Physics/physics.hpp"
 #include "Engine/Graphics/renderer.hpp"
 #include "Engine/Debugger/debugger.hpp"
 

@@ -25,6 +25,9 @@ private:
     void Tick();            //Main update function to tick along current GameState
     void Render();          //Draw a scene based on gamestate - The program should work fine with this disabled
 
+    //Gameplay
+    void HitAsteroid();
+
     bool isRunning = true;
 
     Engine engine;
@@ -35,6 +38,7 @@ private:
 
     //Asteroid Related stuff
     std::vector<Asteroid> asteroids;
+    glm::vec3 debugColor = glm::vec3(0.0f, 0.0f, 0.0f);
 };
 
 #endif

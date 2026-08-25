@@ -27,7 +27,8 @@ set(APP_SRCS
     src/main.cpp
     src/Game/game.cpp
     src/Engine/asset_manager.cpp
-    src/Third_Party/glad.c 
+    src/Third_Party/glad.c
+    src/Engine/Physics/physics.cpp 
     src/Engine/input.cpp 
     src/Engine/transform.cpp
     src/Engine/Graphics/camera.cpp

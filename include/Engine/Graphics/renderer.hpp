@@ -35,6 +35,7 @@ public:
     void Clear();
     void SetClearColor(float r, float g, float b, float a);
     void DrawAsteroid(const Asteroid& asteroid);
+    void DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 color);
 
     //This stuff can eventually go away or somewhere else
     unsigned int chunkVAO;

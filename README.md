@@ -25,4 +25,72 @@ For the alpha build, the following features are good enough I think:
 ### Could Have
 - Light Mod Support
 
+## Notes - Beginning
+In terms of complexity i mean walls can have multiple thin pipes running up and across them, and slight recesses into walls for custom control panels etc
+The game is intended for 3D, it will be developed in mind as a 3D game, this is final.
+However for a large part of development, gameplay will be the primary focus, not the 3D rendering system.
+
+The solution will be to develop the game with a "simulation first" approach, and have a temporary 2D
+"debug" view whilst the 3D engine is being worked on.
+
+It is important to not sleep on the 2D view, as it will likely become an extremely powerful debug tool
+over the course of development.
+
+The complex ship interiors I have in my head is probably not possible to plan for as a first pass,
+so scope will need to be limited till I have a better hand on things, and it will need iterated from there.
+
+In terms of complexity i mean walls can have multiple thin pipes running up and across them, 
+and slight recesses into walls for custom control panels etc
+
+# Notes 02/07/2026
+After a good bit of thinking, I think I want a dynamic "chisel and bits" based gameplay loop.
+So I think in terms of high level systems that are to be worked on, there are 3 main ones:
+- Base Building / World Setting
+- Dynamic bits / Processing
+- Asteroid Harvesting / Material Gathering
+
+I am happy enough with these 3 pillars, and will work on them without trying to introduce scope creep.
+
+## Version 1 World Data layout:
+ 
+2D grid of floor tiles.
+Each tile has a ceiling height in meters.
+That is it
+
+## Version 1 Asteroid harvesting:
+ 
+Asteroids of 2 types (copper/iron) appear randomly at a static height around ship.
+Player can spacewalk with basically no restrictions and mine them with a pick.
+Mining fills two global resource meters.
+Spend resources to expand ship.
+
+# Folder Structure
+
+Game/
+├── engine/
+│   ├── graphics/
+│   │   ├── Renderer.cpp
+│   │   └── Renderer.h
+│   ├── input/
+│   ├── audio/
+│   ├── assets/
+│   ├── debug/
+│   │   └── ImGuiLayer.cpp
+│   └── core/
+│
+├── game/
+│   ├── Player.cpp
+│   ├── Ship.cpp
+│   ├── Asteroid.cpp
+│   ├── Inventory.cpp
+│   └── ...
+│
+└── third_party/
+    ├── glad/
+    ├── stb/
+    ├── imgui/
+    └── entt/
+
+
+
 

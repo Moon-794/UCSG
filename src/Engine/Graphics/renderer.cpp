@@ -191,7 +191,6 @@ void Renderer::DrawAsteroid(const Asteroid& a)
     assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 
-    std::string mat = "copper";
     glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
 
     if(a.materialType == "iron")
@@ -199,6 +198,35 @@ void Renderer::DrawAsteroid(const Asteroid& a)
     else
         color = glm::vec3(230.0f/255.0f, 78.0f/255.0f, 14.0f/255.0f);
     
+    assetManager->GetShader("base")->setVec3("inputColor", color);
+
+    glBindVertexArray(cubeVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+}
+
+void Renderer::DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 color)
+{
+    glUseProgram(assetManager->GetShader("base")->ID);
+
+    //Base uniforms, different shaders will likely have different uniforms
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+
+    Transform cameraTransform = camera.transform;
+    glm::vec3 cameraPos = cameraTransform.GetPosition();
+    glm::vec3 cameraForward = cameraTransform.Forward();
+    view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+
+    //These correspond to the grid
+    model = glm::translate(model, position);
+    model = glm::scale(model, scale);
+
+    assetManager->GetShader("base")->setMat4("projection", camera.GetProjection());
+    assetManager->GetShader("base")->setMat4("model", model);
+    assetManager->GetShader("base")->setMat4("view", view);
+
     assetManager->GetShader("base")->setVec3("inputColor", color);
 
     glBindVertexArray(cubeVAO);
