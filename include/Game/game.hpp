@@ -11,6 +11,12 @@
 #include <thread>
 #include <chrono>
 
+struct PlayerStats
+{
+    int ironAmount = 0;
+    int copperAmount = 0;
+};
+
 class Game
 {
 public:
@@ -29,9 +35,7 @@ private:
     void HitAsteroid();
 
     bool isRunning = true;
-
     Engine engine;
-    
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -39,6 +43,9 @@ private:
     //Asteroid Related stuff
     std::vector<Asteroid> asteroids;
     glm::vec3 debugColor = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    //Player related stuff
+    PlayerStats stats;
 };
 
 #endif

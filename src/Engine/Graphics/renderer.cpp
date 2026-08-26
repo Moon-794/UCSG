@@ -172,6 +172,9 @@ unsigned int CreateChunkVAO()
 
 void Renderer::DrawAsteroid(const Asteroid& a)
 {
+    if(!a.isActive)
+        return;
+    
     glUseProgram(assetManager->GetShader("base")->ID);
 
     //Base uniforms, different shaders will likely have different uniforms

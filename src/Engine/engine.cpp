@@ -20,15 +20,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
     Engine* engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
 
-    if(action == GLFW_PRESS)
-    {
-        engine->inputMap->SetKey(key, 1);
-        return;
-    }
-
     if(action == GLFW_RELEASE)
     {
         engine->inputMap->SetKey(key, 0);
+        return;
+    }
+
+    if(action == GLFW_PRESS)
+    {
+        engine->inputMap->SetKey(key, 1);
         return;
     }
 }

@@ -78,8 +78,10 @@ void Game::UpdateInputs()
     if(engine.inputMap->GetKey(GLFW_KEY_D))
         cameraTransform.Translate(-cameraTransform.Right() * movespeed);
     
-    if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
-        HitAsteroid();
+    if(engine.inputMap->GetKeyDown(GLFW_KEY_SPACE))
+       HitAsteroid();
+
+    engine.inputMap->SetKeyDown();
 }
 
 void Game::Tick()
@@ -109,6 +111,11 @@ void Game::HitAsteroid()
         glm::vec3 hitPosition = glm::vec3(0.0f, 0.0f, 0.0f);
         if(Physics::Raycast(engine.renderer->camera.transform.GetPosition(), engine.renderer->camera.transform.Forward(), asteroids[i].transform.GetPosition(), hitPosition))
         {
+            asteroids[i].remainingMaterial -= 20;
+            if(asteroids[i].remainingMaterial <= 0)
+            {
+                asteroids[i].isActive = false;
+            }
             return;
         }
     }
