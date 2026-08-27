@@ -2,13 +2,24 @@
 #define U_WORLD
 
 #include "stdio.h"
+#include <array>
+
+enum TileType
+{
+    empty,
+    ship,
+    door
+};
 
 struct World
 {
-    constexpr int ROWS = 16;
-    constexpr int COLS = 16;
+public:
+    void Init();
 
-    std::array<std::array<bool, ROWS>, COLS> shipGrid {};
+    constexpr static int ROWS = 16;
+    constexpr static int COLS = 16;
+
+    std::array<std::array<TileType, COLS>, ROWS> shipGrid {};
 };
 
 #endif

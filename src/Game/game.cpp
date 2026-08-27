@@ -27,7 +27,9 @@ void Game::Init()
         a.transform.SetPosition(x - 100.0f, y - 100.0f, z - 100.0f);
         asteroids.push_back(a);
     }
-    
+
+    world.Init();
+
     Run();
 }
 

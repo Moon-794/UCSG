@@ -2,7 +2,8 @@
 #define U_GAME
 
 #include "Engine/engine.hpp"
-
+#include "Game/game.hpp"
+#include "Game/world.hpp"
 #include "Game/asteroid.hpp"
 
 #include "unistd.h"
@@ -46,6 +47,7 @@ private:
 
     //Player related stuff
     PlayerStats stats;
+    World world;
 };
 
 #endif
