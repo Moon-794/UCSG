@@ -16,10 +16,10 @@ struct World
 public:
     void Init();
 
-    constexpr static int ROWS = 16;
-    constexpr static int COLS = 16;
+    constexpr static int ROWS = 32;
+    constexpr static int COLS = 32;
 
-    std::array<std::array<TileType, COLS>, ROWS> shipGrid {};
+    std::array<std::array<TileType, ROWS>, COLS> shipGrid {};
 };
 
 #endif

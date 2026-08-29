@@ -6,29 +6,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-unsigned int CreateQuadVAO()
-{
-    unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);   
-    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshConstants::vertices), MeshConstants::vertices, GL_DYNAMIC_DRAW);
-    
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshConstants::indices), MeshConstants::indices, GL_DYNAMIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    return VAO;
-}
-
 unsigned int CreateCubeVAO()
 {
     unsigned int VAO, VBO, EBO;
@@ -88,8 +65,6 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
-    quadVAO = CreateQuadVAO();
-    chunkVAO = CreateChunkVAO();
     cubeVAO = CreateCubeVAO();
 
     SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
@@ -100,6 +75,8 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
 
     //Init AssetManager
     assetManager = std::make_unique<AssetManager>();
+
+    shipMesh.Init();
 }
 
 void Renderer::SwapBuffers()
@@ -236,4 +213,68 @@ void Renderer::DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 colo
     glActiveTexture(GL_TEXTURE0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+}
+
+void Renderer::UpdateShipMesh(World& world)
+{
+    shipMesh.vertices.clear();
+    shipMesh.indices.clear();
+
+    for (size_t i = 0; i < world.ROWS; i++)
+    {
+        for (size_t j = 0; j < world.COLS; j++)
+        {
+            if(world.shipGrid[i][j] == TileType::ship)
+            {
+                // Floor and roof mesh
+                unsigned int k = shipMesh.vertices.size() / 5;
+
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 0.0f,    0.00f, 1.00f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 1.0f,    0.25f, 0.75f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 1.0f,    0.00f, 0.75f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 0.0f,    0.25f, 1.00f});
+                
+                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 3, k + 1, k + 2, k});
+                k = shipMesh.vertices.size() / 5;
+
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.00f, 1.00f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 1.0f,    0.25f, 0.75f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 1.0f,    0.00f, 0.75f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.25f, 1.00f});
+                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 3, k + 1, k + 2, k});
+            }
+        } 
+    }
+
+    shipMesh.UpdateBuffers();
+}
+
+void Renderer::DrawShip()
+{
+    glUseProgram(assetManager->GetShader("area")->ID);
+
+    //Base uniforms, different shaders will likely have different uniforms
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+
+    Transform cameraTransform = camera.transform;
+    glm::vec3 cameraPos = cameraTransform.GetPosition();
+    glm::vec3 cameraForward = cameraTransform.Forward();
+    view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+
+    //These correspond to the grid
+    model = glm::translate(model, glm::vec3(0, 0, 0));
+    model = glm::scale(model, glm::vec3(1, 1, 1));
+
+    assetManager->GetShader("area")->setMat4("projection", camera.GetProjection());
+    assetManager->GetShader("area")->setMat4("model", model);
+    assetManager->GetShader("area")->setMat4("view", view);
+
+    assetManager->GetShader("area")->setVec3("inputColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    unsigned int texID = assetManager->GetTexture("Textures");
+    glBindVertexArray(shipMesh.VAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texID);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawElements(GL_TRIANGLES, 32 * 32 * 6 * 2, GL_UNSIGNED_INT, 0);
 }

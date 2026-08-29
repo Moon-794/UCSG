@@ -9,12 +9,14 @@
 #include <vector>
 #include "stdbool.h"
 
+#include "Engine/Graphics/mesh.hpp"
 #include "Engine/Graphics/sprite.hpp"
 #include "Engine/Graphics/shader.hpp"
 #include "Engine/Graphics/camera.hpp"
 #include "Engine/Graphics/asset_manager.hpp"
 
 #include "Game/asteroid.hpp"
+#include "Game/world.hpp"
 
 class Renderer
 {
@@ -36,23 +38,24 @@ public:
     void SetClearColor(float r, float g, float b, float a);
     void DrawAsteroid(const Asteroid& asteroid);
     void DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 color);
+    void DrawShip();
+
+    void UpdateShipMesh(World& world);
 
     //This stuff can eventually go away or somewhere else
     unsigned int chunkVAO;
     unsigned int quadVAO;
     unsigned int cubeVAO;
+
+    Mesh shipMesh;
     
     float lastMouseX = 1280.0f;
     float lastMouseY = 720.0f;
 private:
+
 };
 
-unsigned int CreateQuadVAO(); //! as all of these are primitives these are very low concern, probs just throw it in voxel manager or something
 unsigned int CreateCubeVAO();
-unsigned int CreateChunkVAO();
-
-void DrawChunk();                                               //! Not doing the 2D chunks anymore so forget
-void DrawSprite(Renderer& renderer, const Sprite& sprite);      //! Will def be doing sprites for UI later but not a concern right now
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);              //!idek if these can be put somewhere nice but they need to exists so meh
 static void cursor_position_callback(GLFWwindow* window, double xPos, double yPos);

@@ -29,6 +29,7 @@ void Game::Init()
     }
 
     world.Init();
+    engine.renderer->UpdateShipMesh(world);
 
     Run();
 }
@@ -102,6 +103,8 @@ void Game::Render()
     {    
         engine.renderer->DrawAsteroid(asteroids[i]);
     }
+
+    engine.renderer->DrawShip();
 
     engine.renderer->SwapBuffers();
 }

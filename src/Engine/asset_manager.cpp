@@ -1,11 +1,14 @@
 #include "Engine/Graphics/asset_manager.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "Third_Party/stb_image.h"
+
 AssetManager::AssetManager()
 {
     std::cout << "Loading resources..." << std::endl;
 
     LoadShaders();
-    LoadSprites();
+    LoadTextures();
 }
 
 //Create and store a shader for each subfolder in the resources/shaders directory
@@ -35,19 +38,42 @@ void AssetManager::LoadShaders()
     std::cout << "Loaded " << folderCount << " shaders..." << std::endl;
 }
 
-void AssetManager::LoadSprites()
+void AssetManager::LoadTextures()
 {
     int folderCount = 0;
 
-    std::vector<RawSpriteData> spriteData;
-
-    const std::string resourcesPath = "resources/sprites";
+    const std::string resourcesPath = "resources/textures";
     for(const auto& entry : fs::directory_iterator(resourcesPath))
     {
+        std::string folderPath = std::regex_replace(entry.path().string(), std::regex("\\\\"), "/");
 
+        int width, height, nrChannels;
+        unsigned char *data = stbi_load(folderPath.c_str(), &width, &height, &nrChannels, 0);
+        
+        unsigned int textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            std::cout << "Failed to load texture" << std::endl;
+        }
+        
+        stbi_image_free(data);
+
+        std::string textureName(entry.path().stem().string());
+        textureMap.insert({textureName, textureID});
     }
-
-    GenerateSpriteSheet(spriteData);
 }
 
 std::shared_ptr<Shader> AssetManager::GetShader(const std::string& shaderName) const
@@ -55,7 +81,7 @@ std::shared_ptr<Shader> AssetManager::GetShader(const std::string& shaderName) c
     return shaderMap.at(shaderName);
 }
 
-void AssetManager::GenerateSpriteSheet(std::vector<RawSpriteData>& sprites)
+unsigned int AssetManager::GetTexture(const std::string& textureName) const
 {
-    
+    return textureMap.at(textureName);
 }
