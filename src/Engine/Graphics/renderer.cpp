@@ -70,6 +70,10 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
+    //Enable Transparency controlled by alpha channel
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     //glEnable(GL_CULL_FACE);      
     glFrontFace(GL_CCW); 
 
@@ -234,7 +238,7 @@ void Renderer::UpdateShipMesh(World& world)
     {
         for (size_t j = 0; j < world.COLS; j++)
         {
-            if(world.shipGrid[i][j] == TileType::ship)
+            if(world.shipGrid[i][j] == TileType::ship || world.shipGrid[i][j] == TileType::door)
             {
                 // Floor and roof mesh
                 unsigned int k = shipMesh.vertices.size() / 5;
@@ -283,12 +287,16 @@ void Renderer::UpdateShipMesh(World& world)
                 
                 if(j == 0 || world.shipGrid[i][j - 1] == TileType::empty)
                 {
+                    float UVoffset = 0.0f;
+                    if(j == 0 && world.shipGrid[i][j] == TileType::door)
+                        UVoffset = 0.25f;
+
                     k = shipMesh.vertices.size() / 5;
 
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 0.0f,    0.50f, 0.00f});
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 0.0f,    0.25f, 0.00f});
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.50f, 1.00f});
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.25f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 0.0f,    0.50f + UVoffset, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 0.0f,    0.25f + UVoffset, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.50f + UVoffset, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.25f + UVoffset, 1.00f});
                     shipMesh.indices.insert(shipMesh.indices.end(), {k + 2, k + 3, k, k + 3, k + 1, k});
                 }
 
