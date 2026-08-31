@@ -65,6 +65,10 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
+    glEnable(GL_CULL_FACE);      // Turn on face culling
+    glCullFace(GL_BACK);         // Choose to cull back-facing triangles (default)
+    glFrontFace(GL_CCW); 
+
     cubeVAO = CreateCubeVAO();
 
     SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
@@ -158,10 +162,12 @@ void Renderer::DrawAsteroid(const Asteroid& a)
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
 
+    glm::vec3 cameraRot = camera.transform.GetRotation();
+
     Transform cameraTransform = camera.transform;
     glm::vec3 cameraPos = cameraTransform.GetPosition();
     glm::vec3 cameraForward = cameraTransform.Forward();
-    view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+    view = glm::lookAtLH(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
 
     //These correspond to the grid
     model = glm::translate(model, a.transform.GetPosition());
@@ -229,21 +235,41 @@ void Renderer::UpdateShipMesh(World& world)
                 // Floor and roof mesh
                 unsigned int k = shipMesh.vertices.size() / 5;
 
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 0.0f,    0.00f, 1.00f});
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 1.0f,    0.25f, 0.75f});
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 1.0f,    0.00f, 0.75f});
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 0.0f,    0.25f, 1.00f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 0.0f,    0.00f, 0.00f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 1.0f,    0.25f, 0.25f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 1.0f,    0.00f, 0.25f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 0.0f,    0.25f, 0.00f});
                 
-                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 3, k + 1, k + 2, k});
+                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 2, k + 1, k, k + 3});
                 k = shipMesh.vertices.size() / 5;
 
                 shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.00f, 1.00f});
                 shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 1.0f,    0.25f, 0.75f});
                 shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 1.0f,    0.00f, 0.75f});
                 shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.25f, 1.00f});
-                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 3, k + 1, k + 2, k});
+                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 3, k, k + 2, k + 1});
+
+                //~-------------- WALLS -------------
+                float rowLeft = (i - 1) >= 0 ? i - 1 : 0;
+                float rowRight = (i + 1) < world.ROWS ? i + 1 : world.ROWS - 1;
+
+                float colDown = (j - 1) >= 0 ? j - 1: 0;
+                float colUp = (j + 1) < world.COLS ? j + 1 : world.COLS - 1;
+            
+                if(rowLeft == 0)
+                {
+                    k = shipMesh.vertices.size() / 5;
+
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 0.0f, j + 0.0f,    0.25f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 0.0f, j + 1.0f,    0.50f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 4.0f, j + 0.0f,    0.25f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 4.0f, j + 1.0f,    0.50f, 0.00f});
+                    shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 3, k + 2, k + 3, k + 1, k});
+                }
             }
-        } 
+            
+        }
+        
     }
 
     shipMesh.UpdateBuffers();
@@ -260,7 +286,7 @@ void Renderer::DrawShip()
     Transform cameraTransform = camera.transform;
     glm::vec3 cameraPos = cameraTransform.GetPosition();
     glm::vec3 cameraForward = cameraTransform.Forward();
-    view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+    view = glm::lookAtLH(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
 
     //These correspond to the grid
     model = glm::translate(model, glm::vec3(0, 0, 0));
@@ -275,6 +301,6 @@ void Renderer::DrawShip()
     glBindVertexArray(shipMesh.VAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texID);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES, 32 * 32 * 6 * 2, GL_UNSIGNED_INT, 0);
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glDrawElements(GL_TRIANGLES, 32 * 32 * 6 * 2 * 4, GL_UNSIGNED_INT, 0);
 }

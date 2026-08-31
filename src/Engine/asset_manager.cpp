@@ -7,6 +7,9 @@ AssetManager::AssetManager()
 {
     std::cout << "Loading resources..." << std::endl;
 
+    //Y flipping on images
+    stbi_set_flip_vertically_on_load(true);
+
     LoadShaders();
     LoadTextures();
 }
@@ -49,6 +52,13 @@ void AssetManager::LoadTextures()
 
         int width, height, nrChannels;
         unsigned char *data = stbi_load(folderPath.c_str(), &width, &height, &nrChannels, 0);
+
+        if (!data) 
+        {
+            std::cerr << "Failed to load: " << entry.path().string()
+                    << "\n" << stbi_failure_reason() << '\n';
+            return;
+        }
         
         unsigned int textureID;
         glGenTextures(1, &textureID);

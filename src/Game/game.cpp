@@ -28,6 +28,9 @@ void Game::Init()
         asteroids.push_back(a);
     }
 
+    asteroids[0].transform.SetPosition(32, 0, 32);
+    asteroids[0].transform.SetScale(0.1f, 0.1f, 0.1f);
+
     world.Init();
     engine.renderer->UpdateShipMesh(world);
 

@@ -44,7 +44,7 @@ void cursor_position_callback(GLFWwindow* window, double xPos, double yPos)
     xOffset *= sensitivity;
     yOffset *= sensitivity;
 
-    engine->renderer->camera.transform.Rotate(0.0f, -xOffset, 0.0f);
+    engine->renderer->camera.transform.Rotate(0.0f, xOffset, 0.0f);
     engine->renderer->camera.transform.Rotate(yOffset, 0.0f, 0.0f);
 
     glm::vec3 camRotation = engine->renderer->camera.transform.GetRotation();

@@ -24,7 +24,7 @@ float Camera::GetAspectRatio() const
 
 void Camera::CalculateProjection()
 {
-    projection = glm::perspective(glm::radians(fov), aspectRatio, 0.0001f, 20000.0f);
+    projection = glm::perspectiveLH(glm::radians(fov), aspectRatio, 0.0001f, 20000.0f);
 }
 
 const glm::mat4& Camera::GetProjection() const

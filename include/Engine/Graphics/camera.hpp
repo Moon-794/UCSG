@@ -20,6 +20,7 @@ public:
     float GetAspectRatio() const;
 
     const glm::mat4& GetProjection() const;
+    glm::mat4 GetViewMatrix();
 
 private:
     float fov = 80.0f;

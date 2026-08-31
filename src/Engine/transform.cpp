@@ -33,17 +33,7 @@ glm::vec3 Transform::Forward()
 
 glm::vec3 Transform::Right()
 {
-    glm::vec3 right = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    float p = glm::radians(rotation.x);
-    float y = glm::radians(rotation.y);
-    float r = glm::radians(rotation.z);
-
-    right.x = glm::cos(y) * glm::cos(r) - glm::sin(p) * glm::sin(y) * glm::sin(r);
-    right.y = glm::cos(p) * glm::sin(r);
-    right.z = -glm::sin(y) * glm::cos(r) - glm::sin(p) * glm::cos(y) * glm::sin(r);
-
-    return glm::normalize(right);
+    return glm::normalize(glm::cross(Forward(), Up()));
 }
 
 glm::vec3 Transform::Up()
