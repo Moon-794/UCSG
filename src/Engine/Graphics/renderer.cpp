@@ -1,6 +1,11 @@
 #include "Engine/Graphics/renderer.hpp"
 #include "Engine/engine.hpp"
 
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <string_view>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -65,8 +70,7 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_CULL_FACE);      // Turn on face culling
-    glCullFace(GL_BACK);         // Choose to cull back-facing triangles (default)
+    //glEnable(GL_CULL_FACE);      
     glFrontFace(GL_CCW); 
 
     cubeVAO = CreateCubeVAO();
@@ -243,28 +247,60 @@ void Renderer::UpdateShipMesh(World& world)
                 shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 2, k + 1, k, k + 3});
                 k = shipMesh.vertices.size() / 5;
 
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.00f, 1.00f});
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 1.0f,    0.25f, 0.75f});
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 1.0f,    0.00f, 0.75f});
-                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.25f, 1.00f});
-                shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 1, k + 3, k, k + 2, k + 1});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.25f, 0.00f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 1.0f,    0.00f, 0.25f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 1.0f,    0.25f, 0.25f});
+                shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.00f, 0.00f});
+                shipMesh.indices.insert(shipMesh.indices.end(), {k + 2, k + 1, k, k + 3, k, k + 1});
 
                 //~-------------- WALLS -------------
-                float rowLeft = (i - 1) >= 0 ? i - 1 : 0;
                 float rowRight = (i + 1) < world.ROWS ? i + 1 : world.ROWS - 1;
 
                 float colDown = (j - 1) >= 0 ? j - 1: 0;
                 float colUp = (j + 1) < world.COLS ? j + 1 : world.COLS - 1;
-            
-                if(rowLeft == 0)
+
+                if(i == 0 || world.shipGrid[i - 1][j] == TileType::empty)
                 {
                     k = shipMesh.vertices.size() / 5;
 
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 0.0f, j + 0.0f,    0.25f, 1.00f});
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 0.0f, j + 1.0f,    0.50f, 1.00f});
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 4.0f, j + 0.0f,    0.25f, 0.00f});
-                    shipMesh.vertices.insert(shipMesh.vertices.end(), {rowLeft, 4.0f, j + 1.0f,    0.50f, 0.00f});
-                    shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 3, k + 2, k + 3, k + 1, k});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i, 0.0f, j + 0.0f,    0.25f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i, 0.0f, j + 1.0f,    0.50f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i, 4.0f, j + 0.0f,    0.25f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i, 4.0f, j + 1.0f,    0.50f, 1.00f});
+                    shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 3, k + 2, k, k + 1, k + 3});
+                }
+                
+                if(i == world.ROWS - 1 || world.shipGrid[i + 1][j] == TileType::empty)
+                {
+                    k = shipMesh.vertices.size() / 5;
+
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i + 1, 0.0f, j + 0.0f,    0.50f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i + 1, 0.0f, j + 1.0f,    0.25f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i + 1, 4.0f, j + 0.0f,    0.50f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {(float)i + 1, 4.0f, j + 1.0f,    0.25f, 1.00f});
+                    shipMesh.indices.insert(shipMesh.indices.end(), {k + 2, k + 3, k, k + 3, k + 1, k});
+                }
+                
+                if(j == 0 || world.shipGrid[i][j - 1] == TileType::empty)
+                {
+                    k = shipMesh.vertices.size() / 5;
+
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 0.0f,    0.50f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 0.0f,    0.25f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 0.0f,    0.50f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 0.0f,    0.25f, 1.00f});
+                    shipMesh.indices.insert(shipMesh.indices.end(), {k + 2, k + 3, k, k + 3, k + 1, k});
+                }
+
+                if(j == world.COLS - 1 || world.shipGrid[i][j + 1] == TileType::empty)
+                {
+                    k = shipMesh.vertices.size() / 5;
+
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 0.0f, j + 1.0f,    0.25f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 0.0f, j + 1.0f,    0.50f, 0.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 0.0f, 4.0f, j + 1.0f,    0.25f, 1.00f});
+                    shipMesh.vertices.insert(shipMesh.vertices.end(), {i + 1.0f, 4.0f, j + 1.0f,    0.50f, 1.00f});
+                    shipMesh.indices.insert(shipMesh.indices.end(), {k, k + 3, k + 2, k, k + 1, k + 3});
                 }
             }
             

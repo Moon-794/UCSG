@@ -6,7 +6,15 @@ void World::Init()
     {
         for (size_t j = 0; j < 32; j++)
         {
-            shipGrid[i][j] = TileType::ship;
+            if(i < 8 && j < 8)
+                shipGrid[i][j] = TileType::ship;
+            else
+                shipGrid[i][j] = TileType::empty;
         } 
     }
+
+    shipGrid[0][7] = TileType::empty;
+    shipGrid[7][7] = TileType::empty;
+
+    shipGrid[13][13] = TileType::ship;
 }
