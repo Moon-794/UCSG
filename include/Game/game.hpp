@@ -46,6 +46,10 @@ private:
     glm::vec3 debugColor = glm::vec3(0.0f, 0.0f, 0.0f);
 
     //Player related stuff
+    float playerWidth;
+    float playerHeight = 1.5f;
+
+    Transform playerTransform;
     PlayerStats stats;
     World world;
 };

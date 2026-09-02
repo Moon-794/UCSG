@@ -34,6 +34,8 @@ void Game::Init()
     world.Init();
     engine.renderer->UpdateShipMesh(world);
 
+    engine.renderer->camera.transform.SetPosition(3, 2, 3);
+
     Run();
 }
 
@@ -65,27 +67,39 @@ void Game::UpdateInputs()
     glfwPollEvents();
 
     Transform& cameraTransform = engine.renderer->camera.transform;
+    glm::vec3 camForward = glm::vec3(cameraTransform.Forward().x, 0.0f, cameraTransform.Forward().z);
 
-    float movespeed = 0.15f;
+    float movespeed = 0.075f;
+    glm::vec3 moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
 
     if(engine.inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
-        movespeed = 0.0002f;
+        movespeed = 0.025f;
 
     //Player controls
     if(engine.inputMap->GetKey(GLFW_KEY_W))
-        cameraTransform.Translate(cameraTransform.Forward() * movespeed);
+        moveVector += camForward;
     
     if(engine.inputMap->GetKey(GLFW_KEY_S))
-        cameraTransform.Translate(-cameraTransform.Forward() * movespeed);
+        moveVector -= camForward;
 
     if(engine.inputMap->GetKey(GLFW_KEY_A))
-        cameraTransform.Translate(cameraTransform.Right() * movespeed);
+        moveVector += cameraTransform.Right();
     
     if(engine.inputMap->GetKey(GLFW_KEY_D))
-        cameraTransform.Translate(-cameraTransform.Right() * movespeed);
+        moveVector -= cameraTransform.Right();
+    
+    if(glm::length(moveVector) > movespeed && glm::length(moveVector) != 0)
+    {
+        moveVector = glm::normalize(moveVector) * movespeed;
+    }
+
+    playerTransform.Translate(moveVector);
     
     if(engine.inputMap->GetKeyDown(GLFW_KEY_SPACE))
        HitAsteroid();
+
+    glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+    cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
 
     engine.inputMap->SetKeyDown();
 }
