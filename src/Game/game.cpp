@@ -70,30 +70,30 @@ void Game::UpdateInputs()
     glm::vec3 camForward = glm::vec3(cameraTransform.Forward().x, 0.0f, cameraTransform.Forward().z);
 
     float movespeed = 0.075f;
-    glm::vec3 moveVector = glm::vec3(0.0f, 0.0f, 0.0f);
+    playerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
     if(engine.inputMap->GetKey(GLFW_KEY_LEFT_SHIFT))
         movespeed = 0.025f;
 
     //Player controls
     if(engine.inputMap->GetKey(GLFW_KEY_W))
-        moveVector += camForward;
+        playerVelocity += camForward;
     
     if(engine.inputMap->GetKey(GLFW_KEY_S))
-        moveVector -= camForward;
+        playerVelocity -= camForward;
 
     if(engine.inputMap->GetKey(GLFW_KEY_A))
-        moveVector += cameraTransform.Right();
+        playerVelocity += cameraTransform.Right();
     
     if(engine.inputMap->GetKey(GLFW_KEY_D))
-        moveVector -= cameraTransform.Right();
+        playerVelocity -= cameraTransform.Right();
     
-    if(glm::length(moveVector) > movespeed && glm::length(moveVector) != 0)
+    if(glm::length(playerVelocity) > movespeed && glm::length(playerVelocity) != 0)
     {
-        moveVector = glm::normalize(moveVector) * movespeed;
+        playerVelocity = glm::normalize(playerVelocity) * movespeed;
     }
 
-    playerTransform.Translate(moveVector);
+    playerTransform.Translate(playerVelocity);
     
     if(engine.inputMap->GetKeyDown(GLFW_KEY_SPACE))
        HitAsteroid();
@@ -110,6 +110,32 @@ void Game::Tick()
     float currentFrameTime = glfwGetTime();
     deltaTime = currentFrameTime - lastFrame;
     lastFrame = currentFrameTime;
+
+    CheckAsteroidCollision();
+}
+
+void Game::CheckAsteroidCollision()
+{
+    glm::vec3 playerOffset =  glm::vec3(playerWidth / 2, 0.0f, playerWidth / 2);
+
+    glm::vec3 minPlayer = playerTransform.GetPosition() - playerOffset;
+    glm::vec3 maxPlayer = playerTransform.GetPosition() + playerOffset + glm::vec3(0.0f, playerHeight, 0.0f);
+
+    glm::vec3 boxCenter = glm::vec3(0.5f, 0.5f, 0.5f);
+
+    for (size_t i = 0; i < asteroids.size(); i++)
+    {
+        glm::vec3 boxMin = asteroids[i].transform.GetPosition() - boxCenter;
+        glm::vec3 boxMax = asteroids[i].transform.GetPosition() + boxCenter; 
+
+        if(Physics::AABB_AABB_Collision(minPlayer, maxPlayer, boxMin, boxMax))
+        {
+            Physics::Resolve_AABB_AABB_Collision(minPlayer, maxPlayer, boxMin, boxMax, playerTransform, playerVelocity);
+
+            glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+            engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
+        }
+    }
 }
 
 void Game::Render()

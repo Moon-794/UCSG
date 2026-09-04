@@ -43,4 +43,60 @@ namespace Physics
         hitPosition = origin + direction * tMin;
         return true;
     }
+
+    bool AABB_AABB_Collision(const glm::vec3& minA, const glm::vec3& maxA, const glm::vec3& minB, const glm::vec3& maxB)
+    {
+        return 
+        (
+            minA.x <= maxB.x && maxA.x >= minB.x &&
+            minA.y <= maxB.y && maxA.y >= minB.y &&
+            minA.z <= maxB.z && maxA.z >= minB.z
+        );
+    }
+
+    void Resolve_AABB_AABB_Collision(glm::vec3 minA, glm::vec3 maxA, glm::vec3 minB, glm::vec3 maxB, Transform& playerTransform, glm::vec3& velocity)
+    {
+        float overlapX = std::min(maxA.x, maxB.x) - std::max(minA.x, minB.x);
+        float overlapY = std::min(maxA.y, maxB.y) - std::max(minA.y, minB.y);
+        float overlapZ = std::min(maxA.z, maxB.z) - std::max(minA.z, minB.z);
+
+        glm::vec3 centerA = (minA + maxA) * 0.5f;
+        glm::vec3 centerB = (minB + maxB) * 0.5f;
+
+        if(overlapX <= overlapY && overlapX <= overlapZ)
+        {
+            if(centerA.x < centerB.x)
+            {
+                playerTransform.Translate(-overlapX, 0.0f, 0.0f);
+            }
+            else
+            {
+                playerTransform.Translate(overlapX, 0.0f, 0.0f);
+            }
+        } 
+        else if(overlapY <= overlapZ && overlapY <= overlapX)
+        {
+            if(centerA.y < centerB.y)
+            {
+                playerTransform.Translate(0.0f, -overlapY, 0.0f);
+            }
+            else
+            {
+                playerTransform.Translate(0.0f, overlapY, 0.0f);
+            }
+        }
+        else
+        {
+            if(centerA.z < centerB.z)
+            {
+                playerTransform.Translate(0.0f, 0.0f, -overlapZ);
+            }
+            else
+            {
+                playerTransform.Translate(0.0f, 0.0f, overlapZ);
+            }
+        }
+        
+        std::cout << overlapX << " " << overlapY << " " << overlapZ << std::endl;
+    }
 }
