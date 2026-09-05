@@ -170,8 +170,6 @@ void Renderer::DrawAsteroid(const Asteroid& a)
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
 
-    glm::vec3 cameraRot = camera.transform.GetRotation();
-
     Transform cameraTransform = camera.transform;
     glm::vec3 cameraPos = cameraTransform.GetPosition();
     glm::vec3 cameraForward = cameraTransform.Forward();
@@ -211,7 +209,7 @@ void Renderer::DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 colo
     Transform cameraTransform = camera.transform;
     glm::vec3 cameraPos = cameraTransform.GetPosition();
     glm::vec3 cameraForward = cameraTransform.Forward();
-    view = glm::lookAt(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+    view = glm::lookAtLH(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
 
     //These correspond to the grid
     model = glm::translate(model, position);

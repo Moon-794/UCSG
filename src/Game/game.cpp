@@ -100,7 +100,6 @@ void Game::UpdateInputs()
 
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
-
     engine.inputMap->SetKeyDown();
 }
 
@@ -112,6 +111,7 @@ void Game::Tick()
     lastFrame = currentFrameTime;
 
     CheckAsteroidCollision();
+    CheckShipCollision();
 }
 
 void Game::CheckAsteroidCollision()
@@ -136,6 +136,47 @@ void Game::CheckAsteroidCollision()
             engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
         }
     }
+
+
+    glm::vec3 planeMin = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 planeMax = glm::vec3(0.0f, 3.0f, 1.0f);
+    if(Physics::AABB_AABB_Collision(minPlayer, maxPlayer, planeMin, planeMax))
+    {
+        glm::vec3 centerA = (minPlayer + maxPlayer) * 0.5f;
+
+        if (centerA.x < 0.0f)
+        {
+            // Player is on the negative X side.
+            playerTransform.Translate(-maxPlayer.x, 0.0f, 0.0f);
+        }
+        else
+        {
+            // Player is on the positive X side.
+            playerTransform.Translate(-minPlayer.x, 0.0f, 0.0f);
+        }
+
+        glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+        engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
+    }
+}
+
+void Game::CheckShipCollision()
+{
+    glm::vec3 pos = playerTransform.GetPosition();
+    glm::vec3 rounded = glm::floor(pos);
+
+    //3x3 ship grid around player
+    for (int i = -1; i < 2; i++)
+    {
+        for (int k = -1; k < 2; k++)
+        {
+            if(rounded.x + i < 0 || rounded.x + i < 32)
+            {
+                glm::vec3 tilePos = glm::vec3(rounded.x + i, 0.0f, rounded.z + k);
+            }
+        }   
+    }
+    
 }
 
 void Game::Render()
@@ -145,6 +186,27 @@ void Game::Render()
     for (size_t i = 0; i < asteroids.size(); i++)
     {    
         engine.renderer->DrawAsteroid(asteroids[i]);
+    }
+
+    glm::vec3 pos = playerTransform.GetPosition();
+    glm::vec3 rounded = glm::floor(pos - glm::vec3(0.5f));
+
+    for (int i = -2; i < 3; i++)
+    {
+        for (int k = -2; k < 3; k++)
+        {
+            if(rounded.x + i >= 0 && rounded.x + i < 32)
+            {
+                if(rounded.z + k >= 0 && rounded.z + k < 32)
+                {
+                    if(world.shipGrid[rounded.x + i][rounded.z + k] == TileType::ship)
+                    {
+                        glm::vec3 tilePos = glm::vec3(rounded.x + i, 0.0f, rounded.z + k);
+                        engine.renderer->DrawDebugCube(tilePos, glm::vec3(1.0f, 0.01f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+                    }
+                }
+            }
+        }   
     }
 
     engine.renderer->DrawShip();

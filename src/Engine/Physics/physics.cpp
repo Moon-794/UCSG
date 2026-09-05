@@ -96,7 +96,5 @@ namespace Physics
                 playerTransform.Translate(0.0f, 0.0f, overlapZ);
             }
         }
-        
-        std::cout << overlapX << " " << overlapY << " " << overlapZ << std::endl;
     }
 }

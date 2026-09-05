@@ -35,6 +35,7 @@ private:
     //Gameplay
     void HitAsteroid();
     void CheckAsteroidCollision();
+    void CheckShipCollision();
 
     bool isRunning = true;
     Engine engine;
@@ -47,7 +48,7 @@ private:
     glm::vec3 debugColor = glm::vec3(0.0f, 0.0f, 0.0f);
 
     //Player related stuff
-    float playerWidth = 0.5f;
+    float playerWidth = 0.75f;
     float playerHeight = 1.5f;
 
     Transform playerTransform;
