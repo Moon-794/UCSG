@@ -54,7 +54,7 @@ namespace Physics
         );
     }
 
-    void Resolve_AABB_AABB_Collision(glm::vec3 minA, glm::vec3 maxA, glm::vec3 minB, glm::vec3 maxB, Transform& playerTransform, glm::vec3& velocity)
+    void Resolve_AABB_AABB_Collision(glm::vec3 minA, glm::vec3 maxA, glm::vec3 minB, glm::vec3 maxB, Transform& playerTransform)
     {
         float overlapX = std::min(maxA.x, maxB.x) - std::max(minA.x, minB.x);
         float overlapY = std::min(maxA.y, maxB.y) - std::max(minA.y, minB.y);
