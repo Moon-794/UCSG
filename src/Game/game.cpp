@@ -10,12 +10,12 @@ void Game::Init()
     engine.Init();
 
     //Setup Asteroids
-    for (size_t i = 0; i < 200; i++)
+    for (size_t i = 0; i < 20; i++)
     {
         Asteroid a;
-        float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/200.0f));
-        float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/200.0f));
-        float z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/200.0f));
+        float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/50.0f));
+        float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/1.0f));
+        float z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/50.0f));
 
         float type = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/30.0f));
 
@@ -24,12 +24,11 @@ void Game::Init()
         else
             a.materialType = "copper";
 
-        a.transform.SetPosition(x - 100.0f, y - 100.0f, z - 100.0f);
+        a.transform.SetPosition(x - 25, y, z - 25);
         asteroids.push_back(a);
     }
 
-    asteroids[0].transform.SetPosition(32, 0, 32);
-    asteroids[0].transform.SetScale(0.1f, 0.1f, 0.1f);
+    asteroids[0].transform.SetPosition(8, 0, 0);
 
     world.Init();
     engine.renderer->UpdateShipMesh(world);
@@ -98,6 +97,9 @@ void Game::UpdateInputs()
     if(engine.inputMap->GetKeyDown(GLFW_KEY_SPACE))
        HitAsteroid();
 
+    //Check Collisions to update velocity 
+    CheckAsteroidCollision();
+
     //Update player based on velocity
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
@@ -108,34 +110,44 @@ void Game::UpdateInputs()
 
 void Game::Tick()
 {
+    engine.renderer->Clear();
     //Update DeltaTime
     float currentFrameTime = glfwGetTime();
     deltaTime = currentFrameTime - lastFrame;
     lastFrame = currentFrameTime;
-
-    CheckShipCollision();
-    CheckAsteroidCollision();
 }
 
 void Game::CheckAsteroidCollision()
 {
-    glm::vec3 playerOffset =  glm::vec3(playerWidth / 2, 0.0f, playerWidth / 2);
-    glm::vec3 minPlayer = playerTransform.GetPosition() - playerOffset;
-    glm::vec3 maxPlayer = playerTransform.GetPosition() + playerOffset + glm::vec3(0.0f, playerHeight, 0.0f);
-    glm::vec3 boxCenter = glm::vec3(0.5f, 0.5f, 0.5f);
+    glm::vec3 playerOffset =  glm::vec3(playerWidth / 2, playerHeight, playerWidth / 2);
+    glm::vec3 boxCenter = glm::vec3(1.0f, 1.0f, 1.0f);
 
     for (size_t i = 0; i < asteroids.size(); i++)
     {
-        glm::vec3 boxMin = asteroids[i].transform.GetPosition() - boxCenter;
-        glm::vec3 boxMax = asteroids[i].transform.GetPosition() + boxCenter; 
+        glm::vec3 boxMin = asteroids[i].transform.GetPosition();
+        glm::vec3 boxMax = asteroids[i].transform.GetPosition();
 
-        if(Physics::AABB_AABB_Collision(minPlayer, maxPlayer, boxMin, boxMax))
-        {
-            Physics::Resolve_AABB_AABB_Collision(minPlayer, maxPlayer, boxMin, boxMax, playerTransform);
+        boxMin -= playerOffset;
+        boxMax += boxCenter + playerOffset;
 
-            glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
-            engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
-        }
+        glm::vec3 hit(0.0f);
+        glm::vec3 normal(0.0f);
+        float dist = glm::length(playerVelocity);
+
+        if(dist != 0)
+            if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, dist, boxMin, boxMax, hit, normal))
+            {
+                playerTransform.SetPosition(hit.x, hit.y, hit.z);
+
+                float velocityIntoSurface =
+                glm::dot(playerVelocity, normal);
+
+                if (velocityIntoSurface < 0.0f)
+                {
+                    playerVelocity -=
+                        normal * velocityIntoSurface;
+                }
+            }
     }
 }
 
@@ -178,10 +190,10 @@ void Game::CheckShipCollision()
 
 void Game::Render()
 {
-    engine.renderer->Clear();
+    
 
     for (size_t i = 0; i < asteroids.size(); i++)
-    {    
+    {   
         engine.renderer->DrawAsteroid(asteroids[i]);
     }
 
@@ -192,7 +204,7 @@ void Game::Render()
 
 void Game::HitAsteroid()
 {
-    for (size_t i = 0; i < asteroids.size(); i++)
+    /*for (size_t i = 0; i < asteroids.size(); i++)
     {
         glm::vec3 hitPosition = glm::vec3(0.0f, 0.0f, 0.0f);
         if(Physics::Raycast(engine.renderer->camera.transform.GetPosition(), engine.renderer->camera.transform.Forward(), asteroids[i].transform.GetPosition(), hitPosition))
@@ -204,10 +216,10 @@ void Game::HitAsteroid()
             }
             return;
         }
-    }
+    }*/
     
-    std::cout << "No hit detected..." << std::endl;
-    debugColor = glm::vec3(1, 0, 0);
+    //std::cout << "No hit detected..." << std::endl;
+    //debugColor = glm::vec3(1, 0, 0);
     return;
 }
 
