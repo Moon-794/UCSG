@@ -32,11 +32,6 @@ private:
     void Tick();            //Main update function to tick along current GameState
     void Render();          //Draw a scene based on gamestate - The program should work fine with this disabled
 
-    //Gameplay
-    void HitAsteroid();
-    void CheckAsteroidCollision();
-    void CheckShipCollision();
-
     bool isRunning = true;
     Engine engine;
 
@@ -55,8 +50,6 @@ private:
     glm::vec3 playerVelocity;
     PlayerStats stats;
     World world;
-
-    int counter = 0;
 };
 
 #endif
