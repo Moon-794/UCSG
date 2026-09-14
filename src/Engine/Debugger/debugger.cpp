@@ -2,9 +2,7 @@
 
 Debugger::Debugger()
 {
-    debugShader = std::make_shared<Shader>("debugger", "resources/shaders/debugger/vertex.vert", "resources/shaders/debugger/fragment.frag");
-    debugSprite = Sprite("d_selector.png", glm::vec2(0, 0), debugShader);
-    debugSprite.scale = glm::vec2(1, 1);
+    std::cout << "Debugger Initialised" << std::endl;
 }
 
 void Debugger::InitImGUI(GLFWwindow* window)
@@ -19,7 +17,7 @@ void Debugger::InitImGUI(GLFWwindow* window)
     ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void Debugger::DrawDebugger(Renderer& renderer, DebuggerInfo info)
+void Debugger::Draw(Renderer& renderer, DebuggerInfo info)
 {
     ProcessDebugger(renderer, info);
 
@@ -28,10 +26,11 @@ void Debugger::DrawDebugger(Renderer& renderer, DebuggerInfo info)
     ImGui::NewFrame();
 
     ImGui::Begin("Debugger");
-    int roundedX = std::round(info.playerPosition.x * 100.0f);
-    int roundedY = std::round(info.playerPosition.y * 100.0f);
+    int roundedX = std::floor(info.playerPosition.x);
+    int roundedY = std::floor(info.playerPosition.y);
+    int roundedZ = std::floor(info.playerPosition.z);
 
-    std::string playerPosText("Player Position: [" + std::to_string(roundedX) + " - " + std::to_string(roundedY) + "]");
+    std::string playerPosText("Player Position: [" + std::to_string(info.playerPosition.x) + " - " + std::to_string(info.playerPosition.y) + " - " + std::to_string(info.playerPosition.z) + "]");
     ImGui::Text(playerPosText.c_str());
 
     ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);

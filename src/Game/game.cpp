@@ -28,19 +28,13 @@ void Game::Init()
         asteroids.push_back(a);
     }
 
-    asteroids[0].transform.SetPosition(8, 0, 0);
-    asteroids[1].transform.SetPosition(9, 0, 0);
-    asteroids[2].transform.SetPosition(10, 0, 0);
-    asteroids[3].transform.SetPosition(11, 0, 0);
-    asteroids[4].transform.SetPosition(12, 0, 0);
-    asteroids[5].transform.SetPosition(13, 0, 0);
-
     world.Init();
     engine.renderer->UpdateShipMesh(world);
 
     engine.renderer->camera.transform.SetPosition(3, 2, 3);
-
     playerTransform.SetPosition(3, 0, 3);
+
+    debugger.InitImGUI(engine.renderer->window);
 
     Run();
 }
@@ -71,6 +65,11 @@ void Game::Run()
 void Game::UpdateInputs()
 {
     glfwPollEvents();
+}
+
+void Game::Tick()
+{   
+    engine.renderer->DrawLine(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(0.25f, 0.75f, 0.25f));
 
     Transform& cameraTransform = engine.renderer->camera.transform;
     glm::vec3 camForward = glm::vec3(cameraTransform.Forward().x, 0.0f, cameraTransform.Forward().z);
@@ -100,18 +99,6 @@ void Game::UpdateInputs()
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
-
-    engine.inputMap->SetKeyDown();
-}
-
-void Game::Tick()
-{
-    engine.renderer->Clear();
-
-    //Update DeltaTime
-    float currentFrameTime = glfwGetTime();
-    deltaTime = currentFrameTime - lastFrame;
-    lastFrame = currentFrameTime;
 }
 
 void Game::Render()
@@ -125,7 +112,22 @@ void Game::Render()
 
     engine.renderer->DrawShip();
 
+    DrawDebugMenu();
+
+    engine.renderer->FlushLines();
+
     engine.renderer->SwapBuffers();
+}
+
+void Game::EndFrame()
+{
+    engine.inputMap->SetKeyDown();
+}
+
+void Game::DrawDebugMenu()
+{
+    debugInfo.playerPosition = playerTransform.GetPosition();
+    debugger.Draw(*engine.renderer, debugInfo);
 }
 
 void Game::QuitGame()

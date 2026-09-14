@@ -15,7 +15,7 @@ struct DebuggerState
 
 struct DebuggerInfo
 {
-    glm::vec2 playerPosition;
+    glm::vec3 playerPosition;
 };
 
 class Debugger
@@ -24,7 +24,7 @@ public:
     Debugger();
     void InitImGUI(GLFWwindow* window);
 
-    void DrawDebugger(Renderer& renderer, DebuggerInfo info);
+    void Draw(Renderer& renderer, DebuggerInfo info);
     void ProcessDebugger(Renderer& renderer, DebuggerInfo info);
 
 private:

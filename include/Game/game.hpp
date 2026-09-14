@@ -31,25 +31,25 @@ private:
     void UpdateInputs();    //Update the input map for this frame
     void Tick();            //Main update function to tick along current GameState
     void Render();          //Draw a scene based on gamestate - The program should work fine with this disabled
+    void EndFrame();        //Update GetInputDown, amongst possible other things in the future
+
+    void DrawDebugMenu();
 
     bool isRunning = true;
     Engine engine;
 
-    float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
-
-    //Asteroid Related stuff
-    std::vector<Asteroid> asteroids;
-    glm::vec3 debugColor = glm::vec3(0.0f, 0.0f, 0.0f);
-
     //Player related stuff
     float playerWidth = 0.75f;
     float playerHeight = 1.5f;
-
     Transform playerTransform;
     glm::vec3 playerVelocity;
     PlayerStats stats;
+
+    std::vector<Asteroid> asteroids;
     World world;
+
+    Debugger debugger;
+    DebuggerInfo debugInfo;
 };
 
 #endif

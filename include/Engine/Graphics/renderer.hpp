@@ -18,6 +18,12 @@
 #include "Game/asteroid.hpp"
 #include "Game/world.hpp"
 
+struct Vertex
+{
+    glm::vec3 position;
+    glm::vec3 color;
+};
+
 class Renderer
 {
 public:
@@ -38,21 +44,29 @@ public:
     void SetClearColor(float r, float g, float b, float a);
     void DrawAsteroid(const Asteroid& asteroid);
     void DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 color);
+    void DrawLine(glm::vec3 a, glm::vec3 b, glm::vec3 lineColor);
+    void DrawBoxOutline(glm::vec3 min, glm::vec3 max);
     void DrawShip();
 
     void UpdateShipMesh(World& world);
+
+    void CreateLineBuffers();
+    void FlushLines();
 
     //This stuff can eventually go away or somewhere else
     unsigned int chunkVAO;
     unsigned int quadVAO;
     unsigned int cubeVAO;
 
+    unsigned int linesVAO = 0;
+    unsigned int linesVBO = 0;
+
     Mesh shipMesh;
     
     float lastMouseX = 1280.0f;
     float lastMouseY = 720.0f;
 private:
-
+    std::vector<Vertex> lineVertices;
 };
 
 unsigned int CreateCubeVAO();

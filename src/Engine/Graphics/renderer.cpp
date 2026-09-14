@@ -34,6 +34,22 @@ unsigned int CreateCubeVAO()
     return VAO;
 }
 
+void Renderer::CreateLineBuffers()
+{
+    glGenVertexArrays(1, &linesVAO);
+    glBindVertexArray(linesVAO);
+
+    glGenBuffers(1, &linesVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, linesVBO);
+    glBufferData(GL_ARRAY_BUFFER, 10000 * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
 Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
 {
     //Initialise GLFW
@@ -78,6 +94,9 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     glFrontFace(GL_CCW); 
 
     cubeVAO = CreateCubeVAO();
+    CreateLineBuffers();
+
+    glLineWidth(5.0f);
 
     SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
@@ -103,60 +122,25 @@ void Renderer::SetClearColor(float r, float g, float b, float a)
     glClearColor(r, g, b,a);
 }
 
+void Renderer::DrawLine(glm::vec3 a, glm::vec3 b, glm::vec3 lineColor)
+{
+    Vertex vA;
+    vA.position = a;
+    vA.color = lineColor;
+    
+    Vertex vB;
+    vB.position = b;
+    vB.color = lineColor;
+
+    lineVertices.push_back(vA);
+    lineVertices.push_back(vB);
+
+    //Draw later during "Flush()"
+}
+
 void Renderer::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-unsigned int CreateChunkVAO()
-{
-    unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    unsigned int width = 16;
-    unsigned int height = 16;
-
-    std::vector<float> vertices;
-    std::vector<unsigned int> indices;
-
-    //Generate a grid of quads x wide and y tall, quads do not share vertices to support UV indexing
-    for (size_t x = 0; x < width; x++)
-    {
-        for (size_t y = 0; y < height; y++)
-        {   
-            //Quad vertices
-            unsigned int index = static_cast<unsigned int>(vertices.size() / 5);
-            float xPos = (float)x;
-            float yPos = (float)y;
-
-            vertices.insert(vertices.end(), {xPos + 1.0f,  yPos,            0.0f,   1.0f, 1.0f});         
-            vertices.insert(vertices.end(), {xPos + 1.0f,  yPos - 1.0f,     0.0f,   1.0f, 0.0f}); 
-            vertices.insert(vertices.end(), {xPos,         yPos - 1.0f,     0.0f,   0.0f, 0.0f});         
-            vertices.insert(vertices.end(), {xPos,         yPos,            0.0f,   0.0f, 1.0f});
-            
-            indices.insert(indices.end(), {index, index + 1, index + 3, index + 1, index + 2, index + 3});
-        }
-    }
-
-    std::cout << "Vertices: " << vertices.size() / 5 << "\n";
-    std::cout << "Indices: " << indices.size() << "\n";
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
-    
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    return VAO;
 }
 
 void Renderer::DrawAsteroid(const Asteroid& a)
@@ -180,7 +164,6 @@ void Renderer::DrawAsteroid(const Asteroid& a)
     model = glm::scale(model, glm::vec3(1, 1, 1));
 
     assetManager->GetShader("base")->setMat4("projection", camera.GetProjection());
-    assetManager->GetShader("base")->setMat4("model", model);
     assetManager->GetShader("base")->setMat4("view", view);
 
     glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -315,6 +298,34 @@ void Renderer::UpdateShipMesh(World& world)
     }
 
     shipMesh.UpdateBuffers();
+}
+
+void Renderer::FlushLines()
+{
+    if (lineVertices.empty())
+        return;
+
+    //Bind Line Shader
+    glUseProgram(assetManager->GetShader("line")->ID);
+
+    Transform cameraTransform = camera.transform;
+    glm::vec3 cameraPos = cameraTransform.GetPosition();
+    glm::vec3 cameraForward = cameraTransform.Forward();
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::lookAtLH(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
+
+    assetManager->GetShader("line")->setMat4("projection", camera.GetProjection());
+    assetManager->GetShader("line")->setMat4("view", view);
+
+    glBindVertexArray(linesVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, linesVBO);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, lineVertices.size() * sizeof(Vertex), lineVertices.data());
+
+    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineVertices.size()));
+
+    lineVertices.clear();
 }
 
 void Renderer::DrawShip()
