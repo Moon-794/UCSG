@@ -33,7 +33,8 @@ set(APP_SRCS
     src/Engine/input.cpp 
     src/Engine/transform.cpp
     src/Engine/Graphics/camera.cpp
-    src/Engine/Graphics/renderer.cpp 
+    src/Engine/Graphics/renderer.cpp
+    src/Engine/Graphics/line_renderer.cpp 
     src/Engine/Graphics/sprite.cpp
     src/Engine/engine.cpp 
 )

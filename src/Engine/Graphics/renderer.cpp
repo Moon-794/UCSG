@@ -34,22 +34,6 @@ unsigned int CreateCubeVAO()
     return VAO;
 }
 
-void Renderer::CreateLineBuffers()
-{
-    glGenVertexArrays(1, &linesVAO);
-    glBindVertexArray(linesVAO);
-
-    glGenBuffers(1, &linesVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, linesVBO);
-    glBufferData(GL_ARRAY_BUFFER, 10000 * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-}
-
 Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
 {
     //Initialise GLFW
@@ -96,7 +80,7 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     cubeVAO = CreateCubeVAO();
     CreateLineBuffers();
 
-    glLineWidth(5.0f);
+    glLineWidth(3.0f);
 
     SetClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
@@ -122,22 +106,6 @@ void Renderer::SetClearColor(float r, float g, float b, float a)
     glClearColor(r, g, b,a);
 }
 
-void Renderer::DrawLine(glm::vec3 a, glm::vec3 b, glm::vec3 lineColor)
-{
-    Vertex vA;
-    vA.position = a;
-    vA.color = lineColor;
-    
-    Vertex vB;
-    vB.position = b;
-    vB.color = lineColor;
-
-    lineVertices.push_back(vA);
-    lineVertices.push_back(vB);
-
-    //Draw later during "Flush()"
-}
-
 void Renderer::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -149,6 +117,9 @@ void Renderer::DrawAsteroid(const Asteroid& a)
         return;
     
     glUseProgram(assetManager->GetShader("base")->ID);
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, 1.0f);
 
     //Base uniforms, different shaders will likely have different uniforms
     glm::mat4 model = glm::mat4(1.0f);
@@ -179,11 +150,16 @@ void Renderer::DrawAsteroid(const Asteroid& a)
     glActiveTexture(GL_TEXTURE0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
 void Renderer::DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 color)
 {
     glUseProgram(assetManager->GetShader("base")->ID);
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, 1.0f);
 
     //Base uniforms, different shaders will likely have different uniforms
     glm::mat4 model = glm::mat4(1.0f);
@@ -208,6 +184,8 @@ void Renderer::DrawDebugCube(glm::vec3 position, glm::vec3 scale, glm::vec3 colo
     glActiveTexture(GL_TEXTURE0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
 void Renderer::UpdateShipMesh(World& world)
@@ -300,37 +278,11 @@ void Renderer::UpdateShipMesh(World& world)
     shipMesh.UpdateBuffers();
 }
 
-void Renderer::FlushLines()
-{
-    if (lineVertices.empty())
-        return;
-
-    //Bind Line Shader
-    glUseProgram(assetManager->GetShader("line")->ID);
-
-    Transform cameraTransform = camera.transform;
-    glm::vec3 cameraPos = cameraTransform.GetPosition();
-    glm::vec3 cameraForward = cameraTransform.Forward();
-
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::lookAtLH(cameraPos, cameraPos + cameraForward, cameraTransform.Up());
-
-    assetManager->GetShader("line")->setMat4("projection", camera.GetProjection());
-    assetManager->GetShader("line")->setMat4("view", view);
-
-    glBindVertexArray(linesVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, linesVBO);
-
-    glBufferSubData(GL_ARRAY_BUFFER, 0, lineVertices.size() * sizeof(Vertex), lineVertices.data());
-
-    glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineVertices.size()));
-
-    lineVertices.clear();
-}
-
 void Renderer::DrawShip()
 {
     glUseProgram(assetManager->GetShader("area")->ID);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, 1.0f);
 
     //Base uniforms, different shaders will likely have different uniforms
     glm::mat4 model = glm::mat4(1.0f);
@@ -356,4 +308,6 @@ void Renderer::DrawShip()
     glBindTexture(GL_TEXTURE_2D, texID);
     glPolygonMode(GL_FRONT, GL_FILL);
     glDrawElements(GL_TRIANGLES, 32 * 32 * 6 * 2 * 4, GL_UNSIGNED_INT, 0);
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }

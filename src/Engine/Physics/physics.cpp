@@ -2,7 +2,7 @@
 
 namespace Physics
 {
-    bool Raycast(const glm::vec3& origin, const glm::vec3 direction, float distance, const glm::vec3& boxMin, const glm::vec3& boxMax, glm::vec3& hitPosition, glm::vec3& hitNormal)
+    bool Raycast(const glm::vec3& origin, const glm::vec3 direction, float distance, const AABB& aabb, glm::vec3& hitPosition, glm::vec3& hitNormal)
     {
         glm::vec3 normDirection = glm::normalize(direction);
 
@@ -19,7 +19,7 @@ namespace Physics
             {
                 // Ray is parallel to this pair of planes.
                 // It must already be inside the slab.
-                if (origin[i] < boxMin[i] || origin[i] > boxMax[i])
+                if (origin[i] < aabb.min[i] || origin[i] > aabb.max[i])
                     return false;
 
                 continue;
@@ -27,8 +27,8 @@ namespace Physics
 
             float inverseDirection = 1.0f / normDirection[i];
 
-            float t1 = (boxMin[i] - origin[i]) * inverseDirection;
-            float t2 = (boxMax[i] - origin[i]) * inverseDirection;
+            float t1 = (aabb.min[i] - origin[i]) * inverseDirection;
+            float t2 = (aabb.max[i] - origin[i]) * inverseDirection;
 
             glm::vec3 n1(0.0f);
             glm::vec3 n2(0.0f);
@@ -62,24 +62,24 @@ namespace Physics
         return true;
     }
 
-    bool AABB_AABB_Collision(const glm::vec3& minA, const glm::vec3& maxA, const glm::vec3& minB, const glm::vec3& maxB)
+    bool AABB_AABB_Collision(const AABB& a, const AABB& b)
     {
         return 
         (
-            minA.x <= maxB.x && maxA.x >= minB.x &&
-            minA.y <= maxB.y && maxA.y >= minB.y &&
-            minA.z <= maxB.z && maxA.z >= minB.z
+            a.min.x <= b.max.x && a.max.x >= b.min.x &&
+            a.min.y <= b.max.y && a.max.y >= b.min.y &&
+            a.min.z <= b.max.z && a.max.z >= b.min.z
         );
     }
 
-    void Resolve_AABB_AABB_Collision(glm::vec3 minA, glm::vec3 maxA, glm::vec3 minB, glm::vec3 maxB, Transform& playerTransform)
+    void Resolve_AABB_AABB_Collision(const AABB& a, const AABB& b, Transform& playerTransform)
     {
-        float overlapX = std::min(maxA.x, maxB.x) - std::max(minA.x, minB.x);
-        float overlapY = std::min(maxA.y, maxB.y) - std::max(minA.y, minB.y);
-        float overlapZ = std::min(maxA.z, maxB.z) - std::max(minA.z, minB.z);
+        float overlapX = std::min(a.max.x, b.max.x) - std::max(a.min.x, b.min.x);
+        float overlapY = std::min(a.max.y, b.max.y) - std::max(a.min.y, b.min.y);
+        float overlapZ = std::min(a.max.z, b.max.z) - std::max(a.min.z, b.min.z);
 
-        glm::vec3 centerA = (minA + maxA) * 0.5f;
-        glm::vec3 centerB = (minB + maxB) * 0.5f;
+        glm::vec3 centerA = (a.min + a.max) * 0.5f;
+        glm::vec3 centerB = (b.min + b.max) * 0.5f;
 
         if(overlapX <= overlapY && overlapX <= overlapZ)
         {
