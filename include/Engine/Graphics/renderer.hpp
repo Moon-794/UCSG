@@ -51,7 +51,7 @@ public:
 
     //~ line_renderer.cpp
     void DrawLine(glm::vec3 a, glm::vec3 b, glm::vec3 lineColor);
-    void DrawAABB(const AABB& aabb);
+    void DrawAABB(const AABB& aabb, glm::vec3 color);
     void CreateLineBuffers();
     void FlushLines();
 
@@ -73,7 +73,7 @@ private:
 
 unsigned int CreateCubeVAO();
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);              //!idek if these can be put somewhere nice but they need to exists so meh
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 static void cursor_position_callback(GLFWwindow* window, double xPos, double yPos);
 
 #endif

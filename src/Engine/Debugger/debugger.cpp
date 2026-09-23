@@ -26,6 +26,7 @@ void Debugger::Draw(Renderer& renderer, DebuggerInfo info)
     ImGui::NewFrame();
 
     ImGui::Begin("Debugger");
+
     int roundedX = std::floor(info.playerPosition.x);
     int roundedY = std::floor(info.playerPosition.y);
     int roundedZ = std::floor(info.playerPosition.z);

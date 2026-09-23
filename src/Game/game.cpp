@@ -69,11 +69,6 @@ void Game::UpdateInputs()
 
 void Game::Tick()
 {   
-    engine.renderer->DrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 0, 1), glm::vec3(0.25f, 0.75f, 0.25f));
-    engine.renderer->DrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 4, 0), glm::vec3(0.25f, 0.75f, 0.25f));
-    engine.renderer->DrawLine(glm::vec3(0, 4, 0), glm::vec3(0, 4, 1), glm::vec3(0.25f, 0.75f, 0.25f));
-    engine.renderer->DrawLine(glm::vec3(0, 4, 1), glm::vec3(0, 0, 1), glm::vec3(0.25f, 0.75f, 0.25f));
-
     Transform& cameraTransform = engine.renderer->camera.transform;
     glm::vec3 camForward = glm::vec3(cameraTransform.Forward().x, 0.0f, cameraTransform.Forward().z);
 
@@ -102,6 +97,11 @@ void Game::Tick()
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
+
+    AABB a;
+    a.min = glm::vec3(3, 0, 3);
+    a.max = glm::vec3(4, 1, 4);
+    engine.renderer->DrawAABB(a, glm::vec3(0, 0, 1));
 }
 
 void Game::Render()

@@ -30,9 +30,35 @@ void Renderer::DrawLine(glm::vec3 a, glm::vec3 b, glm::vec3 lineColor)
     lineVertices.push_back(vB);
 }
 
-void Renderer::DrawAABB(const AABB& aabb)
+void Renderer::DrawAABB(const AABB& aabb, glm::vec3 color)
 {
-    
+    glm::vec3 min = aabb.min;
+    glm::vec3 max = aabb.max;
+
+    //Bottom 4 points
+    glm::vec3 bottom_near_right = glm::vec3(max.x, min.y, min.z);
+    glm::vec3 bottom_far_right = glm::vec3(max.x, min.y, max.z);
+    glm::vec3 bottom_near_left = aabb.min;
+    glm::vec3 bottom_far_left = glm::vec3(min.x, min.y, max.z);
+
+    //Top 4 points
+    glm::vec3 top_near_right = glm::vec3(max.x, max.y, min.z);
+    glm::vec3 top_far_right = glm::vec3(max.x, max.y, max.z);
+    glm::vec3 top_near_left = glm::vec3(min.x, max.y, min.z);
+    glm::vec3 top_far_left = glm::vec3(min.x, max.y, max.z);
+
+    DrawLine(bottom_near_left, bottom_far_left, color);
+    DrawLine(bottom_near_left, bottom_near_right, color);
+    DrawLine(bottom_near_left, top_near_left, color);
+    DrawLine(top_far_right, bottom_far_right, color);
+    DrawLine(top_far_right, top_far_left, color);
+    DrawLine(top_far_right, top_near_right, color);
+    DrawLine(bottom_far_left, top_far_left, color);
+    DrawLine(bottom_near_right, top_near_right, color);
+    DrawLine(top_near_left, top_far_left, color);
+    DrawLine(top_near_left, top_near_right, color);
+    DrawLine(bottom_far_left, bottom_far_right, color);
+    DrawLine(bottom_near_right, bottom_far_right, color);
 }
 
 void Renderer::FlushLines()
