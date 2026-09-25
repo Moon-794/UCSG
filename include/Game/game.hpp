@@ -26,12 +26,13 @@ public:
 
 private:
 
-    void Init();            //Initial setup
-    void Run();             //Main loop, checks for closed status
-    void UpdateInputs();    //Update the input map for this frame
-    void Tick();            //Main update function to tick along current GameState
-    void Render();          //Draw a scene based on gamestate - The program should work fine with this disabled
-    void EndFrame();        //Update GetInputDown, amongst possible other things in the future
+    void Init();                    //Initial setup
+    void Run();                     //Main loop, checks for closed status
+    void UpdateInputs();            //Update the input map for this frame
+    void Tick();                    //Main update function to tick along current GameState
+    void HandleWallCollisions();    //Handle iminent player collisions with level geometry
+    void Render();                  //Draw a scene based on gamestate - The program should work fine with this disabled
+    void EndFrame();                //Update GetInputDown, amongst possible other things in the future
 
     void DrawDebugMenu();
 

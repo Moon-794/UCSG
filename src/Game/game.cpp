@@ -93,65 +93,100 @@ void Game::Tick()
         playerVelocity = glm::normalize(playerVelocity) * movespeed;
     }
 
-    //Handle collisions
-    AABB plane1;
-    plane1.min = glm::vec3(0.0f, 0.0f, 0.0f);
-    plane1.max = glm::vec3(0.0f, 4.0f, 1.0f);
-
-    glm::vec3 pExt = glm::vec3(playerWidth / 2.0f, playerHeight, playerWidth / 2.0f);
-
-    plane1.min = plane1.min - pExt;
-    plane1.max = plane1.max + pExt;
-
-    glm::vec3 hitPos;
-    glm::vec3 normal;
-    if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), plane1.min, plane1.max, hitPos, normal))
-    { 
-        playerTransform.SetPosition(hitPos.x, hitPos.y, hitPos.z);
-        engine.renderer->DrawDebugCube(hitPos, glm::vec3(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-        float velocityIntoSurface =
-        glm::dot(playerVelocity, normal);
-
-        if (velocityIntoSurface < 0.0f)
-        {
-            playerVelocity -=
-                (normal * 1.0025f) * velocityIntoSurface;
-        }
-    }
-
-    AABB plane2;
-    plane2.min = glm::vec3(0.0f, 0.0f, 1.0f);
-    plane2.max = glm::vec3(0.0f, 4.0f, 2.0f);
-
-    plane2.min = plane2.min - pExt;
-    plane2.max = plane2.max + pExt;
-
-    if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), plane2.min, plane2.max, hitPos, normal))
-    { 
-        hitPos += normal * 0.01f;
-        playerTransform.SetPosition(hitPos.x, hitPos.y, hitPos.z);
-        engine.renderer->DrawDebugCube(hitPos, glm::vec3(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-        float velocityIntoSurface =
-        glm::dot(playerVelocity, normal);
-
-        if (velocityIntoSurface < 0.0f)
-        {
-            playerVelocity -=
-                normal * velocityIntoSurface;
-        }
-    }
-
-    engine.renderer->DrawLine(playerTransform.GetPosition(), playerTransform.GetPosition() + playerVelocity, glm::vec3(1, 1, 1));
-
+    HandleWallCollisions();
+    
     //Update player based on velocity
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
 
-    engine.renderer->DrawAABB(plane1, glm::vec3(0, 0, 1));
-    engine.renderer->DrawAABB(plane2, glm::vec3(0, 0, 1));
+    //engine.renderer->DrawAABB(plane1, glm::vec3(0, 0, 1));
+    //engine.renderer->DrawAABB(plane2, glm::vec3(0, 0, 1));
+}
+
+void Game::HandleWallCollisions()
+{
+    std::vector<Physics::CollisionData> collisions;
+    glm::vec3 rounded = glm::floor(playerTransform.GetPosition());
+    glm::vec3 pPos = playerTransform.GetPosition();
+    glm::vec3 pExt = glm::vec3(playerWidth / 2.0f, playerHeight, playerWidth / 2.0f);
+
+    //Get all the data
+    for (int i = -1; i < 2; i++)
+    {
+        for (int j = -1; j < 2; j++)
+        {
+            if(rounded.x + i >= 0 && rounded.x + i < 32)
+            {
+                if(rounded.z + j >= 0 && rounded.z + j < 32)
+                {
+                    if(world.shipGrid[rounded.x + i][rounded.z + j] == TileType::ship)
+                    {
+                        int x = rounded.x + i;
+                        int z = rounded.z + j;
+                        glm::vec3 tilePos = glm::vec3(rounded.x + i, 0.0f, rounded.z + j);
+
+                        //Left Wall check
+                        if(rounded.x + i - 1 < 0 || world.shipGrid[rounded.x + i - 1][rounded.z + j] == TileType::empty)
+                        {
+                            AABB planeLeft;
+                            planeLeft.min = glm::vec3(x, 0.0f, z) - pExt;
+                            planeLeft.max = glm::vec3(x, 4.0f, z + 1) + pExt;
+                            engine.renderer->DrawAABB(planeLeft, glm::vec3(1.0f, 0.0f, 0.0f));
+
+                            glm::vec3 hitPos;
+                            glm::vec3 normal;
+                            float time;
+                            if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), planeLeft.min, planeLeft.max, hitPos, normal, time))
+                            {
+                                Physics::CollisionData data;
+                                data.hitPos = hitPos;
+                                data.normal = normal;
+                                data.time = time;
+                                data.plane = planeLeft;
+
+                                collisions.push_back(data);
+                            }
+                        }
+
+                        //AABB floorTile;
+                        //floorTile.min = glm::vec3(rounded.x + i, 0.0f, rounded.z + j);
+                        //floorTile.max = glm::vec3(rounded.x + i + 1, 0.0f, rounded.z + j + 1);
+                        //engine.renderer->DrawAABB(floorTile, glm::vec3(1.0f, 0.0f, 0.0f));
+                    }
+                }
+            }
+        }
+    }
+
+    //ALL DATA GOTTEN
+    if(collisions.size() != 0)
+    {
+        std::sort(collisions.begin(), collisions.end(), [](const Physics::CollisionData &a, const Physics::CollisionData &b)
+        {
+            return a.time < b.time;
+        });
+
+        for (size_t i = 0; i < collisions.size(); i++)
+        {
+            Physics::CollisionData d = collisions[i];
+
+            float velocityIntoSurface =
+            glm::dot(playerVelocity, d.normal);
+
+            if (velocityIntoSurface < 0.0f)
+            {
+                glm::vec3 resolve = (d.normal * 1.0f) * velocityIntoSurface;
+                playerVelocity -= resolve;
+
+                std::cout << "Resolved by: " << resolve.x << " " << resolve.y << " " << resolve.z << " --- "; 
+            }
+
+            
+        }
+        
+        std::cout << "Final position: " << pPos.x << " " << pPos.y << " " << pPos.z << " Collisions Detected: " << collisions.size() <<  " \n";
+    }  
 }
 
 void Game::Render()

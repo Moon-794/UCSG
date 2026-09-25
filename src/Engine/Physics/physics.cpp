@@ -2,7 +2,7 @@
 
 namespace Physics
 {
-    bool Raycast(const glm::vec3& origin, const glm::vec3 direction, float distance, const glm::vec3& boxMin, const glm::vec3& boxMax, glm::vec3& hitPosition, glm::vec3& hitNormal)
+    bool Raycast(const glm::vec3& origin, const glm::vec3 direction, float distance, const glm::vec3& boxMin, const glm::vec3& boxMax, glm::vec3& hitPosition, glm::vec3& hitNormal, float& time)
     {
         glm::vec3 normDirection = glm::normalize(direction);
 
@@ -59,6 +59,7 @@ namespace Physics
         
         hitPosition = origin + normDirection * tMin;
         hitNormal = normal;
+        time = glm::length(hitPosition - origin);
         return true;
     }
 
