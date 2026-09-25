@@ -39,7 +39,7 @@ private:
     Engine engine;
 
     //Player related stuff
-    float playerWidth = 0.75f;
+    float playerWidth = 0.80f;
     float playerHeight = 1.5f;
     Transform playerTransform;
     glm::vec3 playerVelocity;

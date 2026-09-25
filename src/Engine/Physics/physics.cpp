@@ -2,7 +2,7 @@
 
 namespace Physics
 {
-    bool Raycast(const glm::vec3& origin, const glm::vec3 direction, float distance, const AABB& aabb, glm::vec3& hitPosition, glm::vec3& hitNormal)
+    bool Raycast(const glm::vec3& origin, const glm::vec3 direction, float distance, const glm::vec3& boxMin, const glm::vec3& boxMax, glm::vec3& hitPosition, glm::vec3& hitNormal)
     {
         glm::vec3 normDirection = glm::normalize(direction);
 
@@ -19,7 +19,7 @@ namespace Physics
             {
                 // Ray is parallel to this pair of planes.
                 // It must already be inside the slab.
-                if (origin[i] < aabb.min[i] || origin[i] > aabb.max[i])
+                if (origin[i] < boxMin[i] || origin[i] > boxMax[i])
                     return false;
 
                 continue;
@@ -27,8 +27,8 @@ namespace Physics
 
             float inverseDirection = 1.0f / normDirection[i];
 
-            float t1 = (aabb.min[i] - origin[i]) * inverseDirection;
-            float t2 = (aabb.max[i] - origin[i]) * inverseDirection;
+            float t1 = (boxMin[i] - origin[i]) * inverseDirection;
+            float t2 = (boxMax[i] - origin[i]) * inverseDirection;
 
             glm::vec3 n1(0.0f);
             glm::vec3 n2(0.0f);

@@ -93,15 +93,65 @@ void Game::Tick()
         playerVelocity = glm::normalize(playerVelocity) * movespeed;
     }
 
+    //Handle collisions
+    AABB plane1;
+    plane1.min = glm::vec3(0.0f, 0.0f, 0.0f);
+    plane1.max = glm::vec3(0.0f, 4.0f, 1.0f);
+
+    glm::vec3 pExt = glm::vec3(playerWidth / 2.0f, playerHeight, playerWidth / 2.0f);
+
+    plane1.min = plane1.min - pExt;
+    plane1.max = plane1.max + pExt;
+
+    glm::vec3 hitPos;
+    glm::vec3 normal;
+    if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), plane1.min, plane1.max, hitPos, normal))
+    { 
+        playerTransform.SetPosition(hitPos.x, hitPos.y, hitPos.z);
+        engine.renderer->DrawDebugCube(hitPos, glm::vec3(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        float velocityIntoSurface =
+        glm::dot(playerVelocity, normal);
+
+        if (velocityIntoSurface < 0.0f)
+        {
+            playerVelocity -=
+                (normal * 1.0025f) * velocityIntoSurface;
+        }
+    }
+
+    AABB plane2;
+    plane2.min = glm::vec3(0.0f, 0.0f, 1.0f);
+    plane2.max = glm::vec3(0.0f, 4.0f, 2.0f);
+
+    plane2.min = plane2.min - pExt;
+    plane2.max = plane2.max + pExt;
+
+    if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), plane2.min, plane2.max, hitPos, normal))
+    { 
+        hitPos += normal * 0.01f;
+        playerTransform.SetPosition(hitPos.x, hitPos.y, hitPos.z);
+        engine.renderer->DrawDebugCube(hitPos, glm::vec3(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        float velocityIntoSurface =
+        glm::dot(playerVelocity, normal);
+
+        if (velocityIntoSurface < 0.0f)
+        {
+            playerVelocity -=
+                normal * velocityIntoSurface;
+        }
+    }
+
+    engine.renderer->DrawLine(playerTransform.GetPosition(), playerTransform.GetPosition() + playerVelocity, glm::vec3(1, 1, 1));
+
     //Update player based on velocity
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
 
-    AABB a;
-    a.min = glm::vec3(3, 0, 3);
-    a.max = glm::vec3(4, 1, 4);
-    engine.renderer->DrawAABB(a, glm::vec3(0, 0, 1));
+    engine.renderer->DrawAABB(plane1, glm::vec3(0, 0, 1));
+    engine.renderer->DrawAABB(plane2, glm::vec3(0, 0, 1));
 }
 
 void Game::Render()

@@ -88,7 +88,7 @@ Renderer::Renderer(std::string windowName, int windowWidth, int windowHeight)
     camera.SetFOV(80.0f);
     camera.SetAspectRatio((float)windowWidth/(float)windowHeight);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glEnable(GL_MULTISAMPLE);
 
     //Init AssetManager
