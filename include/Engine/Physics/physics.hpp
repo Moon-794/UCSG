@@ -5,6 +5,8 @@
 #include "Engine/Physics/AABB.hpp"
 #include "stdbool.h"
 
+#define MAX_COLLISIONS 3
+
 namespace Physics
 {
     struct CollisionData

@@ -106,6 +106,7 @@ void Game::Tick()
 
 void Game::HandleWallCollisions()
 {
+    std::vector<AABB> candidates;
     std::vector<Physics::CollisionData> collisions;
     glm::vec3 rounded = glm::floor(playerTransform.GetPosition());
     glm::vec3 pPos = playerTransform.GetPosition();
@@ -132,61 +133,74 @@ void Game::HandleWallCollisions()
                             AABB planeLeft;
                             planeLeft.min = glm::vec3(x, 0.0f, z) - pExt;
                             planeLeft.max = glm::vec3(x, 4.0f, z + 1) + pExt;
-                            engine.renderer->DrawAABB(planeLeft, glm::vec3(1.0f, 0.0f, 0.0f));
-
-                            glm::vec3 hitPos;
-                            glm::vec3 normal;
-                            float time;
-                            if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), planeLeft.min, planeLeft.max, hitPos, normal, time))
-                            {
-                                Physics::CollisionData data;
-                                data.hitPos = hitPos;
-                                data.normal = normal;
-                                data.time = time;
-                                data.plane = planeLeft;
-
-                                collisions.push_back(data);
-                            }
+                            candidates.push_back(planeLeft);
                         }
-
-                        //AABB floorTile;
-                        //floorTile.min = glm::vec3(rounded.x + i, 0.0f, rounded.z + j);
-                        //floorTile.max = glm::vec3(rounded.x + i + 1, 0.0f, rounded.z + j + 1);
-                        //engine.renderer->DrawAABB(floorTile, glm::vec3(1.0f, 0.0f, 0.0f));
                     }
                 }
             }
         }
     }
 
-    //ALL DATA GOTTEN
     if(collisions.size() != 0)
     {
         std::sort(collisions.begin(), collisions.end(), [](const Physics::CollisionData &a, const Physics::CollisionData &b)
         {
             return a.time < b.time;
         });
+    } 
 
-        for (size_t i = 0; i < collisions.size(); i++)
+    //ALL candidates retrieved
+    //C = MAX_COLLISIONS
+    float shortest = 100;
+    for (size_t C = 0; C < MAX_COLLISIONS; C++)
+    {
+        Physics::CollisionData cData;
+        cData.normal = glm::vec3(0, 0, 0);
+        cData.time = 0;
+        cData.hitPos = glm::vec3(0, 0, 0);
+
+        if(candidates.size() == 0)
         {
-            Physics::CollisionData d = collisions[i];
-
-            float velocityIntoSurface =
-            glm::dot(playerVelocity, d.normal);
-
-            if (velocityIntoSurface < 0.0f)
-            {
-                glm::vec3 resolve = (d.normal * 1.0f) * velocityIntoSurface;
-                playerVelocity -= resolve;
-
-                std::cout << "Resolved by: " << resolve.x << " " << resolve.y << " " << resolve.z << " --- "; 
-            }
-
-            
+            break;
         }
-        
-        std::cout << "Final position: " << pPos.x << " " << pPos.y << " " << pPos.z << " Collisions Detected: " << collisions.size() <<  " \n";
-    }  
+
+        for (size_t i = 0; i < candidates.size(); i++)
+        {
+            glm::vec3 hit;
+            glm::vec3 normal;
+            float time;
+
+            AABB candidate = candidates[i];
+            if(Physics::Raycast(pPos, playerVelocity, glm::length(playerVelocity), candidate.min, candidate.max, hit, normal, time))
+            {
+                if(time < shortest)
+                {
+                    shortest = time;
+                    cData.time = time;
+                    cData.hitPos = hit;
+                    cData.normal = normal;
+                }
+            }
+        }
+
+        if(cData.normal == glm::vec3(0, 0, 0))
+        {
+            break;
+        }
+    
+        //Ok we have our shortest hit, resolve
+        cData.hitPos += cData.normal * (0.01f);
+        playerTransform.SetPosition(cData.hitPos.x, cData.hitPos.y, cData.hitPos.z);
+
+        float velocityIntoSurface =
+        glm::dot(playerVelocity, cData.normal);
+
+        if (velocityIntoSurface < 0.0f)
+        {
+            glm::vec3 resolve = (cData.normal * 1.01f) * velocityIntoSurface;
+            playerVelocity -= resolve;
+        }
+    }     
 }
 
 void Game::Render()
