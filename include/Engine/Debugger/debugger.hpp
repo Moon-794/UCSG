@@ -15,7 +15,7 @@ struct DebuggerState
 
 struct DebuggerInfo
 {
-    glm::vec3 playerPosition;
+    Transform* playerTransform;
 };
 
 class Debugger

@@ -118,7 +118,7 @@ void Renderer::DrawAsteroid(const Asteroid& a)
 {
     if(!a.isActive)
         return;
-    
+
     glUseProgram(assetManager->GetShader("base")->ID);
 
     glEnable(GL_POLYGON_OFFSET_FILL);
@@ -139,6 +139,7 @@ void Renderer::DrawAsteroid(const Asteroid& a)
 
     assetManager->GetShader("base")->setMat4("projection", camera.GetProjection());
     assetManager->GetShader("base")->setMat4("view", view);
+    assetManager->GetShader("base")->setMat4("model", model);
 
     glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
 

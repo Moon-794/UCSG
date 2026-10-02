@@ -25,16 +25,30 @@ void Debugger::Draw(Renderer& renderer, DebuggerInfo info)
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Debugger");
+    ImGui::Begin("Debugger", nullptr, ImGuiWindowFlags_MenuBar);
 
-    int roundedX = std::floor(info.playerPosition.x);
-    int roundedY = std::floor(info.playerPosition.y);
-    int roundedZ = std::floor(info.playerPosition.z);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("General"))
+        {
+            if (ImGui::MenuItem("Player"))  { /*Nothing so far*/ }
+            if (ImGui::MenuItem("World"))   { /*Nothing so far*/ }
+            if (ImGui::MenuItem("Physics")) { /*Nothing so far*/ }
+            ImGui::EndMenu();
+        }
 
-    std::string playerPosText("Player Position: [" + std::to_string(info.playerPosition.x) + " - " + std::to_string(info.playerPosition.y) + " - " + std::to_string(info.playerPosition.z) + "]");
-    ImGui::Text(playerPosText.c_str());
+        ImGui::EndMenuBar();
+    }
 
-    ImGui::Checkbox("Show Active Colliders", &state.showActiveColliders);
+    ImGui::SeparatorText("Player Position");
+    glm::vec3 pos = info.playerTransform->GetPosition();
+    float debugPos[3] = {pos.x, pos.y, pos.z};
+    ImGui::DragFloat3("", debugPos, 0.1f);
+
+    if(debugPos[0] != pos.x || debugPos[1] != pos.y || debugPos[2] != pos.z)
+    {
+        info.playerTransform->SetPosition(debugPos[0], debugPos[1], debugPos[2]);
+    }
 
     ImGui::End();
 

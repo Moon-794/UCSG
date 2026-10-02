@@ -5,7 +5,7 @@
 #include "Engine/Physics/AABB.hpp"
 #include "stdbool.h"
 
-#define MAX_COLLISIONS 3
+#define MAX_COLLISIONS 150
 
 namespace Physics
 {

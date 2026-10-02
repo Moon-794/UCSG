@@ -10,12 +10,12 @@ void Game::Init()
     engine.Init();
 
     //Setup Asteroids
-    for (size_t i = 0; i < 20; i++)
+    for (size_t i = 0; i < 900; i++)
     {
         Asteroid a;
-        float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/50.0f));
-        float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/1.0f));
-        float z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/50.0f));
+        float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/300.0f));
+        float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/300.0f));
+        float z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/300.0f));
 
         float type = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/30.0f));
 
@@ -24,7 +24,7 @@ void Game::Init()
         else
             a.materialType = "copper";
 
-        a.transform.SetPosition(x - 25, y, z - 25);
+        a.transform.SetPosition(x - 150, y - 150, z - 150);
         asteroids.push_back(a);
     }
 
@@ -99,15 +99,16 @@ void Game::Tick()
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
-
-    //engine.renderer->DrawAABB(plane1, glm::vec3(0, 0, 1));
-    //engine.renderer->DrawAABB(plane2, glm::vec3(0, 0, 1));
 }
 
 void Game::HandleWallCollisions()
 {
+    if(glm::length(playerVelocity) == 0)
+    {
+        return;
+    }
+
     std::vector<AABB> candidates;
-    std::vector<Physics::CollisionData> collisions;
     glm::vec3 rounded = glm::floor(playerTransform.GetPosition());
     glm::vec3 pPos = playerTransform.GetPosition();
     glm::vec3 pExt = glm::vec3(playerWidth / 2.0f, playerHeight, playerWidth / 2.0f);
@@ -135,28 +136,63 @@ void Game::HandleWallCollisions()
                             planeLeft.max = glm::vec3(x, 4.0f, z + 1) + pExt;
                             candidates.push_back(planeLeft);
                         }
+
+                        //Right Wall Check
+                        if(x + 1 < 32 && world.shipGrid[x + 1][z] == TileType::empty)
+                        {
+                            AABB planeRight;
+                            planeRight.min = glm::vec3(x + 1, 0.0f, z) - pExt;
+                            planeRight.max = glm::vec3(x + 1, 4.0f, z + 1) + pExt;
+                            candidates.push_back(planeRight);
+                        }
+
+                        //Back Wall Check
+                        if(z - 1 < 0 || world.shipGrid[x][z - 1] == TileType::empty)
+                        {
+                            AABB planeBack;
+                            planeBack.min = glm::vec3(x, 0.0f, z) - pExt;
+                            planeBack.max = glm::vec3(x + 1, 4.0f, z) + pExt;
+                            candidates.push_back(planeBack);
+                        }
+
+                        //Forward Wall Check
+                        if(z + 1 < 32 && world.shipGrid[x][z + 1] == TileType::empty)
+                        {
+                            AABB planeForward;
+                            planeForward.min = glm::vec3(x, 0.0f, z + 1) - pExt;
+                            planeForward.max = glm::vec3(x + 1, 4.0f, z + 1) + pExt;
+                            candidates.push_back(planeForward);
+                        }
                     }
                 }
             }
         }
     }
 
-    if(collisions.size() != 0)
+    //Asteroids
+    for (size_t i = 0; i < 900; i++)
     {
-        std::sort(collisions.begin(), collisions.end(), [](const Physics::CollisionData &a, const Physics::CollisionData &b)
+        glm::vec3 aPos = asteroids[i].transform.GetPosition();
+        if(glm::length2(aPos - playerTransform.GetPosition()) < 100)
         {
-            return a.time < b.time;
-        });
-    } 
+            AABB asteroidAABB;
+            asteroidAABB.min = aPos;
+            asteroidAABB.max = aPos + glm::vec3(1);
+            candidates.push_back(asteroidAABB);
 
+            engine.renderer->DrawAABB(asteroidAABB, glm::vec3(1));
+        }
+    }
+    
     //ALL candidates retrieved
     //C = MAX_COLLISIONS
-    float shortest = 100;
+    
     for (size_t C = 0; C < MAX_COLLISIONS; C++)
     {
+        float shortest = 100000;
         Physics::CollisionData cData;
         cData.normal = glm::vec3(0, 0, 0);
-        cData.time = 0;
+        cData.time = 100000;
         cData.hitPos = glm::vec3(0, 0, 0);
 
         if(candidates.size() == 0)
@@ -171,7 +207,7 @@ void Game::HandleWallCollisions()
             float time;
 
             AABB candidate = candidates[i];
-            if(Physics::Raycast(pPos, playerVelocity, glm::length(playerVelocity), candidate.min, candidate.max, hit, normal, time))
+            if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), candidate.min, candidate.max, hit, normal, time))
             {
                 if(time < shortest)
                 {
@@ -183,24 +219,32 @@ void Game::HandleWallCollisions()
             }
         }
 
-        if(cData.normal == glm::vec3(0, 0, 0))
+        if(cData.time == 100000)
         {
             break;
         }
     
         //Ok we have our shortest hit, resolve
-        cData.hitPos += cData.normal * (0.01f);
+        cData.hitPos += cData.normal * 0.001f;
         playerTransform.SetPosition(cData.hitPos.x, cData.hitPos.y, cData.hitPos.z);
 
-        float velocityIntoSurface =
-        glm::dot(playerVelocity, cData.normal);
+        float velocityIntoSurface = glm::dot(playerVelocity, cData.normal);
 
         if (velocityIntoSurface < 0.0f)
         {
-            glm::vec3 resolve = (cData.normal * 1.01f) * velocityIntoSurface;
+            glm::vec3 resolve = (cData.normal) * velocityIntoSurface;
             playerVelocity -= resolve;
+
+            std::cout << "Resolve: " << resolve.x << " " << resolve.y << " " << resolve.z << " -------- ";
+
+            if(glm::length(playerVelocity) > 0.075)
+            {
+                playerVelocity = glm::normalize(playerVelocity) * 0.075f;
+            }
         }
-    }     
+    }
+
+    std::cout << std::endl;
 }
 
 void Game::Render()
@@ -228,7 +272,7 @@ void Game::EndFrame()
 
 void Game::DrawDebugMenu()
 {
-    debugInfo.playerPosition = playerTransform.GetPosition();
+    debugInfo.playerTransform = &playerTransform;
     debugger.Draw(*engine.renderer, debugInfo);
 }
 

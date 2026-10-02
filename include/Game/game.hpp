@@ -39,6 +39,8 @@ private:
     bool isRunning = true;
     Engine engine;
 
+    int counter = 0;
+
     //Player related stuff
     float playerWidth = 0.80f;
     float playerHeight = 1.5f;
