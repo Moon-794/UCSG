@@ -47,6 +47,7 @@ private:
     Transform playerTransform;
     glm::vec3 playerVelocity;
     PlayerStats stats;
+    bool shipMove = false;
 
     std::vector<Asteroid> asteroids;
     World world;

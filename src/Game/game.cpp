@@ -70,7 +70,13 @@ void Game::UpdateInputs()
 void Game::Tick()
 {   
     Transform& cameraTransform = engine.renderer->camera.transform;
-    glm::vec3 camForward = glm::vec3(cameraTransform.Forward().x, 0.0f, cameraTransform.Forward().z);
+    glm::vec3 camForward = cameraTransform.Forward();
+
+    //If moving within the ship, dont move exactly the direction we're facing, just the XZ components of it
+    if(shipMove)
+    {
+        camForward.y = 0.0f;
+    }
 
     float movespeed = 0.075f;
     playerVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -111,7 +117,7 @@ void Game::HandleWallCollisions()
     std::vector<AABB> candidates;
     glm::vec3 rounded = glm::floor(playerTransform.GetPosition());
     glm::vec3 pPos = playerTransform.GetPosition();
-    glm::vec3 pExt = glm::vec3(playerWidth / 2.0f, playerHeight, playerWidth / 2.0f);
+    glm::vec3 pExt = glm::vec3(playerWidth / 2.0f, (playerHeight) / 2.0f, playerWidth / 2.0f);
 
     //Get all the data
     for (int i = -1; i < 2; i++)
@@ -176,8 +182,8 @@ void Game::HandleWallCollisions()
         if(glm::length2(aPos - playerTransform.GetPosition()) < 100)
         {
             AABB asteroidAABB;
-            asteroidAABB.min = aPos;
-            asteroidAABB.max = aPos + glm::vec3(1);
+            asteroidAABB.min = aPos - pExt;
+            asteroidAABB.max = aPos + glm::vec3(1) + pExt;
             candidates.push_back(asteroidAABB);
 
             engine.renderer->DrawAABB(asteroidAABB, glm::vec3(1));
@@ -200,6 +206,9 @@ void Game::HandleWallCollisions()
             break;
         }
 
+        glm::vec3 origin = playerTransform.GetPosition();
+        origin.y += playerHeight / 2.0f;
+
         for (size_t i = 0; i < candidates.size(); i++)
         {
             glm::vec3 hit;
@@ -207,13 +216,14 @@ void Game::HandleWallCollisions()
             float time;
 
             AABB candidate = candidates[i];
-            if(Physics::Raycast(playerTransform.GetPosition(), playerVelocity, glm::length(playerVelocity), candidate.min, candidate.max, hit, normal, time))
+            if(Physics::Raycast(origin, playerVelocity, glm::length(playerVelocity), candidate.min, candidate.max, hit, normal, time))
             {
                 if(time < shortest)
                 {
                     shortest = time;
                     cData.time = time;
                     cData.hitPos = hit;
+                    cData.hitPos.y -= playerHeight / 2.0f;
                     cData.normal = normal;
                 }
             }
@@ -235,16 +245,12 @@ void Game::HandleWallCollisions()
             glm::vec3 resolve = (cData.normal) * velocityIntoSurface;
             playerVelocity -= resolve;
 
-            std::cout << "Resolve: " << resolve.x << " " << resolve.y << " " << resolve.z << " -------- ";
-
             if(glm::length(playerVelocity) > 0.075)
             {
                 playerVelocity = glm::normalize(playerVelocity) * 0.075f;
             }
         }
     }
-
-    std::cout << std::endl;
 }
 
 void Game::Render()
