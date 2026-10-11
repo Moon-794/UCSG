@@ -36,7 +36,14 @@ void Game::Init()
 
     debugger.InitImGUI(engine.renderer->window);
 
+    engine.time->AddTimer("Test", 60, TestCallback, true, true);
+
     Run();
+}
+
+void TestCallback()
+{
+    std::cout << "YAY!" << std::endl;
 }
 
 void Game::Run()
@@ -45,6 +52,7 @@ void Game::Run()
     {
         auto frameStart = std::chrono::high_resolution_clock::now();
 
+        engine.Tick();
         UpdateInputs();
         Tick();
         Render();

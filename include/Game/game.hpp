@@ -56,4 +56,6 @@ private:
     DebuggerInfo debugInfo;
 };
 
+void TestCallback();
+
 #endif

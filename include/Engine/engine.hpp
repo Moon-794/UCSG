@@ -5,6 +5,7 @@
 #include "Engine/Physics/physics.hpp"
 #include "Engine/Graphics/renderer.hpp"
 #include "Engine/Debugger/debugger.hpp"
+#include "Engine/Time/time_manager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -16,9 +17,11 @@ public:
     Engine();
 
     void Init();
+    void Tick();
     
     std::shared_ptr<InputMap> inputMap;
     std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<TimeManager> time;
 
 private:
 

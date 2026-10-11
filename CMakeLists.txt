@@ -29,6 +29,8 @@ set(APP_SRCS
     src/Game/world.cpp
     src/Engine/asset_manager.cpp
     src/Third_Party/glad.c
+    src/Engine/Time/timer.cpp 
+    src/Engine/Time/time_manager.cpp
     src/Engine/Physics/physics.cpp 
     src/Engine/input.cpp 
     src/Engine/transform.cpp

@@ -9,11 +9,17 @@ void Engine::Init()
 {
     renderer = std::make_unique<Renderer>("Space Game", 2560, 1440);    
     inputMap = std::make_shared<InputMap>();
+    time = std::make_unique<TimeManager>();
 
     glfwSetWindowUserPointer(renderer->window, reinterpret_cast<void*>(this));
     glfwSetFramebufferSizeCallback(renderer->window, framebuffer_size_callback);
     glfwSetKeyCallback(renderer->window, key_callback);
     glfwSetCursorPosCallback(renderer->window, cursor_position_callback);
+}
+
+void Engine::Tick()
+{
+    time->ProcessTimers();
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

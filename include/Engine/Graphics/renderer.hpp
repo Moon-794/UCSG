@@ -31,7 +31,7 @@ class Renderer
 public:
     Renderer(std::string windowName, int windowWidth, int windowHeight);
 
-    // Can eventually go in a GameWindow Class or something
+    // Can eventually go in a Window Class or something
     GLFWwindow* window = nullptr;
     int windowWidth;
     int windowHeight;
