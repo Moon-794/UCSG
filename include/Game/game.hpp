@@ -28,11 +28,14 @@ private:
 
     void Init();                    //Initial setup
     void Run();                     //Main loop, checks for closed status
-    void UpdateInputs();            //Update the input map for this frame
     void Tick();                    //Main update function to tick along current GameState
     void HandleWallCollisions();    //Handle iminent player collisions with level geometry
     void Render();                  //Draw a scene based on gamestate - The program should work fine with this disabled
     void EndFrame();                //Update GetInputDown, amongst possible other things in the future
+
+    void InitMoveTransition();
+    void MoveTransition();
+    void EndMoveTransition();
 
     void DrawDebugMenu();
 
@@ -49,13 +52,16 @@ private:
     PlayerStats stats;
     bool shipMove = false;
 
+    bool moveTransition = false;
+    int moveState = 0;
+
     std::vector<Asteroid> asteroids;
     World world;
 
     Debugger debugger;
     DebuggerInfo debugInfo;
-};
 
-void TestCallback();
+    std::shared_ptr<Timer> moveTimer;
+};
 
 #endif

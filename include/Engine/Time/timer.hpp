@@ -15,6 +15,8 @@ public:
     void Toggle();
     void Reset(bool enable = true);
 
+    float GetProgress();
+
 private:
     int currentTick = 0;
     int ticksRequired = -1;

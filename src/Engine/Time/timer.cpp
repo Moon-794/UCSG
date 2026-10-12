@@ -13,8 +13,6 @@ void Timer::Tick()
 {
     if(!isEnabled)
         return;
-
-    currentTick++;
     
     //Timer Complete!
     if(currentTick == ticksRequired)
@@ -30,6 +28,10 @@ void Timer::Tick()
 
         if(OnCompleteCallback)
             OnCompleteCallback();
+    }
+    else
+    {
+        currentTick++;
     }
 }
 
@@ -53,4 +55,9 @@ void Timer::Reset(bool enable)
 {
     currentTick = 0;
     isEnabled = enable;
+}
+
+float Timer::GetProgress()
+{
+    return (float)currentTick/(float)ticksRequired;
 }

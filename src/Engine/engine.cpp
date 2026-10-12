@@ -19,6 +19,7 @@ void Engine::Init()
 
 void Engine::Tick()
 {
+    glfwPollEvents();
     time->ProcessTimers();
 }
 

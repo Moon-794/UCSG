@@ -36,14 +36,9 @@ void Game::Init()
 
     debugger.InitImGUI(engine.renderer->window);
 
-    engine.time->AddTimer("Test", 60, TestCallback, true, true);
+    moveTimer = engine.time->AddTimer("Test", 60, [this]() { EndMoveTransition(); }, false, false);
 
     Run();
-}
-
-void TestCallback()
-{
-    std::cout << "YAY!" << std::endl;
 }
 
 void Game::Run()
@@ -53,7 +48,6 @@ void Game::Run()
         auto frameStart = std::chrono::high_resolution_clock::now();
 
         engine.Tick();
-        UpdateInputs();
         Tick();
         Render();
 
@@ -70,15 +64,16 @@ void Game::Run()
     QuitGame();
 }
 
-void Game::UpdateInputs()
-{
-    glfwPollEvents();
-}
-
 void Game::Tick()
 {   
     Transform& cameraTransform = engine.renderer->camera.transform;
     glm::vec3 camForward = cameraTransform.Forward();
+
+    if(moveTransition)
+    {
+        MoveTransition();
+        return;
+    }
 
     //If moving within the ship, dont move exactly the direction we're facing, just the XZ components of it
     if(shipMove)
@@ -113,6 +108,57 @@ void Game::Tick()
     playerTransform.Translate(playerVelocity);
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
+
+    if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
+        InitMoveTransition();
+}
+
+void Game::InitMoveTransition()
+{
+    moveTransition = true;
+    moveTimer->Toggle();
+}
+
+void Game::MoveTransition()
+{
+    std::cout << moveState << " - " << moveTimer->GetProgress() << std::endl;
+    if(moveState == 0)
+    {
+        playerTransform.SetPosition(4.5f, 0, 1);
+        glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+        engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
+    }
+    else if(moveState == 1)
+    {
+
+    }
+    else
+    {   
+        glm::vec3 origin = glm::vec3(4.5f, 0.0f, 1.0f);
+        glm::vec3 destination = glm::vec3(4.5f, 0.0f, -1.0f);
+        float t = moveTimer->GetProgress();
+        glm::vec3 newPos = glm::mix(origin, destination, t);
+
+        playerTransform.SetPosition(newPos.x, newPos.y, newPos.z);
+        glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+        engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
+    }
+}
+
+void Game::EndMoveTransition()
+{
+    moveState++;
+
+    if(moveState != 3)
+    {
+        moveTimer->Reset();
+        return;
+    }
+
+    moveTransition = false;
+    moveState = 0;
+    moveTimer->Reset();
+    moveTimer->Disable();
 }
 
 void Game::HandleWallCollisions()
