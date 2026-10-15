@@ -115,16 +115,30 @@ void Game::Tick()
 
 void Game::InitMoveTransition()
 {
+    shipMove = !shipMove;
+
     moveTransition = true;
     moveTimer->Toggle();
 }
 
 void Game::MoveTransition()
 {
-    std::cout << moveState << " - " << moveTimer->GetProgress() << std::endl;
+    glm::vec3 origin = glm::vec3(0);
+    glm::vec3 target = glm::vec3(0);
+    if(shipMove)
+    {
+        origin = glm::vec3(4.5f, 0.0f, -1.0f);
+        target = glm::vec3(4.5f, 0.0f, 1.0f);
+    }
+    else
+    {
+        origin = glm::vec3(4.5f, 0.0f, 1.0f);
+        target = glm::vec3(4.5f, 0.0f, -1.0f);
+    }
+
     if(moveState == 0)
     {
-        playerTransform.SetPosition(4.5f, 0, 1);
+        playerTransform.SetPosition(origin.x, origin.y, origin.z);
         glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
         engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
     }
@@ -134,10 +148,8 @@ void Game::MoveTransition()
     }
     else
     {   
-        glm::vec3 origin = glm::vec3(4.5f, 0.0f, 1.0f);
-        glm::vec3 destination = glm::vec3(4.5f, 0.0f, -1.0f);
         float t = moveTimer->GetProgress();
-        glm::vec3 newPos = glm::mix(origin, destination, t);
+        glm::vec3 newPos = glm::mix(origin, target, t);
 
         playerTransform.SetPosition(newPos.x, newPos.y, newPos.z);
         glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
