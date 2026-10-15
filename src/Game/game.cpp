@@ -235,6 +235,19 @@ void Game::HandleWallCollisions()
                             planeForward.max = glm::vec3(x + 1, 4.0f, z + 1) + pExt;
                             candidates.push_back(planeForward);
                         }
+
+                        if(shipMove == false)
+                        {
+                            AABB planeCeiling;
+                            planeCeiling.min = glm::vec3(x, 4.0f, z) - pExt;
+                            planeCeiling.max = glm::vec3(x + 1, 4.0f, z + 1) + pExt;
+                            candidates.push_back(planeCeiling);
+
+                            AABB planeFloor;
+                            planeFloor.min = glm::vec3(x, 0.0f, z) - pExt;
+                            planeFloor.max = glm::vec3(x + 1, 0.0f, z + 1) + pExt;
+                            candidates.push_back(planeFloor);
+                        }
                     }
                 }
             }
