@@ -69,7 +69,7 @@ void Game::Tick()
     Transform& cameraTransform = engine.renderer->camera.transform;
     glm::vec3 camForward = cameraTransform.Forward();
 
-    if(moveTransition)
+    if(transitioning)
     {
         MoveTransition();
         return;
@@ -117,14 +117,20 @@ void Game::InitMoveTransition()
 {
     shipMove = !shipMove;
 
-    moveTransition = true;
-    moveTimer->Toggle();
+    transitioning = true;
+    moveState = MoveState::premove;
+    initialPos = playerTransform.GetPosition();
+
+    moveTimer->Reset();
+    moveTimer->Enable();
 }
 
 void Game::MoveTransition()
 {
     glm::vec3 origin = glm::vec3(0);
     glm::vec3 target = glm::vec3(0);
+    glm::vec3 camPos;
+
     if(shipMove)
     {
         origin = glm::vec3(4.5f, 0.0f, -1.0f);
@@ -136,39 +142,47 @@ void Game::MoveTransition()
         target = glm::vec3(4.5f, 0.0f, -1.0f);
     }
 
-    if(moveState == 0)
+    switch (moveState)
     {
-        playerTransform.SetPosition(origin.x, origin.y, origin.z);
-        glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
-        engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
-    }
-    else if(moveState == 1)
+    case MoveState::premove:
     {
-
-    }
-    else
-    {   
         float t = moveTimer->GetProgress();
-        glm::vec3 newPos = glm::mix(origin, target, t);
+        glm::vec3 newPos = glm::mix(initialPos, origin, glm::smoothstep(0.0f, 1.0f, 2 * t));
+        playerTransform.SetPosition(newPos.x, newPos.y, newPos.z);
+        camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+        engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
+
+        if(t >= 0.5f)
+        {
+            moveTimer->Reset();
+            moveTimer->Enable();
+            moveState = MoveState::moving;
+        }
+    }
+    break;
+    
+    case MoveState::moving:
+    {
+        float t = moveTimer->GetProgress();
+        glm::vec3 newPos = glm::mix(origin, target, glm::smoothstep(0.0f, 1.0f, t));
 
         playerTransform.SetPosition(newPos.x, newPos.y, newPos.z);
-        glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
+        camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
         engine.renderer->camera.transform.SetPosition(camPos.x, camPos.y, camPos.z);
+        if(t >= 1.0f)
+            EndMoveTransition();
+    }
+    break;
+    
+    case MoveState::none:
+        break;
     }
 }
 
 void Game::EndMoveTransition()
 {
-    moveState++;
-
-    if(moveState != 3)
-    {
-        moveTimer->Reset();
-        return;
-    }
-
-    moveTransition = false;
-    moveState = 0;
+    transitioning = false;
+    moveState = MoveState::none;
     moveTimer->Reset();
     moveTimer->Disable();
 }

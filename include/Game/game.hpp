@@ -18,6 +18,13 @@ struct PlayerStats
     int copperAmount = 0;
 };
 
+enum MoveState
+{
+    premove,
+    moving,
+    none
+};
+
 class Game
 {
 public:
@@ -50,10 +57,11 @@ private:
     Transform playerTransform;
     glm::vec3 playerVelocity;
     PlayerStats stats;
-    bool shipMove = false;
-
-    bool moveTransition = false;
-    int moveState = 0;
+    
+    bool shipMove = true;
+    bool transitioning = false;
+    MoveState moveState;
+    glm::vec3 initialPos = glm::vec3(0);
 
     std::vector<Asteroid> asteroids;
     World world;
