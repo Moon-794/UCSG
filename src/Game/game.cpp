@@ -109,8 +109,21 @@ void Game::Tick()
     glm::vec3 camPos = playerTransform.GetPosition() + glm::vec3(0.0f, playerHeight, 0.0f);
     cameraTransform.SetPosition(camPos.x, camPos.y, camPos.z);
 
-    if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
-        InitMoveTransition();
+    AABB doorAABB;
+    doorAABB.min = glm::vec3(4.0f, 0.0f, 0.0f);
+    doorAABB.max = glm::vec3(5.0f, 4.0f, 0.0f);
+
+    glm::vec3 hitPos;
+    glm::vec3 normal;
+    float time;
+
+    if(Physics::Raycast(cameraTransform.GetPosition(), cameraTransform.Forward(), 3.0f, doorAABB.min, doorAABB.max, hitPos, normal, time))
+    {
+        engine.renderer->DrawAABB(doorAABB, glm::vec3(0.0f));
+        if(engine.inputMap->GetKey(GLFW_KEY_SPACE))
+            InitMoveTransition();
+    }
+        
 }
 
 void Game::InitMoveTransition()
@@ -208,7 +221,8 @@ void Game::HandleWallCollisions()
             {
                 if(rounded.z + j >= 0 && rounded.z + j < 32)
                 {
-                    if(world.shipGrid[rounded.x + i][rounded.z + j] == TileType::ship)
+                    TileType type = world.shipGrid[rounded.x + i][rounded.z + j];
+                    if(type == TileType::ship || type == TileType::door)
                     {
                         int x = rounded.x + i;
                         int z = rounded.z + j;
